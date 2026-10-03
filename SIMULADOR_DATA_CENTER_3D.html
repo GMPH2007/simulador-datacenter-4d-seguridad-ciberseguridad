@@ -1,0 +1,2451 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador de Centro de Datos 4D Profesional | I.E.S.T.P. Hermanos Cárcamo</title>
+  
+  <!-- Tipografías de Alta Tecnología -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Three.js y OrbitControls -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+            tech: ['Rajdhani', 'sans-serif']
+          },
+          colors: {
+            cyber: {
+              950: '#030712',
+              900: '#070D1E',
+              850: '#0B142D',
+              800: '#101D3F',
+              700: '#192C5E',
+              cyan: '#00F0FF',
+              matrix: '#00FF66',
+              blue: '#0284C7',
+              emerald: '#10B981',
+              amber: '#F59E0B',
+              rose: '#F43F5E',
+              purple: '#A855F7'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --primary-glow: #00F0FF;
+      --alarm-color: #10B981;
+    }
+    
+    body {
+      background-color: #030712;
+      color: #E2E8F0;
+      overflow-x: hidden;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #070D1E;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1E293B;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #00F0FF;
+    }
+
+    @keyframes pulse-alarm {
+      0%, 100% { filter: drop-shadow(0 0 16px var(--alarm-color)); opacity: 1; }
+      50% { filter: drop-shadow(0 0 4px var(--alarm-color)); opacity: 0.4; }
+    }
+
+    @keyframes flow-synapse {
+      0% { stroke-dashoffset: 120; }
+      100% { stroke-dashoffset: 0; }
+    }
+
+    @keyframes matrix-fade {
+      0% { opacity: 0.9; }
+      50% { opacity: 0.4; }
+      100% { opacity: 0.9; }
+    }
+
+    .alarm-glow {
+      animation: pulse-alarm 0.9s infinite ease-in-out;
+    }
+
+    .synapse-active {
+      stroke-dasharray: 6;
+      animation: flow-synapse 1.2s linear infinite;
+    }
+
+    .glass-panel {
+      background: rgba(11, 20, 45, 0.82);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .glass-panel-glow {
+      background: rgba(11, 20, 45, 0.90);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(0, 240, 255, 0.35);
+      box-shadow: 0 8px 32px 0 rgba(0, 240, 255, 0.15);
+    }
+
+    .cyber-btn {
+      position: relative;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .cyber-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px -2px rgba(0, 240, 255, 0.4);
+    }
+    .cyber-btn:active {
+      transform: translateY(1px);
+    }
+
+    .cctv-scanline {
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.45) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.04));
+      background-size: 100% 3px, 3px 100%;
+    }
+
+    #canvas-container {
+      position: relative;
+      width: 100%;
+      height: 720px;
+      background: radial-gradient(circle at center, #0B1838 0%, #030712 100%);
+      border-radius: 1.25rem;
+      overflow: hidden;
+      cursor: grab;
+      user-select: none;
+    }
+    #canvas-container:active {
+      cursor: grabbing;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-cyber-950 font-sans text-slate-200">
+
+  <!-- ==================== BANNER DE VERSIÓN SUPERIOR ==================== -->
+  <div class="bg-gradient-to-r from-cyan-900 via-blue-900 to-indigo-900 border-b border-cyan-500/40 text-center py-1 px-4 text-xs font-mono text-cyan-200 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-matrix animate-ping"></span>
+      <span class="font-bold text-white font-tech tracking-wider">VERSION 4.0 ULTRA PRO</span> • SIMULADOR DE CIBERSEGURIDAD Y DATA CENTER TIER III
+    </div>
+    <div class="hidden md:flex items-center gap-3 text-[11px] text-cyan-300">
+      <span>Cascada Matrix Verde Activa</span> • <span>Cámaras Físicas Articuladas</span> • <span>Apagón Eléctrico Dinámico</span>
+    </div>
+  </div>
+
+  <!-- ==================== ENCABEZADO INSTITUCIONAL ==================== -->
+  <header class="border-b border-cyber-800 bg-cyber-900/95 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-700 flex items-center justify-center shadow-lg shadow-cyan-500/25 border border-cyan-400/50">
+          <span class="text-2xl font-black text-white font-tech">HC</span>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-cyan-400 bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-800/60 font-mono">I.E.S.T.P. HERMANOS CÁRCAMO</span>
+            <span class="text-[11px] font-semibold text-slate-400 font-mono">PAITA - PIURA</span>
+          </div>
+          <h1 class="text-base md:text-lg font-extrabold text-white font-tech tracking-wide flex items-center gap-2">
+            CENTRO DE CONTROL Y SIMULADOR SOC 4D
+            <span class="text-[10px] font-bold text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-800/60 flex items-center gap-1 font-mono">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              TIER III 99.999% SLA
+            </span>
+          </h1>
+          <p class="text-[11px] text-slate-400">
+            Arquitectura de TI • <span class="text-cyan-300 font-medium">Mg. Javier Eduardo Jaramillo Atoche</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Métricas en Vivo y Equipo -->
+      <div class="flex flex-wrap items-center gap-3">
+        <div class="hidden xl:flex flex-col text-right text-[11px] text-slate-400 border-r border-cyber-800 pr-3">
+          <span class="text-[9px] text-cyan-400 font-bold uppercase tracking-wider">Equipo de Investigación:</span>
+          <span class="font-medium text-slate-200">Gerson Pintado (Líder) • M. López • M. Clavijo</span>
+          <span class="text-[10px] text-slate-400">P. Aguilar • D. Urbina</span>
+        </div>
+
+        <!-- Telemetría Rápida -->
+        <div class="grid grid-cols-3 gap-2 text-center text-xs font-mono">
+          <div class="bg-cyber-850/80 px-2.5 py-1.5 rounded-lg border border-cyber-800">
+            <span class="text-[9px] text-slate-400 block">PUE GLOBAL</span>
+            <span class="text-cyan-400 font-bold text-xs" id="header-pue">1.18</span>
+          </div>
+          <div class="bg-cyber-850/80 px-2.5 py-1.5 rounded-lg border border-cyber-800">
+            <span class="text-[9px] text-slate-400 block">TEMP. SALA</span>
+            <span class="text-emerald-400 font-bold text-xs" id="header-temp">19.8 °C</span>
+          </div>
+          <div class="bg-cyber-850/80 px-2.5 py-1.5 rounded-lg border border-cyber-800">
+            <span class="text-[9px] text-slate-400 block">POTENCIA IT</span>
+            <span class="text-amber-400 font-bold text-xs" id="header-power">142.8 kW</span>
+          </div>
+        </div>
+
+        <!-- Reloj Digital Maestro -->
+        <div class="bg-cyber-850/90 px-3 py-1.5 rounded-lg border border-cyan-800/40 text-right font-mono">
+          <span class="text-[9px] text-cyan-400 block uppercase font-bold">HORA OFICIAL PERÚ</span>
+          <span class="text-xs font-bold text-white tracking-widest" id="header-clock">--:--:--.--</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== CONTENEDOR PRINCIPAL ==================== -->
+  <main class="max-w-7xl mx-auto px-4 py-4 space-y-4">
+
+    <!-- SECCIÓN 1: VIEWPORT 3D CON HUD INTEGRADO -->
+    <div class="relative rounded-2xl p-1 bg-gradient-to-b from-cyan-500/30 via-cyber-800/40 to-transparent border border-cyan-500/40 shadow-2xl shadow-cyan-950/60">
+      <div id="canvas-container">
+        
+        <!-- HUD SUPERIOR IZQUIERDO: BANNER DE INCIDENTE Y TIPO DE ACCESO -->
+        <div class="absolute top-4 left-4 z-20 max-w-md pointer-events-none">
+          <div class="glass-panel-glow p-3.5 rounded-xl border border-cyan-500/50 pointer-events-auto">
+            <div class="flex items-center space-x-2.5 mb-1.5">
+              <span id="dot-alerta" class="w-3.5 h-3.5 rounded-full bg-emerald-400 alarm-glow"></span>
+              <span id="badge-tipo-acceso" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-700/60 font-mono">
+                SEGURIDAD FÍSICA Y LÓGICA
+              </span>
+              <span id="badge-estado-proteccion" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-950 text-cyan-300 border border-cyan-800 font-mono">
+                PROTEGIDO
+              </span>
+            </div>
+            <h2 id="titulo-alerta" class="text-base font-bold text-white font-tech tracking-wide leading-tight">
+              OPERACIÓN NORMAL — DATA CENTER EN LÍNEA BASE
+            </h2>
+            <p id="subtitulo-alerta" class="text-xs text-slate-300 mt-1 leading-relaxed">
+              Todos los controles físicos (esclusa, climatización, VESDA) y lógicos (NGFW, SIEM, SAN WORM) operan al 100%.
+            </p>
+          </div>
+        </div>
+
+        <!-- HUD SUPERIOR DERECHO: MONITOR CCTV EN VIVO CON SCANLINES Y ESTÁTICA -->
+        <div class="absolute top-4 right-4 z-20 w-80 pointer-events-none">
+          <div class="glass-panel p-3 rounded-xl border border-slate-700 pointer-events-auto">
+            <div class="flex items-center justify-between text-[11px] font-mono text-slate-400 mb-1.5">
+              <div class="flex items-center gap-1.5">
+                <span id="cctv-rec-dot" class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
+                <span id="cctv-rec-label" class="text-rose-400 font-bold">REC</span>
+                <span id="cctv-cam-name" class="text-slate-200">CAM-02 [PASILLO FRÍO]</span>
+              </div>
+              <span id="cctv-time" class="text-[10px] text-cyan-400">12:00:00</span>
+            </div>
+            
+            <!-- Ventana de Cámara con scanlines y estática -->
+            <div id="cctv-monitor-box" class="relative w-full h-32 bg-slate-950 rounded-lg overflow-hidden border border-slate-800 flex items-center justify-center">
+              <canvas id="cctv-static-canvas" class="absolute inset-0 w-full h-full opacity-0 pointer-events-none"></canvas>
+              <div class="absolute inset-0 cctv-scanline opacity-60 pointer-events-none"></div>
+              
+              <div id="cctv-view-content" class="text-center p-2 z-10">
+                <div id="cctv-icon" class="text-3xl mb-1">❄️</div>
+                <div id="cctv-status-txt" class="text-xs font-tech font-bold text-cyan-400">PASILLO FRÍO REGULADO (19.8°C)</div>
+                <div id="cctv-sub-txt" class="text-[9px] font-mono text-slate-400 mt-0.5">H.265 AES-256 • 60 FPS • PTZ ACTIVA</div>
+              </div>
+            </div>
+
+            <!-- Selector de Cámaras 1 a 6 -->
+            <div class="grid grid-cols-6 gap-1 mt-2 font-mono text-[10px]">
+              <button onclick="switchSecurityCam(0)" class="cam-btn py-1 rounded bg-cyber-850 hover:bg-cyan-900 border border-slate-700 text-slate-300 font-bold transition">C1</button>
+              <button onclick="switchSecurityCam(1)" class="cam-btn py-1 rounded bg-cyan-700 border border-cyan-400 text-white font-bold transition">C2</button>
+              <button onclick="switchSecurityCam(2)" class="cam-btn py-1 rounded bg-cyber-850 hover:bg-cyan-900 border border-slate-700 text-slate-300 font-bold transition">C3</button>
+              <button onclick="switchSecurityCam(3)" class="cam-btn py-1 rounded bg-cyber-850 hover:bg-cyan-900 border border-slate-700 text-slate-300 font-bold transition">C4</button>
+              <button onclick="switchSecurityCam(4)" class="cam-btn py-1 rounded bg-cyber-850 hover:bg-cyan-900 border border-slate-700 text-slate-300 font-bold transition">C5</button>
+              <button onclick="switchSecurityCam(5)" class="cam-btn py-1 rounded bg-cyber-850 hover:bg-cyan-900 border border-slate-700 text-slate-300 font-bold transition">C6</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- HUD INFERIOR IZQUIERDO: RADAR TÁCTICO 2D INTERACTIVO -->
+        <div class="absolute bottom-4 left-4 z-20 pointer-events-none">
+          <div class="glass-panel p-2.5 rounded-xl border border-cyan-800/50 pointer-events-auto flex items-center gap-3">
+            <div class="relative w-24 h-24 rounded-lg bg-cyber-950 border border-cyan-500/40 overflow-hidden flex items-center justify-center">
+              <canvas id="radar-canvas" width="96" height="96" class="w-full h-full"></canvas>
+            </div>
+            <div class="text-[11px] font-mono space-y-1">
+              <span class="text-cyan-400 font-bold block text-[10px]">RADAR TÁCTICO 2D</span>
+              <div class="flex items-center gap-1.5 text-slate-300">
+                <span class="w-2 h-2 rounded-full bg-cyan-400"></span> 10 Racks TI
+              </div>
+              <div class="flex items-center gap-1.5 text-slate-300">
+                <span class="w-2 h-2 rounded-full bg-blue-500"></span> 2 Climatizadores
+              </div>
+              <div class="flex items-center gap-1.5 text-slate-300">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Esclusa Mantrap
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- HUD INFERIOR DERECHO: BARRA DE HERRAMIENTAS Y MODOS VISUALES -->
+        <div class="absolute bottom-4 right-4 z-20 pointer-events-none">
+          <div class="glass-panel p-2 rounded-xl border border-cyan-800/60 pointer-events-auto flex flex-wrap items-center gap-1.5">
+            <!-- Modos Visuales -->
+            <button id="btn-mode-normal" onclick="setVisualMode('normal')" class="px-2.5 py-1.5 rounded-lg bg-cyan-600 text-white font-mono text-xs font-bold hover:bg-cyan-500 transition shadow">
+              Realista 3D
+            </button>
+            <button id="btn-mode-matrix" onclick="setVisualMode('matrix')" class="px-2.5 py-1.5 rounded-lg bg-cyber-850 text-matrix font-mono text-xs hover:bg-emerald-900 transition border border-emerald-700/60">
+              Matrix Rain ❇️
+            </button>
+            <button id="btn-mode-thermal" onclick="setVisualMode('thermal')" class="px-2.5 py-1.5 rounded-lg bg-cyber-850 text-slate-300 font-mono text-xs hover:bg-amber-600 hover:text-white transition border border-slate-700">
+              Térmico FLIR
+            </button>
+            <button id="btn-mode-xray" onclick="setVisualMode('xray')" class="px-2.5 py-1.5 rounded-lg bg-cyber-850 text-slate-300 font-mono text-xs hover:bg-cyan-600 hover:text-white transition border border-slate-700">
+              Rayos X
+            </button>
+
+            <div class="h-5 w-px bg-slate-700 mx-1"></div>
+
+            <!-- Botones de Utilidad -->
+            <button id="btn-sound" onclick="toggleAudio()" title="Activar/Silenciar Efectos de Sonido" class="p-1.5 rounded-lg bg-cyber-850 hover:bg-slate-700 text-cyan-400 border border-slate-700 transition">
+              <span id="sound-icon" class="text-sm">🔊</span>
+            </button>
+            <button id="btn-speech" onclick="toggleSpeech()" title="Activar/Silenciar Narrador de Voz IA" class="p-1.5 rounded-lg bg-cyber-850 hover:bg-slate-700 text-cyan-400 border border-slate-700 transition">
+              <span id="speech-icon" class="text-sm">🗣️</span>
+            </button>
+            <button id="btn-ambient-hum" onclick="toggleAmbientHum()" title="Zumbido de Climatización" class="p-1.5 rounded-lg bg-cyber-850 hover:bg-slate-700 text-cyan-400 border border-slate-700 transition">
+              <span id="hum-icon" class="text-sm">🌀</span>
+            </button>
+            <button id="btn-tour" onclick="toggleAutoTour()" title="Recorrido Automático 360°" class="px-2.5 py-1.5 rounded-lg bg-indigo-700 hover:bg-indigo-600 text-white font-mono text-xs font-bold transition flex items-center gap-1">
+              <span>🎬</span> Tour 360°
+            </button>
+          </div>
+        </div>
+
+        <!-- TIP FLOTANTE INFERIOR CENTRAL -->
+        <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 z-10 pointer-events-none">
+          <div class="text-[11px] font-mono text-cyan-300 bg-cyber-950/85 px-3 py-1 rounded-full border border-cyan-800/50 shadow-lg">
+            💡 Haz clic en cualquier Servidor o Unidad CRAC para abrir su Telemetría y Contramedidas
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SECCIÓN 2: TABLERO DE CONTROL DE INCIDENTES (CUMPLIMIENTO DE REQUERIMIENTOS DEL PROFESOR) -->
+    <div class="glass-panel p-4 rounded-2xl border border-slate-800">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3 border-b border-cyber-800 pb-2.5">
+        <div>
+          <h2 class="text-base font-bold text-white font-tech uppercase tracking-wider flex items-center gap-2">
+            <span>🛡️</span> TABLERO DE SIMULACIÓN DE INCIDENTES Y CONTRAMEDIDAS
+          </h2>
+          <p class="text-xs text-slate-400">
+            Requerimiento del docente: Simular cada incidente y determinar clasificación (<strong class="text-cyan-400">Acceso Físico vs Lógico</strong>) y estado de protección (<strong class="text-emerald-400">Protegido vs Mitigado</strong>).
+          </p>
+        </div>
+        <!-- Botón Reset a Estado Normal -->
+        <button onclick="triggerIncident('normal')" class="cyber-btn px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-tech font-bold text-sm tracking-wider flex items-center gap-2 shadow-lg shadow-emerald-950 border border-emerald-400/50">
+          <span>🔄</span> RESTABLECER A OPERACIÓN NORMAL
+        </button>
+      </div>
+
+      <!-- Cuadrícula de Botones Dividida en Seguridad Física y Seguridad Lógica -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        
+        <!-- COLUMNA 1: SEGURIDAD FÍSICA -->
+        <div class="space-y-2 bg-cyber-900/60 p-3 rounded-xl border border-slate-800">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs font-bold text-amber-400 font-mono flex items-center gap-1.5">
+              <span>🏢</span> SEGURIDAD FÍSICA & AMBIENTAL (5 CASOS)
+            </span>
+            <span class="text-[10px] text-slate-500 font-mono">INFRAESTRUCTURA & PERÍMETRO</span>
+          </div>
+
+          <!-- Incidente 1: Intrusión Física -->
+          <button onclick="triggerIncident('acceso')" class="w-full text-left p-2.5 rounded-lg bg-cyber-850 hover:bg-slate-800 border border-amber-900/40 hover:border-amber-500 transition group flex items-start gap-3">
+            <div class="p-2 rounded-lg bg-amber-950/80 text-amber-400 border border-amber-700/60 text-lg">🚪</div>
+            <div class="flex-1">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-white group-hover:text-amber-400 font-tech">1. INTRUSIÓN FÍSICA EN ESCLUSA MANTRAP</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-800">ACCESO FÍSICO</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                Intento de forzar la puerta con tarjeta clonada. <span class="text-emerald-400 font-semibold">Respuesta:</span> Bloqueo magnético 1200 lbs, sirena policial de alta claridad, baliza estroboscópica y PTZ enfocada.
+              </p>
+            </div>
+          </button>
+
+          <!-- Incidente 2: Humo y Fuego -->
+          <button onclick="triggerIncident('humo')" class="w-full text-left p-2.5 rounded-lg bg-cyber-850 hover:bg-slate-800 border border-rose-900/40 hover:border-rose-500 transition group flex items-start gap-3">
+            <div class="p-2 rounded-lg bg-rose-950/80 text-rose-400 border border-rose-700/60 text-lg">🔥</div>
+            <div class="flex-1">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-white group-hover:text-rose-400 font-tech">2. DETECCIÓN DE HUMO Y FUEGO EN RACK</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800">FÍSICO / AMBIENTAL</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                Sensor óptico y VESDA detectan partículas de combustión. <span class="text-emerald-400 font-semibold">Respuesta:</span> Corte selectivo EPO y descarga de gas limpio NOVEC 1230.
+              </p>
+            </div>
+          </button>
+
+          <!-- Incidente 3: Sobrecalentamiento Térmico -->
+          <button onclick="triggerIncident('termico')" class="w-full text-left p-2.5 rounded-lg bg-cyber-850 hover:bg-slate-800 border border-orange-900/40 hover:border-orange-500 transition group flex items-start gap-3">
+            <div class="p-2 rounded-lg bg-orange-950/80 text-orange-400 border border-orange-700/60 text-lg">🌡️</div>
+            <div class="flex-1">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-white group-hover:text-orange-400 font-tech">3. SOBRECALENTAMIENTO TÉRMICO (CHILLER)</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-orange-950 text-orange-300 border border-orange-800">FÍSICO / CLIMA</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                Compresor CRAC-01 falla (>28°C). <span class="text-emerald-400 font-semibold">Respuesta:</span> Conmutación a CRAC-02 (Redundancia N+1) a 1450 RPM y balanceo térmico.
+              </p>
+            </div>
+          </button>
+
+          <!-- Incidente 4: Falla de Cámara CCTV (¡CON EFECTO DE CAÍDA Y DESCONEXIÓN FÍSICA!) -->
+          <button onclick="triggerIncident('camara')" class="w-full text-left p-2.5 rounded-lg bg-cyber-850 hover:bg-slate-800 border border-yellow-900/40 hover:border-yellow-500 transition group flex items-start gap-3">
+            <div class="p-2 rounded-lg bg-yellow-950/80 text-yellow-400 border border-yellow-700/60 text-lg">📷</div>
+            <div class="flex-1">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-white group-hover:text-yellow-400 font-tech">4. CÁMARA DESCONECTADA (CAÍDA FÍSICA Y SIN SEÑAL)</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-yellow-950 text-yellow-300 border border-yellow-800">FÍSICO / VIGILANCIA</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                La cámara se <strong class="text-amber-300">agacha/desconecta físicamente</strong> con chispas y estática total. <span class="text-emerald-400 font-semibold">Respuesta:</span> Cobertura cruzada y sensores PIR.
+              </p>
+            </div>
+          </button>
+
+          <!-- Incidente 5: Corte de Energía Eléctrica (¡CON APAGÓN REALISTA!) -->
+          <button onclick="triggerIncident('energia')" class="w-full text-left p-2.5 rounded-lg bg-cyber-850 hover:bg-slate-800 border border-slate-700 hover:border-cyan-500 transition group flex items-start gap-3">
+            <div class="p-2 rounded-lg bg-cyan-950/80 text-cyan-400 border border-cyan-700/60 text-lg">⚡</div>
+            <div class="flex-1">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-white group-hover:text-cyan-400 font-tech">5. CORTE DE ENERGÍA / APAGÓN DINÁMICO (BLACKOUT)</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800">FÍSICO / ELÉCTRICO</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                Parpadeo de tensión, disyuntor salta con sonido de corte y sala a oscuras. <span class="text-emerald-400 font-semibold">Respuesta:</span> UPS 2N y luces de emergencia.
+              </p>
+            </div>
+          </button>
+        </div>
+
+        <!-- COLUMNA 2: SEGURIDAD LÓGICA Y RED -->
+        <div class="space-y-2 bg-cyber-900/60 p-3 rounded-xl border border-slate-800">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs font-bold text-purple-400 font-mono flex items-center gap-1.5">
+              <span>💻</span> SEGURIDAD LÓGICA & CIBERSEGURIDAD (2 CASOS)
+            </span>
+            <span class="text-[10px] text-slate-500 font-mono">RED, DATOS Y APLICACIONES</span>
+          </div>
+
+          <!-- Incidente 6: Intrusión de Red / DDoS -->
+          <button onclick="triggerIncident('red')" class="w-full text-left p-2.5 rounded-lg bg-cyber-850 hover:bg-slate-800 border border-purple-900/40 hover:border-purple-500 transition group flex items-start gap-3">
+            <div class="p-2 rounded-lg bg-purple-950/80 text-purple-400 border border-purple-700/60 text-lg">🌐</div>
+            <div class="flex-1">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-white group-hover:text-purple-400 font-tech">6. INTRUSIÓN DE RED / CIBERATAQUE DDoS</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-800">ACCESO LÓGICO</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                Inundación SYN-Flood de 85 Gbps hacia la DMZ. <span class="text-emerald-400 font-semibold">Respuesta:</span> Filtrado BGP Anycast, inspección profunda en NGFW y microsegmentación.
+              </p>
+            </div>
+          </button>
+
+          <!-- Incidente 7: Ransomware / Virus (¡CON CASCADA MATRIX DIGITAL VERDE!) -->
+          <button onclick="triggerIncident('ransomware')" class="w-full text-left p-2.5 rounded-lg bg-cyber-850 hover:bg-slate-800 border border-emerald-900/40 hover:border-matrix transition group flex items-start gap-3">
+            <div class="p-2 rounded-lg bg-emerald-950/80 text-matrix border border-emerald-700/60 text-lg">❇️</div>
+            <div class="flex-1">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-white group-hover:text-matrix font-tech">7. ATAQUE DE VIRUS / RANSOMWARE (EFECTO MATRIX)</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-950 text-matrix border border-emerald-800">ACCESO LÓGICO</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                Los servidores se tiñen de <strong class="text-matrix">código Matrix verde en cascada digital</strong>. <span class="text-emerald-400 font-semibold">Respuesta:</span> Sellado WORM inmutable y aislamiento de red.
+              </p>
+            </div>
+          </button>
+
+          <!-- Tarjeta de Protocolos ISO 27001 & TIA-942 -->
+          <div class="p-3 rounded-lg bg-cyber-800/40 border border-slate-700/60 text-xs font-mono space-y-1.5">
+            <div class="text-cyan-400 font-bold flex items-center gap-1.5">
+              <span>📜</span> ESTÁNDARES INTERNACIONALES APLICADOS
+            </div>
+            <div class="text-[11px] text-slate-300">
+              • <strong class="text-white">ISO/IEC 27001 (Cláusula A.11):</strong> Seguridad física del perímetro, control de accesos biométricos y protección contra amenazas ambientales.
+            </div>
+            <div class="text-[11px] text-slate-300">
+              • <strong class="text-white">ANSI/TIA-942 Tier III:</strong> Mantenimiento concurrente, rutas de energía 2N y climatización N+1 sin interrumpir servicios financieros.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SECCIÓN 3: TELEMETRÍA EN TIEMPO REAL CON GRÁFICAS SVG DINÁMICAS -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+      
+      <!-- Gráfica 1: Tráfico de Red -->
+      <div class="glass-panel p-3 rounded-xl border border-slate-800">
+        <div class="flex items-center justify-between text-xs font-mono mb-1">
+          <span class="text-slate-400">TRÁFICO DE RED</span>
+          <span id="chart-net-val" class="text-cyan-400 font-bold">12.4 Gbps</span>
+        </div>
+        <div class="h-16 w-full relative">
+          <svg id="svg-chart-net" class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 40">
+            <path id="path-net" d="M0,35 Q25,32 50,34 T100,33" fill="none" stroke="#00F0FF" stroke-width="2"></path>
+          </svg>
+        </div>
+        <span class="text-[10px] text-slate-500 font-mono block mt-1">Capacidad Enlace: 100 GbE</span>
+      </div>
+
+      <!-- Gráfica 2: Temperatura Sala -->
+      <div class="glass-panel p-3 rounded-xl border border-slate-800">
+        <div class="flex items-center justify-between text-xs font-mono mb-1">
+          <span class="text-slate-400">TEMP. PASILLO FRÍO</span>
+          <span id="chart-temp-val" class="text-emerald-400 font-bold">19.8 °C</span>
+        </div>
+        <div class="h-16 w-full relative">
+          <svg id="svg-chart-temp" class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 40">
+            <path id="path-temp" d="M0,25 Q25,24 50,26 T100,25" fill="none" stroke="#10B981" stroke-width="2"></path>
+          </svg>
+        </div>
+        <span class="text-[10px] text-slate-500 font-mono block mt-1">Rango ASHRAE: 18°C - 27°C</span>
+      </div>
+
+      <!-- Gráfica 3: Potencia Eléctrica -->
+      <div class="glass-panel p-3 rounded-xl border border-slate-800">
+        <div class="flex items-center justify-between text-xs font-mono mb-1">
+          <span class="text-slate-400">CARGA UPS TRIFÁSICO</span>
+          <span id="chart-power-val" class="text-amber-400 font-bold">142.8 kW</span>
+        </div>
+        <div class="h-16 w-full relative">
+          <svg id="svg-chart-power" class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 40">
+            <path id="path-power" d="M0,20 Q25,22 50,19 T100,20" fill="none" stroke="#F59E0B" stroke-width="2"></path>
+          </svg>
+        </div>
+        <span class="text-[10px] text-slate-500 font-mono block mt-1">Redundancia: 2N Bus A+B</span>
+      </div>
+
+      <!-- Gráfica 4: Latencia Cognitiva IA -->
+      <div class="glass-panel p-3 rounded-xl border border-slate-800">
+        <div class="flex items-center justify-between text-xs font-mono mb-1">
+          <span class="text-slate-400">LATENCIA IA GUARDIÁN</span>
+          <span id="chart-ia-val" class="text-purple-400 font-bold">1.2 ms</span>
+        </div>
+        <div class="h-16 w-full relative">
+          <svg id="svg-chart-ia" class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 40">
+            <path id="path-ia" d="M0,30 Q25,28 50,32 T100,29" fill="none" stroke="#A855F7" stroke-width="2"></path>
+          </svg>
+        </div>
+        <span class="text-[10px] text-slate-500 font-mono block mt-1">Inferencia en Edge FPGA</span>
+      </div>
+
+    </div>
+
+    <!-- SECCIÓN 4: MENTE PROPIA — RED NEURONAL COGNITIVA Y TERMINAL SYSLOG -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+      
+      <!-- Panel de Red Neuronal (5 columnas) -->
+      <div class="lg:col-span-5 glass-panel p-4 rounded-2xl border border-slate-800 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-sm font-bold text-cyan-400 font-tech uppercase tracking-wider flex items-center gap-1.5">
+              <span>🧠</span> MENTE PROPIA: RED NEURONAL AUTÓNOMA
+            </h3>
+            <span class="text-[10px] font-mono text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800">
+              ACTIVA 24/7
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 mb-3">
+            Infiere anomalías a partir de 128 sensores de telemetría física y lógica, aplicando contramedidas sin intervención humana.
+          </p>
+          
+          <!-- Diagrama de Sinapsis SVG -->
+          <div class="w-full h-44 bg-cyber-950/80 rounded-xl p-2 border border-slate-800 relative flex items-center justify-center">
+            <svg id="neural-svg" class="w-full h-full" viewBox="0 0 320 140">
+              <g stroke="#1E293B" stroke-width="1.5">
+                <line x1="40" y1="25" x2="120" y2="35" class="synapse-active" stroke="#00F0FF" />
+                <line x1="40" y1="55" x2="120" y2="70" class="synapse-active" stroke="#00F0FF" />
+                <line x1="40" y1="85" x2="120" y2="70" class="synapse-active" stroke="#00F0FF" />
+                <line x1="40" y1="115" x2="120" y2="105" class="synapse-active" stroke="#00F0FF" />
+
+                <line x1="120" y1="35" x2="200" y2="50" class="synapse-active" stroke="#A855F7" />
+                <line x1="120" y1="70" x2="200" y2="50" class="synapse-active" stroke="#A855F7" />
+                <line x1="120" y1="70" x2="200" y2="90" class="synapse-active" stroke="#A855F7" />
+                <line x1="120" y1="105" x2="200" y2="90" class="synapse-active" stroke="#A855F7" />
+
+                <line x1="200" y1="50" x2="280" y2="40" class="synapse-active" stroke="#10B981" />
+                <line x1="200" y1="70" x2="280" y2="70" class="synapse-active" stroke="#10B981" />
+                <line x1="200" y1="90" x2="280" y2="100" class="synapse-active" stroke="#10B981" />
+              </g>
+
+              <circle cx="40" cy="25" r="7" fill="#0284C7" />
+              <circle cx="40" cy="55" r="7" fill="#0284C7" />
+              <circle cx="40" cy="85" r="7" fill="#0284C7" />
+              <circle cx="40" cy="115" r="7" fill="#0284C7" />
+
+              <circle cx="120" cy="35" r="7" fill="#3B82F6" />
+              <circle cx="120" cy="70" r="7" fill="#3B82F6" />
+              <circle cx="120" cy="105" r="7" fill="#3B82F6" />
+
+              <circle cx="200" cy="50" r="7" fill="#8B5CF6" />
+              <circle cx="200" cy="90" r="7" fill="#8B5CF6" />
+
+              <circle id="node-out-normal" cx="280" cy="40" r="8" fill="#10B981" />
+              <circle id="node-out-alerta" cx="280" cy="70" r="8" fill="#64748B" />
+              <circle id="node-out-bloqueo" cx="280" cy="100" r="8" fill="#64748B" />
+
+              <text x="40" y="135" fill="#64748B" font-size="8" text-anchor="middle" font-family="monospace">SENSORES</text>
+              <text x="120" y="135" fill="#64748B" font-size="8" text-anchor="middle" font-family="monospace">FEATURES</text>
+              <text x="200" y="135" fill="#64748B" font-size="8" text-anchor="middle" font-family="monospace">INFERENCIA</text>
+              <text x="280" y="135" fill="#64748B" font-size="8" text-anchor="middle" font-family="monospace">ACCIÓN</text>
+            </svg>
+          </div>
+        </div>
+
+        <div class="mt-3 p-2.5 rounded-lg bg-cyber-900 border border-slate-800 text-xs font-mono">
+          <span class="text-cyan-400 font-bold block mb-1">RAZONAMIENTO COGNITIVO EN CURSO:</span>
+          <div id="ai-thought-box" class="text-slate-300 leading-relaxed">
+            [CÁRCAMO-AI]: Correlación espacio-temporal normal. Cero vectores de intrusión física o anomalías de red detectados. SLA al 99.999%.
+          </div>
+        </div>
+      </div>
+
+      <!-- Bitácora de Auditoría Syslog (7 columnas) -->
+      <div class="lg:col-span-7 glass-panel p-4 rounded-2xl border border-slate-800 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-sm font-bold text-slate-200 font-tech uppercase tracking-wider flex items-center gap-1.5">
+              <span>📋</span> TERMINAL DE AUDITORÍA SYSLOG (RFC 5424)
+            </h3>
+            <div class="flex items-center gap-2">
+              <button onclick="clearLogs()" class="text-[10px] font-mono text-slate-400 hover:text-white px-2 py-0.5 rounded bg-cyber-850 border border-slate-700">
+                Limpiar
+              </button>
+              <button onclick="downloadSyslog()" class="text-[10px] font-mono text-cyan-400 hover:text-cyan-300 px-2 py-0.5 rounded bg-cyber-850 border border-cyan-800 flex items-center gap-1">
+                <span>⬇️</span> Descargar .LOG
+              </button>
+            </div>
+          </div>
+          
+          <div id="syslog-window" class="h-64 bg-slate-950 rounded-xl p-3 border border-slate-800 font-mono text-[11px] overflow-y-auto space-y-1.5">
+          </div>
+        </div>
+
+        <div class="mt-2 text-[10px] font-mono text-slate-500 flex items-center justify-between">
+          <span>Buffer: 100 eventos • Nivel de Severidad: INFO/WARN/CRIT</span>
+          <span>Hash SHA-256 de Integridad: <span class="text-cyan-400">VALIDADO</span></span>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ==================== DRAWER LATERAL DE INSPECCIÓN DE ACTIVOS ==================== -->
+  <div id="asset-drawer" class="fixed inset-y-0 right-0 w-96 max-w-full glass-panel-glow z-50 transform translate-x-full transition-transform duration-300 ease-in-out p-5 shadow-2xl overflow-y-auto border-l border-cyan-500/30">
+    <div class="flex items-center justify-between pb-3 border-b border-cyber-800 mb-4">
+      <div class="flex items-center gap-2">
+        <span id="drawer-icon" class="text-2xl">🗄️</span>
+        <div>
+          <h3 id="drawer-title" class="text-base font-bold text-white font-tech">RACK FINANSUR DB</h3>
+          <span id="drawer-tag" class="text-[10px] font-mono text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800">ÓPTIMO</span>
+        </div>
+      </div>
+      <button onclick="closeAssetDrawer()" class="text-slate-400 hover:text-white text-lg p-1">✕</button>
+    </div>
+
+    <div class="space-y-3 font-mono text-xs">
+      <div class="bg-cyber-900/80 p-3 rounded-lg border border-slate-800 space-y-1.5">
+        <span class="text-[10px] text-cyan-400 font-bold block uppercase">ESPECIFICACIONES DE HARDWARE</span>
+        <div class="flex justify-between text-slate-300">
+          <span class="text-slate-500">Modelo:</span>
+          <span id="drawer-spec-model" class="text-white font-semibold">Dell PowerEdge R750xs</span>
+        </div>
+        <div class="flex justify-between text-slate-300">
+          <span class="text-slate-500">Procesadores:</span>
+          <span id="drawer-spec-cpu" class="text-white">2x AMD EPYC 7763 64C</span>
+        </div>
+        <div class="flex justify-between text-slate-300">
+          <span class="text-slate-500">Memoria RAM:</span>
+          <span id="drawer-spec-ram" class="text-white">1024 GB ECC DDR4</span>
+        </div>
+        <div class="flex justify-between text-slate-300">
+          <span class="text-slate-500">Almacenamiento:</span>
+          <span id="drawer-spec-disk" class="text-white">24x 7.68TB NVMe U.3</span>
+        </div>
+      </div>
+
+      <div class="bg-cyber-900/80 p-3 rounded-lg border border-slate-800 space-y-1.5">
+        <span class="text-[10px] text-cyan-400 font-bold block uppercase">SENSORES TÉRMICOS Y DE POTENCIA</span>
+        <div class="flex justify-between text-slate-300">
+          <span class="text-slate-500">Temp. Entrada (Front):</span>
+          <span id="drawer-metric-tempin" class="text-emerald-400 font-bold">19.4 °C</span>
+        </div>
+        <div class="flex justify-between text-slate-300">
+          <span class="text-slate-500">Temp. Salida (Rear):</span>
+          <span id="drawer-metric-tempout" class="text-amber-400">31.2 °C</span>
+        </div>
+        <div class="flex justify-between text-slate-300">
+          <span class="text-slate-500">Consumo Eléctrico:</span>
+          <span id="drawer-metric-power" class="text-white">4.8 kW (Dual PDU)</span>
+        </div>
+      </div>
+
+      <div class="pt-2 space-y-2">
+        <span class="text-[10px] text-slate-400 font-bold block uppercase">ACCIONES DE AUDITORÍA Y CONTROL</span>
+        <button onclick="drawerAction('isolate')" class="w-full py-2 px-3 rounded-lg bg-rose-950/80 hover:bg-rose-900 border border-rose-700/60 text-rose-300 text-xs font-bold transition flex items-center justify-center gap-1.5">
+          <span>🛑</span> AISLAR VLAN POR PROTOCOLO ZERO TRUST
+        </button>
+        <button onclick="drawerAction('cool')" class="w-full py-2 px-3 rounded-lg bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-700/60 text-cyan-300 text-xs font-bold transition flex items-center justify-center gap-1.5">
+          <span>❄️</span> FORZAR ENFRIAMIENTO CRIOGÉNICO MÁXIMO
+        </button>
+        <button onclick="drawerAction('snapshot')" class="w-full py-2 px-3 rounded-lg bg-cyber-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-bold transition flex items-center justify-center gap-1.5">
+          <span>💾</span> GENERAR SNAPSHOT INMUTABLE WORM
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PIE DE PÁGINA -->
+  <footer class="border-t border-cyber-800 py-4 bg-cyber-900/60 text-center text-xs text-slate-500 font-mono">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-2">
+      <div>
+        I.E.S.T.P. "Hermanos Cárcamo" — Proyecto de Investigación en Arquitectura de Plataformas y Servicios de TI (Paita, 2026)
+      </div>
+      <div class="text-cyan-400">
+        Cumplimiento ANSI/TIA-942 Tier III & ISO/IEC 27001 • Mg. Javier Eduardo Jaramillo Atoche
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== SCRIPT PRINCIPAL JAVASCRIPT ==================== -->
+  <script>
+    /* ==========================================================================
+       1. MOTOR DE AUDIO SINTETIZADO (WEB AUDIO API) Y NARRADOR DE VOZ
+       ========================================================================== */
+    let audioCtx = null;
+    let audioEnabled = true;
+    let speechEnabled = true;
+    let ambientHumGain = null;
+    let ambientHumRunning = false;
+
+    function initAudio() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContext();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    // Tono táctil sutil
+    function playTactileClick() {
+      if (!audioEnabled) return;
+      initAudio();
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1400, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.04);
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.04);
+      } catch (e) {}
+    }
+
+    // Sirena policial / seguridad física con alta claridad y modulación
+    function playSirenPolice() {
+      if (!audioEnabled) return;
+      initAudio();
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        const now = audioCtx.currentTime;
+        osc.frequency.setValueAtTime(600, now);
+        osc.frequency.linearRampToValueAtTime(1100, now + 0.25);
+        osc.frequency.linearRampToValueAtTime(600, now + 0.5);
+        osc.frequency.linearRampToValueAtTime(1100, now + 0.75);
+        osc.frequency.linearRampToValueAtTime(600, now + 1.0);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 1.3);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 1.3);
+      } catch (e) {}
+    }
+
+    // Alarma de evacuación por humo / fuego (Buzzer triple agudo)
+    function playFireAlarmBuzzer() {
+      if (!audioEnabled) return;
+      initAudio();
+      try {
+        for (let i = 0; i < 3; i++) {
+          const t = audioCtx.currentTime + i * 0.22;
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(920, t);
+          gain.gain.setValueAtTime(0.22, t);
+          gain.gain.exponentialRampToValueAtTime(0.01, t + 0.14);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(t);
+          osc.stop(t + 0.14);
+        }
+      } catch (e) {}
+    }
+
+    // Chispas eléctricas y desconexión de cámara
+    function playCameraDisconnectSound() {
+      if (!audioEnabled) return;
+      initAudio();
+      try {
+        // Chispa / Ruido estático corto
+        const bufferSize = audioCtx.sampleRate * 0.4;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (audioCtx.sampleRate * 0.08));
+        }
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buffer;
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'highpass';
+        filter.frequency.value = 2200;
+        const gain = audioCtx.createGain();
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+        noise.start();
+
+        // Tono descendente de pérdida de señal
+        const osc = audioCtx.createOscillator();
+        const toneGain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(800, audioCtx.currentTime + 0.05);
+        osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.4);
+        toneGain.gain.setValueAtTime(0.18, audioCtx.currentTime + 0.05);
+        toneGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+        osc.connect(toneGain);
+        toneGain.connect(audioCtx.destination);
+        osc.start(audioCtx.currentTime + 0.05);
+        osc.stop(audioCtx.currentTime + 0.4);
+      } catch (e) {}
+    }
+
+    // Colapso eléctrico de disyuntor y corte de luz
+    function playPowerCutoffSound() {
+      if (!audioEnabled) return;
+      initAudio();
+      try {
+        // Clac mecánico de disyuntor
+        const osc1 = audioCtx.createOscillator();
+        const g1 = audioCtx.createGain();
+        osc1.type = 'square';
+        osc1.frequency.setValueAtTime(180, audioCtx.currentTime);
+        osc1.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.08);
+        g1.gain.setValueAtTime(0.4, audioCtx.currentTime);
+        g1.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+        osc1.connect(g1);
+        g1.connect(audioCtx.destination);
+        osc1.start();
+        osc1.stop(audioCtx.currentTime + 0.08);
+
+        // Sub-bass caída de frecuencia de transformador
+        const osc2 = audioCtx.createOscillator();
+        const g2 = audioCtx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(120, audioCtx.currentTime + 0.08);
+        osc2.frequency.exponentialRampToValueAtTime(20, audioCtx.currentTime + 0.9);
+        g2.gain.setValueAtTime(0.35, audioCtx.currentTime + 0.08);
+        g2.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.9);
+        osc2.connect(g2);
+        g2.connect(audioCtx.destination);
+        osc2.start(audioCtx.currentTime + 0.08);
+        osc2.stop(audioCtx.currentTime + 0.9);
+      } catch (e) {}
+    }
+
+    // Sonido Matrix Cyber Synth
+    function playMatrixCyberSound() {
+      if (!audioEnabled) return;
+      initAudio();
+      try {
+        for (let i = 0; i < 8; i++) {
+          const t = audioCtx.currentTime + i * 0.07;
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(440 + (i * 110) % 880, t);
+          gain.gain.setValueAtTime(0.12, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(t);
+          osc.stop(t + 0.06);
+        }
+      } catch (e) {}
+    }
+
+    function playConfirmBeep() {
+      if (!audioEnabled) return;
+      initAudio();
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.22);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.22);
+      } catch (e) {}
+    }
+
+    function toggleAmbientHum() {
+      initAudio();
+      if (ambientHumRunning) {
+        if (ambientHumGain) ambientHumGain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+        ambientHumRunning = false;
+        document.getElementById('hum-icon').innerText = '🔇';
+      } else {
+        try {
+          const osc = audioCtx.createOscillator();
+          const filter = audioCtx.createBiquadFilter();
+          ambientHumGain = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.value = 62;
+          filter.type = 'lowpass';
+          filter.frequency.value = 160;
+          ambientHumGain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+          osc.connect(filter);
+          filter.connect(ambientHumGain);
+          ambientHumGain.connect(audioCtx.destination);
+          osc.start();
+          ambientHumRunning = true;
+          document.getElementById('hum-icon').innerText = '🌀';
+        } catch (e) {}
+      }
+    }
+
+    function toggleAudio() {
+      audioEnabled = !audioEnabled;
+      document.getElementById('sound-icon').innerText = audioEnabled ? '🔊' : '🔇';
+    }
+
+    function toggleSpeech() {
+      speechEnabled = !speechEnabled;
+      document.getElementById('speech-icon').innerText = speechEnabled ? '🗣️' : '🤫';
+    }
+
+    function speakAlert(text) {
+      if (!speechEnabled || !('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'es-ES';
+      utterance.rate = 1.05;
+      utterance.pitch = 1.0;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    /* ==========================================================================
+       2. BASE DE CONOCIMIENTO DE INCIDENTES (CUMPLIMIENTO DE REQUERIMIENTOS)
+       ========================================================================== */
+    const incidentData = {
+      normal: {
+        tipoAcceso: "SEGURIDAD FÍSICA Y LÓGICA",
+        tipoBadgeColor: "bg-emerald-950 text-emerald-300 border-emerald-700/60",
+        estado: "PROTEGIDO",
+        estadoColor: "bg-blue-950 text-cyan-300 border-cyan-800",
+        dotColor: "bg-emerald-400",
+        alarmTheme: "#10B981",
+        bannerText: "OPERACIÓN NORMAL — DATA CENTER EN LÍNEA BASE",
+        bannerSub: "Todos los controles físicos (esclusa, climatización, VESDA) y lógicos (NGFW, SIEM, SAN WORM) operan al 100%.",
+        aiThought: "[CÁRCAMO-AI]: Correlación espacio-temporal normal. Cero vectores de intrusión física o anomalías de red detectados. SLA al 99.999%.",
+        cctvIcon: "❄️",
+        cctvStatus: "PASILLO FRÍO REGULADO (19.8°C)",
+        cctvSub: "H.265 AES-256 • 60 FPS • PTZ ACTIVA",
+        speechText: "Sistema en estado óptimo. Todas las variables físicas y lógicas dentro de los estándares ISO 27001.",
+        outNode: "normal"
+      },
+      acceso: {
+        tipoAcceso: "ACCESO FÍSICO NO AUTORIZADO",
+        tipoBadgeColor: "bg-amber-950 text-amber-300 border-amber-700/60",
+        estado: "BLOQUEADO Y PROTEGIDO",
+        estadoColor: "bg-rose-950 text-rose-300 border-rose-800",
+        dotColor: "bg-amber-400",
+        alarmTheme: "#F59E0B",
+        bannerText: "ALERTA FÍSICA: INTRUSIÓN EN ESCLUSA MANTRAP",
+        bannerSub: "Intento de forzar la esclusa con tarjeta RFID clonada y sin coincidencia biométrica dactilar.",
+        aiThought: "[CÁRCAMO-AI]: ACCESO FÍSICO DETECTADO en esclusa mantrap. Contramedida: Cerrojo magnético activado (1200 lbs fuerza). Baliza estroboscópica 360° activada. PTZ-01 enfoca al intruso.",
+        cctvIcon: "🚨",
+        cctvStatus: "BLOQUEO EN ESCLUSA MANTRAP",
+        cctvSub: "INTENTO DE ACCESO NO AUTORIZADO REGISTRADO",
+        speechText: "Alerta de seguridad física. Acceso no autorizado detectado en la esclusa mantrap. Cerrojos magnéticos activados.",
+        outNode: "bloqueo"
+      },
+      humo: {
+        tipoAcceso: "FÍSICO / AMBIENTAL",
+        tipoBadgeColor: "bg-rose-950 text-rose-300 border-rose-700/60",
+        estado: "EXTINCIÓN ACTIVA — PROTEGIDO",
+        estadoColor: "bg-rose-950 text-rose-300 border-rose-800",
+        dotColor: "bg-rose-500",
+        alarmTheme: "#EF4444",
+        bannerText: "ALERTA AMBIENTAL: DETECCIÓN DE HUMO Y FUEGO",
+        bannerSub: "Micropartículas de combustión detectadas en Rack A1 por sensor VESDA láser de aspiración continua.",
+        aiThought: "[CÁRCAMO-AI]: INCIDENTE FÍSICO AMBIENTAL. Alarma VESDA nivel 2. Contramedida: Corte selectivo de energía (EPO de rack), cierre de compuertas y descarga de gas limpio NOVEC 1230.",
+        cctvIcon: "🔥",
+        cctvStatus: "DESCARGA DE GAS NOVEC 1230",
+        cctvSub: "SUPRESIÓN LIMPIA SIN DAÑO A CIRCUITOS",
+        speechText: "Alerta de incendio. Detección de humo en Rack A1. Iniciando protocolo de descarga de gas limpio.",
+        outNode: "bloqueo"
+      },
+      termico: {
+        tipoAcceso: "FÍSICO / CLIMATIZACIÓN",
+        tipoBadgeColor: "bg-orange-950 text-orange-300 border-orange-700/60",
+        estado: "CONMUTACIÓN N+1 — PROTEGIDO",
+        estadoColor: "bg-blue-950 text-cyan-300 border-cyan-800",
+        dotColor: "bg-orange-500",
+        alarmTheme: "#F97316",
+        bannerText: "ALERTA TÉRMICA: FALLA DE COMPRESOR CRAC-01",
+        bannerSub: "Temperatura en pasillo caliente se elevó a 34°C. Climatización en riesgo de saturación.",
+        aiThought: "[CÁRCAMO-AI]: INCIDENTE FÍSICO DE INFRAESTRUCTURA. CRAC-01 sin flujo de refrigerante. Contramedida: Activación inmediata de unidad redundante CRAC-02 (N+1) a 1450 RPM. Aislamiento térmico completado.",
+        cctvIcon: "🌡️",
+        cctvStatus: "TURBINA CRAC-02 A MÁXIMA POTENCIA",
+        cctvSub: "BALANCEO TÉRMICO ASHRAE RESTABLECIDO",
+        speechText: "Alerta térmica. Falla de compresor en unidad CRAC uno. Conmutando automáticamente a unidad redundante dos.",
+        outNode: "alerta"
+      },
+      camara: {
+        tipoAcceso: "FÍSICO / VULNERABILIDAD",
+        tipoBadgeColor: "bg-yellow-950 text-yellow-300 border-yellow-700/60",
+        estado: "VULNERABILIDAD MITIGADA",
+        estadoColor: "bg-yellow-950 text-yellow-300 border-yellow-800",
+        dotColor: "bg-yellow-400",
+        alarmTheme: "#EAB308",
+        bannerText: "VULNERABILIDAD FÍSICA: CÁMARA DESCONECTADA Y CAÍDA",
+        bannerSub: "Cámara CAM-02 desconectada físicamente con corte de alimentación PoE. Pérdida total de video.",
+        aiThought: "[CÁRCAMO-AI]: VULNERABILIDAD DE SEGURIDAD FÍSICA. Cámara dos caída por corte de cable. Contramedida: Cobertura cruzada inmediata mediante reorientación de CAM-01 y CAM-03. Activación de sensores de microondas de piso.",
+        cctvIcon: "⚠️",
+        cctvStatus: "¡SIN SEÑAL! CABLE DESCONECTADO",
+        cctvSub: "ESTÁTICA ACTIVA • ERROR 0x7E POE LOSS",
+        speechText: "Vulnerabilidad física detectada. Cámara dos desconectada y caída. Activando cobertura visual redundante.",
+        outNode: "alerta"
+      },
+      energia: {
+        tipoAcceso: "FÍSICO / ELÉCTRICO",
+        tipoBadgeColor: "bg-cyan-950 text-cyan-300 border-cyan-700/60",
+        estado: "CONTINUIDAD TIER III — PROTEGIDO",
+        estadoColor: "bg-emerald-950 text-emerald-300 border-emerald-800",
+        dotColor: "bg-cyan-400",
+        alarmTheme: "#06B6D4",
+        bannerText: "ALERTA ELÉCTRICA: CORTE DE RED COMERCIAL (BLACKOUT)",
+        bannerSub: "Pérdida de tensión en acometida pública. Luces apagadas y transferencia instantánea a baterías.",
+        aiThought: "[CÁRCAMO-AI]: INCIDENTE FÍSICO ELÉCTRICO. Apagón comercial detectado. Contramedida: Transferencia estática a bancos de baterías UPS en 4ms (cero corte IT). Arranque del grupo electrógeno diésel ATS.",
+        cctvIcon: "🔋",
+        cctvStatus: "MODO UPS BATERÍAS (400V)",
+        cctvSub: "RESPALDO TIER III 2N • GENERADOR EN MARCHA",
+        speechText: "Corte de energía comercial. Conmutación instantánea a baterías UPS. Grupo electrógeno en secuencia de encendido.",
+        outNode: "alerta"
+      },
+      red: {
+        tipoAcceso: "ACCESO LÓGICO / CIBERSEGURIDAD",
+        tipoBadgeColor: "bg-purple-950 text-purple-300 border-purple-700/60",
+        estado: "MITIGACIÓN LÓGICA — PROTEGIDO",
+        estadoColor: "bg-purple-950 text-purple-300 border-purple-800",
+        dotColor: "bg-purple-400",
+        alarmTheme: "#A855F7",
+        bannerText: "ALERTA LÓGICA: ATAQUE DDoS SYN-FLOOD (85 Gbps)",
+        bannerSub: "Inundación masiva de paquetes anómalos dirigida a la interfaz pública del clúster de base de datos.",
+        aiThought: "[CÁRCAMO-AI]: ACCESO LÓGICO MALICIOSO. Ataque DDoS volumétrico. Contramedida: Desvío de tráfico mediante BGP Anycast a centro de mitigación Scrubbing. Reglas dinámicas en Firewall NGFW aplicadas.",
+        cctvIcon: "🛡️",
+        cctvStatus: "FILTRADO NGFW ACTIVO (85 Gbps)",
+        cctvSub: "MITIGACIÓN SCRUBBING AUTOMÁTICA",
+        speechText: "Ataque de denegación de servicio lógico detectado. Filtrado volumétrico aplicado en el cortafuegos.",
+        outNode: "bloqueo"
+      },
+      ransomware: {
+        tipoAcceso: "ACCESO LÓGICO / INFECCIÓN MATRIX",
+        tipoBadgeColor: "bg-emerald-950 text-matrix border-emerald-700/60",
+        estado: "SELLADO INMUTABLE — PROTEGIDO",
+        estadoColor: "bg-emerald-950 text-matrix border-emerald-800",
+        dotColor: "bg-matrix",
+        alarmTheme: "#00FF66",
+        bannerText: "ALERTA LÓGICA: ATAQUE DE VIRUS / RANSOMWARE (MATRIX)",
+        bannerSub: "Proceso no autorizado intentó cifrar la base de datos. Flujo de código Matrix verde propagado.",
+        aiThought: "[CÁRCAMO-AI]: AMENAZA LÓGICA CRÍTICA. Intento de secuestro de datos. Contramedida: Sellado de almacenamiento WORM inmutable (Write Once Read Many). Aislamiento criptográfico y restauración instantánea de snapshot.",
+        cctvIcon: "❇️",
+        cctvStatus: "MATRIZ DIGITAL EN CUARENTENA",
+        cctvSub: "ALMACENAMIENTO WORM SELLADO INMUTABLE",
+        speechText: "Ataque de virus y ransomware contenido. Servidores en aislamiento criptográfico inmutable.",
+        outNode: "bloqueo"
+      }
+    };
+
+    /* ==========================================================================
+       3. CONSTRUCCIÓN DE LA ESCENA 3D (THREE.JS PROFESIONAL FOTORREALISTA)
+       ========================================================================== */
+    let scene, camera, renderer, controls;
+    let ceilingLights = [];
+    let rackMeshes = [];
+    let rackFrontMaterials = [];
+    let hvacFans = [];
+    let hvacLeds = [];
+    let ptzCameraRigs = []; // Rigs de las cámaras
+    let ptzHeadMeshes = []; // Cabezas de las cámaras
+    let ptzRecLeds = [];    // LEDs rojos de grabación
+    let ptzConduitPipes = []; // Tubos de cableado
+    let floorVentMeshes = [];
+    let smokeParticles = null;
+    let mistParticles = null;
+    let sparkParticles = null;
+    let fireLight = null;
+    let alarmStrobeLight = null;
+    let rotatingBeaconGroup = null; // Baliza giratoria 360° en el techo
+    let rotatingBeaconLight = null;
+    let mantrapLedFrame = null;
+    let quarantineHoloShield = null;
+
+    // Textura dinámica Matrix Digital Rain
+    let matrixCanvas, matrixCtx, matrixTexture;
+    const matrixCols = 32;
+    const matrixDrops = Array(matrixCols).fill(0);
+    const matrixChars = "0101010101ABCDEF0123456789$#%*<>@XΩΨΞ";
+
+    let currentIncidentKey = 'normal';
+    let visualMode = 'normal';
+    let isAutoTour = false;
+    let tourAngle = 0;
+    let isBlackoutActive = false;
+    let blackoutFlickerTimer = 0;
+
+    const pointerDownPos = { x: 0, y: 0 };
+
+    function init3D() {
+      const container = document.getElementById('canvas-container');
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x040817);
+      scene.fog = new THREE.FogExp2(0x040817, 0.020);
+
+      camera = new THREE.PerspectiveCamera(46, w / h, 0.1, 100);
+      camera.position.set(0, 3.8, 6.2);
+
+      renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+      renderer.setSize(w, h);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      container.appendChild(renderer.domElement);
+
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.06;
+      controls.maxPolarAngle = Math.PI / 2 - 0.01;
+      controls.minDistance = 1.0;
+      controls.maxDistance = 22.0;
+      controls.target.set(0, 1.4, 0);
+
+      // Iluminación ambiental fría
+      const ambient = new THREE.AmbientLight(0x0C2040, 0.85);
+      scene.add(ambient);
+
+      // Luz cenital suave de pasillo
+      const centerAisleLight = new THREE.PointLight(0xBAE6FD, 1.2, 16, 2.0);
+      centerAisleLight.position.set(0, 4.3, 0);
+      scene.add(centerAisleLight);
+      ceilingLights.push(centerAisleLight);
+
+      // Luz direccional principal con sombras
+      const dirLight = new THREE.DirectionalLight(0xE0F2FE, 0.7);
+      dirLight.position.set(5, 10, 5);
+      dirLight.castShadow = true;
+      scene.add(dirLight);
+      ceilingLights.push(dirLight);
+
+      // Baliza de Alarma Giratoria 360° en Techo
+      buildRotatingAlarmBeacon();
+
+      // Luz de Fuego Parpadeante
+      fireLight = new THREE.PointLight(0xFF5500, 0, 12);
+      fireLight.position.set(-1.45, 1.5, 0);
+      scene.add(fireLight);
+
+      // Inicializar Canvas dinámico de Matrix Rain
+      initMatrixCanvas();
+
+      // Construcción del Mundo 3D
+      buildDatacenterArchitecture();
+      buildColdAisleContainment();
+      buildHighDensityRacks();
+      buildIndustrialCRACs();
+      buildOverheadCableLadders();
+      buildBiometricMantrap();
+      buildArticulatedPTZCameras();
+      buildParticleSystems();
+
+      // Eventos anti-arrastre para inspección
+      container.addEventListener('pointerdown', (e) => {
+        pointerDownPos.x = e.clientX;
+        pointerDownPos.y = e.clientY;
+      });
+
+      container.addEventListener('pointerup', (e) => {
+        const dist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
+        if (dist > 5) return;
+        handleObjectClick(e);
+      });
+
+      window.addEventListener('resize', onResize);
+      animate();
+    }
+
+    // Inicializar Textura Canvas de Matrix Digital Rain
+    function initMatrixCanvas() {
+      matrixCanvas = document.createElement('canvas');
+      matrixCanvas.width = 512;
+      matrixCanvas.height = 1024;
+      matrixCtx = matrixCanvas.getContext('2d');
+      matrixCtx.fillStyle = '#030816';
+      matrixCtx.fillRect(0, 0, 512, 1024);
+      matrixTexture = new THREE.CanvasTexture(matrixCanvas);
+    }
+
+    function updateMatrixRain() {
+      matrixCtx.fillStyle = 'rgba(3, 8, 22, 0.08)';
+      matrixCtx.fillRect(0, 0, 512, 1024);
+
+      matrixCtx.fillStyle = '#00FF66';
+      matrixCtx.font = 'bold 20px monospace';
+
+      for (let i = 0; i < matrixCols; i++) {
+        const text = matrixChars[Math.floor(Math.random() * matrixChars.length)];
+        const x = i * 16 + 8;
+        const y = matrixDrops[i] * 22;
+
+        // Brillo blanco en la cabeza de la gota
+        matrixCtx.fillStyle = '#E6FFFA';
+        matrixCtx.fillText(text, x, y);
+
+        // Rastro verde fósforo
+        matrixCtx.fillStyle = '#00FF66';
+        if (y > 22) {
+          const prevText = matrixChars[Math.floor(Math.random() * matrixChars.length)];
+          matrixCtx.fillText(prevText, x, y - 22);
+        }
+
+        if (y > 1024 && Math.random() > 0.975) {
+          matrixDrops[i] = 0;
+        }
+        matrixDrops[i]++;
+      }
+      matrixTexture.needsUpdate = true;
+    }
+
+    // Baliza de Alarma Giratoria 360° en Techo
+    function buildRotatingAlarmBeacon() {
+      rotatingBeaconGroup = new THREE.Group();
+
+      const baseMat = new THREE.MeshStandardMaterial({ color: 0x1E293B, metalness: 0.9 });
+      const base = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.25, 0.12, 16), baseMat);
+      rotatingBeaconGroup.add(base);
+
+      const domeMat = new THREE.MeshPhysicalMaterial({ color: 0xEF4444, transparent: true, opacity: 0.7, roughness: 0.1 });
+      const dome = new THREE.Mesh(new THREE.SphereGeometry(0.18, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2), domeMat);
+      dome.position.y = 0.06;
+      rotatingBeaconGroup.add(dome);
+
+      // SpotLight giratorio hacia las paredes
+      rotatingBeaconLight = new THREE.SpotLight(0xEF4444, 0, 22, Math.PI / 3, 0.4, 1.2);
+      rotatingBeaconLight.position.set(0, 0.1, 0);
+      rotatingBeaconGroup.add(rotatingBeaconLight);
+
+      // Punto objetivo para el foco
+      const spotTarget = new THREE.Object3D();
+      spotTarget.position.set(10, -2, 0);
+      rotatingBeaconGroup.add(spotTarget);
+      rotatingBeaconLight.target = spotTarget;
+
+      rotatingBeaconGroup.position.set(0, 4.72, 0);
+      scene.add(rotatingBeaconGroup);
+    }
+
+    // Textura procedural para suelo técnico
+    function createFloorTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 512;
+      const ctx = canvas.getContext('2d');
+
+      ctx.fillStyle = '#070D1E';
+      ctx.fillRect(0, 0, 512, 512);
+
+      ctx.strokeStyle = '#1E293B';
+      ctx.lineWidth = 3;
+      const step = 64;
+      for (let x = 0; x <= 512; x += step) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, 512);
+        ctx.stroke();
+      }
+      for (let y = 0; y <= 512; y += step) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(512, y);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = '#38BDF8';
+      for (let i = 0; i < 400; i++) {
+        const rx = Math.random() * 512;
+        const ry = Math.random() * 512;
+        ctx.fillRect(rx, ry, 1.5, 1.5);
+      }
+
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.RepeatWrapping;
+      tex.repeat.set(8, 8);
+      return tex;
+    }
+
+    // Textura procedural para paredes
+    function createWallTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 256;
+      const ctx = canvas.getContext('2d');
+
+      ctx.fillStyle = '#060B18';
+      ctx.fillRect(0, 0, 512, 256);
+
+      ctx.strokeStyle = '#111C38';
+      ctx.lineWidth = 4;
+      for (let x = 64; x < 512; x += 64) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, 256);
+        ctx.stroke();
+      }
+
+      const bandHeight = 24;
+      for (let x = 0; x < 512; x += 32) {
+        ctx.fillStyle = '#F59E0B';
+        ctx.fillRect(x, 256 - bandHeight, 16, bandHeight);
+        ctx.fillStyle = '#111827';
+        ctx.fillRect(x + 16, 256 - bandHeight, 16, bandHeight);
+      }
+
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.RepeatWrapping;
+      tex.repeat.set(4, 2);
+      return tex;
+    }
+
+    // Textura de rejilla para piso técnico perforado
+    function createPerforatedTileTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 256;
+      canvas.height = 256;
+      const ctx = canvas.getContext('2d');
+
+      ctx.fillStyle = '#030816';
+      ctx.fillRect(0, 0, 256, 256);
+
+      ctx.fillStyle = '#00F0FF';
+      const r = 4;
+      const spacing = 16;
+      for (let x = spacing / 2; x < 256; x += spacing) {
+        for (let y = spacing / 2; y < 256; y += spacing) {
+          ctx.beginPath();
+          ctx.arc(x, y, r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      ctx.strokeStyle = '#64748B';
+      ctx.lineWidth = 8;
+      ctx.strokeRect(0, 0, 256, 256);
+
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    // Fachada de servidores blade 42U
+    function createServerFrontTexture(isDatabase, rackName) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 1024;
+      const ctx = canvas.getContext('2d');
+
+      ctx.fillStyle = isDatabase ? '#07152B' : '#090E1A';
+      ctx.fillRect(0, 0, 512, 1024);
+
+      ctx.fillStyle = isDatabase ? '#0284C7' : '#1E293B';
+      ctx.fillRect(20, 20, 472, 45);
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 22px monospace';
+      ctx.fillText(rackName, 35, 52);
+
+      const bladeHeight = 72;
+      const startY = 80;
+
+      for (let i = 0; i < 12; i++) {
+        const y = startY + i * (bladeHeight + 4);
+
+        ctx.fillStyle = (i % 2 === 0) ? '#111827' : '#162032';
+        ctx.fillRect(20, y, 472, bladeHeight);
+
+        ctx.strokeStyle = isDatabase ? '#0284C7' : '#334155';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(20, y, 472, bladeHeight);
+
+        for (let d = 0; d < 8; d++) {
+          const dx = 35 + d * 45;
+          ctx.fillStyle = '#0F172A';
+          ctx.fillRect(dx, y + 8, 38, 54);
+
+          ctx.fillStyle = '#64748B';
+          ctx.fillRect(dx + 4, y + 54, 30, 6);
+
+          ctx.fillStyle = '#10B981';
+          ctx.fillRect(dx + 6, y + 12, 5, 5);
+
+          const isBlinking = Math.random() > 0.4;
+          ctx.fillStyle = isBlinking ? (isDatabase ? '#00F0FF' : '#F59E0B') : '#064E3B';
+          ctx.fillRect(dx + 16, y + 12, 5, 5);
+        }
+
+        ctx.fillStyle = '#0284C7';
+        ctx.fillRect(400, y + 15, 75, 40);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = '9px monospace';
+        ctx.fillText('100GbE QSFP', 405, y + 38);
+      }
+
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    function buildDatacenterArchitecture() {
+      // Suelo
+      const floorTex = createFloorTexture();
+      const floorMat = new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.25, metalness: 0.8 });
+      const floor = new THREE.Mesh(new THREE.PlaneGeometry(18, 18), floorMat);
+      floor.rotation.x = -Math.PI / 2;
+      floor.receiveShadow = true;
+      scene.add(floor);
+
+      const grid = new THREE.GridHelper(18, 36, 0x0284C7, 0x1E293B);
+      grid.position.y = 0.005;
+      scene.add(grid);
+
+      // Paredes
+      const wallTex = createWallTexture();
+      const wallMat = new THREE.MeshStandardMaterial({ map: wallTex, roughness: 0.4, metalness: 0.6 });
+
+      const wallNorth = new THREE.Mesh(new THREE.PlaneGeometry(18, 5.0), wallMat);
+      wallNorth.position.set(0, 2.5, -6.5);
+      scene.add(wallNorth);
+
+      const signMesh = new THREE.Mesh(
+        new THREE.BoxGeometry(7.0, 0.8, 0.08),
+        new THREE.MeshStandardMaterial({ color: 0x07152B, metalness: 0.9, roughness: 0.2 })
+      );
+      signMesh.position.set(0, 4.0, -6.45);
+      scene.add(signMesh);
+
+      const wallWest = new THREE.Mesh(new THREE.PlaneGeometry(18, 5.0), wallMat);
+      wallWest.position.set(-7.5, 2.5, 0);
+      wallWest.rotation.y = Math.PI / 2;
+      scene.add(wallWest);
+
+      const wallEast = new THREE.Mesh(new THREE.PlaneGeometry(18, 5.0), wallMat);
+      wallEast.position.set(7.5, 2.5, 0);
+      wallEast.rotation.y = -Math.PI / 2;
+      scene.add(wallEast);
+
+      // Techo
+      const ceilingMat = new THREE.MeshStandardMaterial({ color: 0x060A14, roughness: 0.8 });
+      const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(18, 18), ceilingMat);
+      ceiling.position.y = 4.8;
+      ceiling.rotation.x = Math.PI / 2;
+      scene.add(ceiling);
+
+      // 8 Troffers LED
+      const trofferMat = new THREE.MeshBasicMaterial({ color: 0xBAE6FD });
+      for (let z = -4.5; z <= 4.5; z += 3.0) {
+        for (let x = -2.5; x <= 2.5; x += 5.0) {
+          const troffer = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.04, 0.4), trofferMat);
+          troffer.position.set(x, 4.78, z);
+          scene.add(troffer);
+          ceilingLights.push(troffer);
+        }
+      }
+
+      // Baldosas Perforadas
+      const perfTileTex = createPerforatedTileTexture();
+      const perfTileMat = new THREE.MeshBasicMaterial({ map: perfTileTex, transparent: true, opacity: 0.85 });
+      for (let z = -3.2; z <= 3.2; z += 1.6) {
+        const perfTile = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 1.1), perfTileMat);
+        perfTile.rotation.x = -Math.PI / 2;
+        perfTile.position.set(0, 0.015, z);
+        scene.add(perfTile);
+        floorVentMeshes.push(perfTile);
+
+        const ventGlow = new THREE.PointLight(0x00F0FF, 0.45, 2.5);
+        ventGlow.position.set(0, 0.15, z);
+        scene.add(ventGlow);
+      }
+
+      // Tubería de Gas Limpio NOVEC 1230
+      const vesdaPipe = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.06, 0.06, 14, 16),
+        new THREE.MeshStandardMaterial({ color: 0xDC2626, metalness: 0.7, roughness: 0.3 })
+      );
+      vesdaPipe.rotation.x = Math.PI / 2;
+      vesdaPipe.position.set(0, 4.45, 0);
+      scene.add(vesdaPipe);
+
+      for (let z = -4.5; z <= 4.5; z += 2.2) {
+        const nozzle = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.15, 8), new THREE.MeshStandardMaterial({ color: 0xCBD5E1, metalness: 0.9 }));
+        nozzle.position.set(0, 4.35, z);
+        scene.add(nozzle);
+      }
+    }
+
+    function buildColdAisleContainment() {
+      const canopyGeo = new THREE.BoxGeometry(2.2, 0.04, 8.2);
+      const canopyMat = new THREE.MeshPhysicalMaterial({
+        color: 0xBAE6FD,
+        transparent: true,
+        opacity: 0.35,
+        roughness: 0.1,
+        transmission: 0.8
+      });
+      const canopy = new THREE.Mesh(canopyGeo, canopyMat);
+      canopy.position.set(0, 2.72, 0);
+      scene.add(canopy);
+
+      const doorFrameMat = new THREE.MeshStandardMaterial({ color: 0x0284C7, metalness: 0.9 });
+      const doorFrame = new THREE.Mesh(new THREE.BoxGeometry(2.1, 2.7, 0.08), doorFrameMat);
+      doorFrame.position.set(0, 1.35, 4.1);
+      
+      const doorGlass = new THREE.Mesh(new THREE.BoxGeometry(1.9, 2.5, 0.04), canopyMat);
+      doorGlass.position.set(0, 1.35, 4.1);
+      scene.add(doorGlass);
+    }
+
+    function buildHighDensityRacks() {
+      const rackMetadata = [
+        { id: "RACK A1 - WEB DMZ & PROXY NGINX", temp: "19.6 °C", status: "ÓPTIMO FRÍO", isDB: false, icon: "🌐", cpu: "38%", ram: "42 GB" },
+        { id: "RACK A2 - FINANSUR DB CORE SAN (ORACLE/POSTGRES)", temp: "19.4 °C", status: "ÓPTIMO FRÍO (REPLICADO)", isDB: true, icon: "🗄️", cpu: "64%", ram: "768 GB" },
+        { id: "RACK A3 - FIREWALL NGFW FORTINET 600E", temp: "20.1 °C", status: "ÓPTIMO FRÍO", isDB: false, icon: "🛡️", cpu: "45%", ram: "32 GB" },
+        { id: "RACK A4 - KUBERNETES CONTAINER CLUSTER", temp: "19.9 °C", status: "ÓPTIMO FRÍO", isDB: false, icon: "⚡", cpu: "52%", ram: "256 GB" },
+        { id: "RACK A5 - SIEM FORENSE & BITÁCORAS DE AUDITORÍA", temp: "19.7 °C", status: "ÓPTIMO FRÍO", isDB: false, icon: "📋", cpu: "41%", ram: "128 GB" },
+        { id: "RACK B1 - BACKUP SAN INMUTABLE (WORM 3-2-1)", temp: "19.8 °C", status: "ÓPTIMO FRÍO", isDB: true, icon: "💾", cpu: "30%", ram: "128 GB" },
+        { id: "RACK B2 - CORE SWITCH CISCO NEXUS 9000", temp: "20.4 °C", status: "ÓPTIMO FRÍO", isDB: false, icon: "🖧", cpu: "28%", ram: "64 GB" },
+        { id: "RACK B3 - API GATEWAY & MICROSERVICIOS", temp: "20.0 °C", status: "ÓPTIMO FRÍO", isDB: false, icon: "🚀", cpu: "48%", ram: "192 GB" },
+        { id: "RACK B4 - AUTENTICACIÓN RADIUS / ACTIVE DIRECTORY", temp: "19.5 °C", status: "ÓPTIMO FRÍO", isDB: false, icon: "🔑", cpu: "22%", ram: "64 GB" },
+        { id: "RACK B5 - UPS MODULAR TRIFÁSICO & PDU A/B", temp: "21.2 °C", status: "100% CARGA", isDB: false, icon: "🔋", cpu: "18%", ram: "16 GB" }
+      ];
+
+      const rackGeo = new THREE.BoxGeometry(0.95, 2.7, 1.25);
+      const sideMat = new THREE.MeshStandardMaterial({ color: 0x090F1C, roughness: 0.3, metalness: 0.8 });
+
+      let idx = 0;
+      for (let i = -2; i <= 2; i++) {
+        // Fila Izquierda
+        const dataL = rackMetadata[idx++];
+        const texL = createServerFrontTexture(dataL.isDB, dataL.id.split(' - ')[0]);
+        const frontMatL = new THREE.MeshStandardMaterial({ map: texL, roughness: 0.3, metalness: 0.5 });
+        rackFrontMaterials.push(frontMatL);
+
+        const materialsL = [frontMatL, sideMat, sideMat, sideMat, sideMat, sideMat];
+        const rackL = new THREE.Mesh(rackGeo, materialsL);
+        rackL.position.set(-1.45, 1.35, i * 1.55);
+        rackL.castShadow = true;
+        rackL.userData = dataL;
+        scene.add(rackL);
+        rackMeshes.push(rackL);
+
+        // Fila Derecha
+        const dataR = rackMetadata[idx++];
+        const texR = createServerFrontTexture(dataR.isDB, dataR.id.split(' - ')[0]);
+        const frontMatR = new THREE.MeshStandardMaterial({ map: texR, roughness: 0.3, metalness: 0.5 });
+        rackFrontMaterials.push(frontMatR);
+
+        const materialsR = [sideMat, frontMatR, sideMat, sideMat, sideMat, sideMat];
+        const rackR = new THREE.Mesh(rackGeo, materialsR);
+        rackR.position.set(1.45, 1.35, i * 1.55);
+        rackR.castShadow = true;
+        rackR.userData = dataR;
+        scene.add(rackR);
+        rackMeshes.push(rackR);
+      }
+
+      // Escudo Holográfico
+      const shieldGeo = new THREE.SphereGeometry(1.6, 24, 24);
+      const shieldMat = new THREE.MeshBasicMaterial({
+        color: 0x00FF66,
+        wireframe: true,
+        transparent: true,
+        opacity: 0
+      });
+      quarantineHoloShield = new THREE.Mesh(shieldGeo, shieldMat);
+      quarantineHoloShield.position.set(-1.45, 1.35, -1.55);
+      scene.add(quarantineHoloShield);
+    }
+
+    function buildIndustrialCRACs() {
+      const cabinetMat = new THREE.MeshStandardMaterial({ color: 0x1E293B, metalness: 0.85, roughness: 0.25 });
+      const rimMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.9, roughness: 0.2 });
+      const bladeMat = new THREE.MeshStandardMaterial({ color: 0x0284C7, metalness: 0.85, roughness: 0.2 });
+
+      [-4.2, 4.2].forEach((xPos, idx) => {
+        const cracGroup = new THREE.Group();
+
+        const cabinet = new THREE.Mesh(new THREE.BoxGeometry(2.1, 3.8, 1.1), cabinetMat);
+        cabinet.position.set(0, 1.9, 0);
+        cracGroup.add(cabinet);
+
+        const tunnel = new THREE.Mesh(new THREE.CylinderGeometry(0.68, 0.68, 0.22, 32), new THREE.MeshStandardMaterial({ color: 0x080E1C }));
+        tunnel.rotation.x = Math.PI / 2;
+        tunnel.position.set(0, 2.5, 0.55);
+        cracGroup.add(tunnel);
+
+        const rim = new THREE.Mesh(new THREE.TorusGeometry(0.70, 0.035, 12, 32), rimMat);
+        rim.position.set(0, 2.5, 0.57);
+        cracGroup.add(rim);
+
+        const ledRing = new THREE.Mesh(new THREE.TorusGeometry(0.66, 0.012, 8, 32), new THREE.MeshBasicMaterial({ color: 0x00F0FF }));
+        ledRing.position.set(0, 2.5, 0.58);
+        cracGroup.add(ledRing);
+        hvacLeds.push(ledRing);
+
+        const turbine = new THREE.Group();
+        const hub = new THREE.Mesh(new THREE.ConeGeometry(0.15, 0.2, 16), rimMat);
+        hub.rotation.x = Math.PI / 2;
+        hub.position.set(0, 0, 0.08);
+        turbine.add(hub);
+
+        for (let b = 0; b < 6; b++) {
+          const blade = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.54, 0.02), bladeMat);
+          blade.position.y = 0.29;
+          blade.rotation.z = (b * Math.PI) / 3;
+          blade.rotation.y = 0.35;
+          turbine.add(blade);
+        }
+
+        turbine.position.set(0, 2.5, 0.56);
+        cracGroup.add(turbine);
+        hvacFans.push(turbine);
+
+        [0.22, 0.44, 0.64].forEach(r => {
+          const ring = new THREE.Mesh(new THREE.TorusGeometry(r, 0.007, 6, 24), rimMat);
+          ring.position.set(0, 2.5, 0.67);
+          cracGroup.add(ring);
+        });
+
+        cracGroup.position.set(xPos, 0, -4.5);
+        cracGroup.userData = { id: `UNIDAD CRAC-0${idx+1} INDUSTRIAL`, temp: "19.4 °C", status: "OPERACIÓN NOMINAL", isCRAC: true, icon: "❄️" };
+        scene.add(cracGroup);
+        rackMeshes.push(cabinet);
+        cabinet.userData = cracGroup.userData;
+      });
+    }
+
+    function buildOverheadCableLadders() {
+      const steelMat = new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.85, roughness: 0.3 });
+      const yellowFiberMat = new THREE.MeshStandardMaterial({ color: 0xEAB308, roughness: 0.4 });
+      const blueCableMat = new THREE.MeshStandardMaterial({ color: 0x0284C7, roughness: 0.5 });
+
+      [-1.45, 1.45].forEach(x => {
+        for (let z = -4.0; z <= 4.0; z += 2.0) {
+          const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 1.5, 8), steelMat);
+          rod.position.set(x, 3.8, z);
+          scene.add(rod);
+        }
+
+        const tray = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.03, 9.0), steelMat);
+        tray.position.set(x, 3.05, 0);
+        scene.add(tray);
+
+        const fiberDuct = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.12, 9.0), yellowFiberMat);
+        fiberDuct.position.set(x - 0.15, 3.12, 0);
+        scene.add(fiberDuct);
+
+        const cat6Bundle = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 9.0, 12), blueCableMat);
+        cat6Bundle.rotation.x = Math.PI / 2;
+        cat6Bundle.position.set(x + 0.15, 3.12, 0);
+        scene.add(cat6Bundle);
+      });
+    }
+
+    function buildBiometricMantrap() {
+      const mantrapGroup = new THREE.Group();
+      const steelMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.9, roughness: 0.2 });
+      const glassMat = new THREE.MeshPhysicalMaterial({ color: 0x00F0FF, transparent: true, opacity: 0.35, roughness: 0.1 });
+
+      const portal = new THREE.Mesh(new THREE.BoxGeometry(0.15, 3.2, 2.2), steelMat);
+      portal.position.set(7.42, 1.6, 3.8);
+      mantrapGroup.add(portal);
+
+      const doorGlass = new THREE.Mesh(new THREE.BoxGeometry(0.05, 3.0, 1.9), glassMat);
+      doorGlass.position.set(7.42, 1.5, 3.8);
+      mantrapGroup.add(doorGlass);
+
+      mantrapLedFrame = new THREE.Mesh(new THREE.BoxGeometry(0.04, 3.1, 0.05), new THREE.MeshBasicMaterial({ color: 0x10B981 }));
+      mantrapLedFrame.position.set(7.38, 1.5, 4.8);
+      mantrapGroup.add(mantrapLedFrame);
+
+      const pedestal = new THREE.Mesh(new THREE.BoxGeometry(0.25, 1.1, 0.25), steelMat);
+      pedestal.position.set(6.8, 0.55, 4.8);
+      mantrapGroup.add(pedestal);
+
+      const scannerPlate = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.02, 0.15), new THREE.MeshBasicMaterial({ color: 0x00F0FF }));
+      scannerPlate.position.set(6.8, 1.11, 4.8);
+      mantrapGroup.add(scannerPlate);
+
+      mantrapGroup.userData = { id: "ESCLUSA MANTRAP BIOMÉTRICA", temp: "20.2 °C", status: "CONTROL DE ACCESO FÍSICO", isMantrap: true, icon: "🚪" };
+      scene.add(mantrapGroup);
+      portal.userData = mantrapGroup.userData;
+      rackMeshes.push(portal);
+    }
+
+    /* Cámaras PTZ con Tubo Conduit y articulación para descolgarse/agacharse */
+    function buildArticulatedPTZCameras() {
+      const camLocations = [
+        { x: 7.2, y: 3.8, z: 5.8, rotY: -Math.PI / 1.5 },
+        { x: 0, y: 3.4, z: 4.3, rotY: 0 }, // CAM-02 del pasillo frío (¡SE DESCONECTA Y SE AGACHA!)
+        { x: -7.2, y: 3.8, z: 5.8, rotY: Math.PI / 1.5 },
+        { x: 0, y: 4.6, z: -5.8, rotY: 0 },
+        { x: -7.2, y: 3.8, z: -5.8, rotY: Math.PI / 4 },
+        { x: 7.2, y: 3.8, z: -5.8, rotY: -Math.PI / 4 }
+      ];
+
+      const steelMat = new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.9 });
+      const conduitMat = new THREE.MeshStandardMaterial({ color: 0x94A3B8, metalness: 0.85, roughness: 0.3 });
+      const housingMat = new THREE.MeshStandardMaterial({ color: 0xE2E8F0, roughness: 0.3, metalness: 0.4 });
+      const domeMat = new THREE.MeshStandardMaterial({ color: 0x091428, roughness: 0.1, metalness: 0.9 });
+
+      camLocations.forEach((loc, idx) => {
+        const camRig = new THREE.Group();
+
+        // Tubo Conduit eléctrico metálico que baja del techo a la cámara
+        const pipeHeight = 4.8 - loc.y;
+        const conduit = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, pipeHeight, 8), conduitMat);
+        conduit.position.set(0, pipeHeight / 2, 0);
+        camRig.add(conduit);
+
+        // Caja de paso / derivación
+        const jbox = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.12, 0.1), steelMat);
+        jbox.position.set(0, 0, 0);
+        camRig.add(jbox);
+
+        // Brazo en L
+        const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.32, 12), steelMat);
+        arm.rotation.z = Math.PI / 2;
+        arm.position.set(0.16, -0.05, 0);
+        camRig.add(arm);
+
+        // Cabeza móvil de la cámara (se agacha / rota)
+        const head = new THREE.Group();
+        head.userData = { defaultRotX: 0, targetTilt: 0, isDropped: false };
+
+        const body = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.26, 16), housingMat);
+        body.rotation.x = Math.PI / 2;
+        head.add(body);
+
+        const dome = new THREE.Mesh(new THREE.SphereGeometry(0.10, 16, 16), domeMat);
+        dome.position.set(0, 0, 0.13);
+        head.add(dome);
+
+        // LED rojo REC
+        const recLed = new THREE.Mesh(new THREE.SphereGeometry(0.015, 8, 8), new THREE.MeshBasicMaterial({ color: 0xEF4444 }));
+        recLed.position.set(0.07, -0.05, 0.18);
+        head.add(recLed);
+        ptzRecLeds.push(recLed);
+
+        head.position.set(0.32, -0.08, 0);
+        camRig.add(head);
+
+        camRig.position.set(loc.x, loc.y, loc.z);
+        camRig.rotation.y = loc.rotY;
+        scene.add(camRig);
+
+        ptzCameraRigs.push(camRig);
+        ptzHeadMeshes.push(head);
+      });
+    }
+
+    function buildParticleSystems() {
+      // Partículas de humo para incendio
+      const smokeGeo = new THREE.BufferGeometry();
+      const smokeCount = 200;
+      const smokePos = new Float32Array(smokeCount * 3);
+      for (let i = 0; i < smokeCount; i++) {
+        smokePos[i * 3] = -1.45 + (Math.random() - 0.5) * 0.6;
+        smokePos[i * 3 + 1] = 2.4 + Math.random() * 1.6;
+        smokePos[i * 3 + 2] = (Math.random() - 0.5) * 0.8;
+      }
+      smokeGeo.setAttribute('position', new THREE.BufferAttribute(smokePos, 3));
+      
+      const smokeMat = new THREE.PointsMaterial({
+        color: 0x475569,
+        size: 0.28,
+        transparent: true,
+        opacity: 0,
+        blending: THREE.NormalBlending
+      });
+      smokeParticles = new THREE.Points(smokeGeo, smokeMat);
+      scene.add(smokeParticles);
+
+      // Partículas de aire frío
+      const mistGeo = new THREE.BufferGeometry();
+      const mistCount = 240;
+      const mistPos = new Float32Array(mistCount * 3);
+      for (let i = 0; i < mistCount; i++) {
+        mistPos[i * 3] = (Math.random() - 0.5) * 1.5;
+        mistPos[i * 3 + 1] = 0.05 + Math.random() * 1.2;
+        mistPos[i * 3 + 2] = (Math.random() - 0.5) * 6.5;
+      }
+      mistGeo.setAttribute('position', new THREE.BufferAttribute(mistPos, 3));
+
+      const mistMat = new THREE.PointsMaterial({
+        color: 0x00F0FF,
+        size: 0.08,
+        transparent: true,
+        opacity: 0.35,
+        blending: THREE.AdditiveBlending
+      });
+      mistParticles = new THREE.Points(mistGeo, mistMat);
+      scene.add(mistParticles);
+
+      // Chispas eléctricas para fallo de cámara y corte de energía
+      const sparkGeo = new THREE.BufferGeometry();
+      const sparkCount = 40;
+      const sparkPos = new Float32Array(sparkCount * 3);
+      for (let i = 0; i < sparkCount * 3; i++) sparkPos[i] = 0;
+      sparkGeo.setAttribute('position', new THREE.BufferAttribute(sparkPos, 3));
+
+      const sparkMat = new THREE.PointsMaterial({
+        color: 0xFACC15,
+        size: 0.09,
+        transparent: true,
+        opacity: 0,
+        blending: THREE.AdditiveBlending
+      });
+      sparkParticles = new THREE.Points(sparkGeo, sparkMat);
+      scene.add(sparkParticles);
+    }
+
+    /* ==========================================================================
+       4. CONTROLADOR DE INCIDENTES Y ACCIONES FORENSES
+       ========================================================================== */
+    function triggerIncident(key) {
+      const data = incidentData[key];
+      if (!data) return;
+      currentIncidentKey = key;
+
+      // Sonido y efectos según incidente
+      if (key === 'normal') {
+        playConfirmBeep();
+      } else if (key === 'acceso') {
+        playSirenPolice();
+      } else if (key === 'humo') {
+        playFireAlarmBuzzer();
+      } else if (key === 'energia') {
+        playPowerCutoffSound();
+      } else if (key === 'camara') {
+        playCameraDisconnectSound();
+      } else if (key === 'red' || key === 'ransomware') {
+        playMatrixCyberSound();
+      }
+
+      if (speechEnabled) {
+        speakAlert(data.speechText);
+      }
+
+      // Actualizar Banner de Alerta en HUD
+      document.getElementById('titulo-alerta').innerText = data.bannerText;
+      document.getElementById('subtitulo-alerta').innerText = data.bannerSub;
+      document.getElementById('badge-tipo-acceso').innerText = data.tipoAcceso;
+      document.getElementById('badge-tipo-acceso').className = `text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border font-mono ${data.tipoBadgeColor}`;
+      document.getElementById('badge-estado-proteccion').innerText = data.estado;
+      document.getElementById('badge-estado-proteccion').className = `text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border font-mono ${data.estadoColor}`;
+      document.getElementById('dot-alerta').className = `w-3.5 h-3.5 rounded-full ${data.dotColor} alarm-glow`;
+
+      // Actualizar Razonamiento en Mente Propia
+      document.getElementById('ai-thought-box').innerText = data.aiThought;
+
+      // Actualizar Nodos de Salida de la Red Neuronal
+      ['node-out-normal', 'node-out-alerta', 'node-out-bloqueo'].forEach(id => {
+        document.getElementById(id).setAttribute('fill', '#64748B');
+      });
+      if (data.outNode === 'normal') document.getElementById('node-out-normal').setAttribute('fill', '#10B981');
+      else if (data.outNode === 'alerta') document.getElementById('node-out-alerta').setAttribute('fill', '#F59E0B');
+      else if (data.outNode === 'bloqueo') document.getElementById('node-out-bloqueo').setAttribute('fill', '#EF4444');
+
+      // Actualizar Monitor CCTV
+      document.getElementById('cctv-icon').innerText = data.cctvIcon;
+      document.getElementById('cctv-status-txt').innerText = data.cctvStatus;
+      document.getElementById('cctv-sub-txt').innerText = data.cctvSub;
+
+      // Efecto de estática de TV si es cámara desconectada
+      const staticCvs = document.getElementById('cctv-static-canvas');
+      if (key === 'camara') {
+        staticCvs.classList.remove('opacity-0');
+        staticCvs.classList.add('opacity-90');
+        document.getElementById('cctv-rec-dot').className = 'w-2.5 h-2.5 rounded-full bg-slate-600';
+        document.getElementById('cctv-rec-label').innerText = 'OFFLINE';
+        document.getElementById('cctv-rec-label').className = 'text-slate-500 font-bold';
+      } else {
+        staticCvs.classList.remove('opacity-90');
+        staticCvs.classList.add('opacity-0');
+        document.getElementById('cctv-rec-dot').className = 'w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping';
+        document.getElementById('cctv-rec-label').innerText = 'REC';
+        document.getElementById('cctv-rec-label').className = 'text-rose-400 font-bold';
+      }
+
+      // Registrar evento en Syslog
+      const sev = (key === 'normal') ? 'INFO' : (key === 'termico' || key === 'camara' ? 'WARN' : 'CRIT');
+      addSyslogEntry(sev, `[${data.tipoAcceso}] ${data.bannerText} — ${data.estado}`);
+
+      // Aplicar efectos en 3D
+      apply3DIncidentEffects(key);
+    }
+
+    function apply3DIncidentEffects(key) {
+      // Resetear efectos
+      fireLight.intensity = 0;
+      smokeParticles.material.opacity = 0;
+      quarantineHoloShield.material.opacity = 0;
+      mantrapLedFrame.material.color.setHex(0x10B981);
+      rotatingBeaconLight.intensity = 0;
+      isBlackoutActive = false;
+
+      // Restaurar cámaras y LEDs
+      ptzHeadMeshes.forEach((head, idx) => {
+        head.userData.targetTilt = 0; // Erguida normal
+        ptzRecLeds[idx].material.color.setHex(0xEF4444);
+      });
+
+      // Restaurar luces de techo
+      ceilingLights.forEach(l => {
+        if (l.isLight) l.intensity = 1.0;
+        else if (l.isMesh) l.material.color.setHex(0xBAE6FD);
+      });
+
+      // Restaurar fachada normal de racks si no es ransomware
+      if (key !== 'ransomware' && visualMode !== 'matrix') {
+        rackFrontMaterials.forEach(m => {
+          m.map = m.userData.origMap || m.map;
+          m.needsUpdate = true;
+        });
+      }
+
+      if (key === 'acceso') {
+        // Baliza giratoria de alarma ámbar
+        rotatingBeaconLight.color.setHex(0xF59E0B);
+        rotatingBeaconLight.intensity = 6.0;
+        mantrapLedFrame.material.color.setHex(0xEF4444);
+        if (ptzHeadMeshes[0]) ptzHeadMeshes[0].rotation.y = 0.9;
+      } else if (key === 'humo') {
+        fireLight.intensity = 6.0;
+        smokeParticles.material.opacity = 0.85;
+        rotatingBeaconLight.color.setHex(0xEF4444);
+        rotatingBeaconLight.intensity = 7.0;
+      } else if (key === 'camara') {
+        // ¡LA CÁMARA 2 SE AGACHA / SE DESCONECTA FÍSICAMENTE!
+        if (ptzHeadMeshes[1]) {
+          ptzHeadMeshes[1].userData.targetTilt = 1.35; // Se agacha 80 grados hacia abajo
+          ptzRecLeds[1].material.color.setHex(0x1E293B); // LED apagado
+        }
+        // Emitir chispas en la base de la cámara
+        emitSparksAt(0, 3.4, 4.3);
+      } else if (key === 'energia') {
+        // ¡APAGÓN ELÉCTRICO REALISTA!
+        isBlackoutActive = true;
+        blackoutFlickerTimer = 24; // Parpadeo previo
+        emitSparksAt(4.2, 2.0, -4.5); // Chispas en el tablero
+      } else if (key === 'ransomware') {
+        // ¡CASCADA MATRIX DIGITAL EN VERDE!
+        quarantineHoloShield.material.opacity = 0.85;
+        quarantineHoloShield.material.color.setHex(0x00FF66);
+        // Asignar textura Matrix a los servidores
+        rackFrontMaterials.forEach(m => {
+          if (!m.userData.origMap) m.userData.origMap = m.map;
+          m.map = matrixTexture;
+          m.needsUpdate = true;
+        });
+      }
+    }
+
+    function emitSparksAt(x, y, z) {
+      if (!sparkParticles) return;
+      sparkParticles.position.set(x, y, z);
+      sparkParticles.material.opacity = 1.0;
+      const pos = sparkParticles.geometry.attributes.position.array;
+      for (let i = 0; i < pos.length; i += 3) {
+        pos[i] = (Math.random() - 0.5) * 0.4;
+        pos[i + 1] = (Math.random() - 0.5) * 0.4;
+        pos[i + 2] = (Math.random() - 0.5) * 0.4;
+      }
+      sparkParticles.geometry.attributes.position.needsUpdate = true;
+      setTimeout(() => {
+        if (sparkParticles) sparkParticles.material.opacity = 0;
+      }, 700);
+    }
+
+    /* ==========================================================================
+       5. SISTEMA DE MONITOREO DE CÁMARAS Y MODOS VISUALES
+       ========================================================================== */
+    const cameraPresets = [
+      { name: "CAM-01 [ESCLUSA MANTRAP]", pos: { x: 5.5, y: 2.4, z: 4.8 }, look: { x: 7.2, y: 1.5, z: 3.8 } },
+      { name: "CAM-02 [PASILLO FRÍO RACKS]", pos: { x: 0, y: 2.1, z: 4.2 }, look: { x: 0, y: 1.4, z: 0 } },
+      { name: "CAM-03 [FINANSUR CORE DB]", pos: { x: -0.6, y: 1.6, z: -1.2 }, look: { x: -1.45, y: 1.35, z: -1.55 } },
+      { name: "CAM-04 [CLIMATIZACIÓN CRAC]", pos: { x: -2.4, y: 2.3, z: -3.2 }, look: { x: -4.2, y: 2.0, z: -4.5 } },
+      { name: "CAM-05 [SALA UPS & ENERGÍA]", pos: { x: 2.2, y: 2.2, z: 3.5 }, look: { x: 1.45, y: 1.35, z: 3.1 } },
+      { name: "CAM-06 [VISTA AÉREA ORBITAL]", pos: { x: 0, y: 8.5, z: 7.5 }, look: { x: 0, y: 1.0, z: 0 } }
+    ];
+
+    function switchSecurityCam(idx) {
+      const preset = cameraPresets[idx];
+      if (!preset) return;
+
+      playTactileClick();
+      camera.position.set(preset.pos.x, preset.pos.y, preset.pos.z);
+      controls.target.set(preset.look.x, preset.look.y, preset.look.z);
+
+      document.getElementById('cctv-cam-name').innerText = preset.name;
+      
+      const buttons = document.querySelectorAll('.cam-btn');
+      buttons.forEach((btn, i) => {
+        if (i === idx) {
+          btn.className = "cam-btn py-1 rounded bg-cyan-700 border border-cyan-400 text-white font-bold transition";
+        } else {
+          btn.className = "cam-btn py-1 rounded bg-cyber-850 hover:bg-cyan-900 border border-slate-700 text-slate-300 font-bold transition";
+        }
+      });
+    }
+
+    function setVisualMode(mode) {
+      visualMode = mode;
+      playTactileClick();
+
+      ['normal', 'matrix', 'thermal', 'xray'].forEach(m => {
+        const btn = document.getElementById(`btn-mode-${m}`);
+        if (m === mode) {
+          btn.className = (m === 'matrix') ? 
+            "px-2.5 py-1.5 rounded-lg bg-emerald-700 text-white font-mono text-xs font-bold transition shadow" :
+            "px-2.5 py-1.5 rounded-lg bg-cyan-600 text-white font-mono text-xs font-bold transition shadow";
+        } else {
+          btn.className = "px-2.5 py-1.5 rounded-lg bg-cyber-850 text-slate-300 font-mono text-xs hover:bg-slate-700 transition border border-slate-700";
+        }
+      });
+
+      if (mode === 'matrix') {
+        rackFrontMaterials.forEach(m => {
+          if (!m.userData.origMap) m.userData.origMap = m.map;
+          m.map = matrixTexture;
+          m.needsUpdate = true;
+        });
+      } else {
+        rackFrontMaterials.forEach(m => {
+          if (m.userData.origMap) {
+            m.map = m.userData.origMap;
+            m.needsUpdate = true;
+          }
+        });
+      }
+
+      rackMeshes.forEach(mesh => {
+        if (mode === 'thermal') {
+          mesh.material = new THREE.MeshBasicMaterial({ color: 0xF59E0B });
+        } else if (mode === 'xray') {
+          mesh.material = new THREE.MeshPhysicalMaterial({ color: 0x00F0FF, transparent: true, opacity: 0.3 });
+        } else if (mode !== 'matrix') {
+          mesh.material = mesh.userData.isDB ? 
+            new THREE.MeshStandardMaterial({ color: 0x08162F, metalness: 0.85 }) :
+            new THREE.MeshStandardMaterial({ color: 0x090F1C, metalness: 0.8 });
+        }
+      });
+    }
+
+    function toggleAutoTour() {
+      isAutoTour = !isAutoTour;
+      playTactileClick();
+      document.getElementById('btn-tour').className = isAutoTour ?
+        "px-2.5 py-1.5 rounded-lg bg-rose-600 text-white font-mono text-xs font-bold transition flex items-center gap-1 shadow-lg shadow-rose-950 animate-pulse" :
+        "px-2.5 py-1.5 rounded-lg bg-indigo-700 hover:bg-indigo-600 text-white font-mono text-xs font-bold transition flex items-center gap-1";
+    }
+
+    /* ==========================================================================
+       6. INTERACCIÓN DE INSPECCIÓN DE ACTIVOS Y DRAWER
+       ========================================================================== */
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    function handleObjectClick(e) {
+      const container = document.getElementById('canvas-container');
+      const rect = container.getBoundingClientRect();
+      mouse.x = ((e.clientX - rect.left) / container.clientWidth) * 2 - 1;
+      mouse.y = -((e.clientY - rect.top) / container.clientHeight) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(rackMeshes, true);
+
+      if (intersects.length > 0) {
+        const hit = intersects[0].object;
+        let data = hit.userData;
+        if (!data || !data.id) {
+          if (hit.parent && hit.parent.userData && hit.parent.userData.id) data = hit.parent.userData;
+        }
+
+        if (data && data.id) {
+          openAssetDrawer(data);
+        }
+      }
+    }
+
+    function openAssetDrawer(data) {
+      playTactileClick();
+      document.getElementById('drawer-title').innerText = data.id;
+      document.getElementById('drawer-tag').innerText = data.status || "ACTIVO";
+      document.getElementById('drawer-icon').innerText = data.icon || "🗄️";
+      document.getElementById('drawer-metric-tempin').innerText = data.temp || "19.4 °C";
+
+      if (data.cpu) document.getElementById('drawer-spec-cpu').innerText = `${data.cpu} Carga`;
+      if (data.ram) document.getElementById('drawer-spec-ram').innerText = data.ram;
+
+      document.getElementById('asset-drawer').classList.remove('translate-x-full');
+      addSyslogEntry('INFO', `Inspección de activo: ${data.id} abierto para diagnóstico forense.`);
+    }
+
+    function closeAssetDrawer() {
+      playTactileClick();
+      document.getElementById('asset-drawer').classList.add('translate-x-full');
+    }
+
+    function drawerAction(act) {
+      playTactileClick();
+      if (act === 'isolate') {
+        addSyslogEntry('CRIT', `ACCIÓN FORENSE: VLAN aislada por protocolo Zero Trust.`);
+        alert("Protocolo ejecutado: Puerto de switch deshabilitado y VLAN puesta en cuarentena criptográfica.");
+      } else if (act === 'cool') {
+        addSyslogEntry('WARN', `ACCIÓN CLIMA: Aumento de caudal a 16,000 CFM solicitado.`);
+        alert("Turbinas de respaldo activadas a 100% de potencia.");
+      } else if (act === 'snapshot') {
+        addSyslogEntry('INFO', `ACCIÓN SNAPSHOT: Instantánea inmutable WORM generada.`);
+        alert("Snapshot SHA-256 inmutable creado con éxito.");
+      }
+    }
+
+    /* ==========================================================================
+       7. SISTEMA DE BITÁCORA SYSLOG Y TELEMETRÍA DINÁMICA
+       ========================================================================== */
+    const syslogHistory = [];
+
+    function addSyslogEntry(severity, msg) {
+      const now = new Date();
+      const timeStr = now.toTimeString().split(' ')[0] + '.' + String(now.getMilliseconds()).padStart(3, '0');
+      const entry = { time: timeStr, severity, msg };
+      syslogHistory.unshift(entry);
+      if (syslogHistory.length > 80) syslogHistory.pop();
+
+      const win = document.getElementById('syslog-window');
+      const color = (severity === 'CRIT') ? 'text-rose-400 font-bold' : (severity === 'WARN' ? 'text-amber-400' : 'text-slate-300');
+      const badgeColor = (severity === 'CRIT') ? 'bg-rose-950 text-rose-300 border-rose-800' : (severity === 'WARN' ? 'bg-amber-950 text-amber-300 border-amber-800' : 'bg-slate-800 text-slate-300 border-slate-700');
+
+      const el = document.createElement('div');
+      el.className = "flex items-start gap-2 border-b border-slate-900/60 pb-1";
+      el.innerHTML = `
+        <span class="text-slate-500 text-[10px] whitespace-nowrap">${timeStr}</span>
+        <span class="text-[9px] px-1 py-0.2 rounded border font-bold ${badgeColor}">${severity}</span>
+        <span class="${color} flex-1 leading-snug">${msg}</span>
+      `;
+      win.prepend(el);
+    }
+
+    function clearLogs() {
+      playTactileClick();
+      document.getElementById('syslog-window').innerHTML = '';
+      addSyslogEntry('INFO', 'Buffer de auditoría Syslog reiniciado.');
+    }
+
+    function downloadSyslog() {
+      playTactileClick();
+      let text = "=== REGISTRO DE AUDITORÍA SYSLOG RFC 5424 — IESTP HERMANOS CÁRCAMO ===\n";
+      text += `Generado el: ${new Date().toISOString()}\n`;
+      text += "Estudiante: Gerson Misael Pintado Huamán | Docente: Mg. Javier Eduardo Jaramillo Atoche\n\n";
+      syslogHistory.forEach(e => {
+        text += `[${e.time}] [${e.severity}] ${e.msg}\n`;
+      });
+
+      const blob = new Blob([text], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `bitacora_datacenter_${Date.now()}.log`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    /* Gráficas SVG Dinámicas */
+    let chartHistoryNet = [12, 13, 11, 14, 12, 13, 12, 15, 12, 14, 13, 12];
+    let chartHistoryTemp = [19.8, 19.7, 19.9, 19.8, 19.8, 19.7, 19.8, 19.9, 19.8, 19.8];
+
+    function updateDynamicCharts() {
+      let currentNet = (currentIncidentKey === 'red') ? (85 + Math.random() * 12) : (12 + Math.random() * 2.5);
+      chartHistoryNet.push(currentNet);
+      if (chartHistoryNet.length > 20) chartHistoryNet.shift();
+      document.getElementById('chart-net-val').innerText = `${currentNet.toFixed(1)} Gbps`;
+
+      let dNet = "M0," + (40 - (chartHistoryNet[0] / 100) * 35);
+      chartHistoryNet.forEach((v, i) => {
+        const x = (i / (chartHistoryNet.length - 1)) * 100;
+        const y = 40 - (v / 100) * 35;
+        dNet += ` L${x.toFixed(1)},${y.toFixed(1)}`;
+      });
+      document.getElementById('path-net').setAttribute('d', dNet);
+
+      let currentTemp = (currentIncidentKey === 'termico') ? (32 + Math.random() * 3.5) : (19.8 + (Math.random() - 0.5) * 0.4);
+      chartHistoryTemp.push(currentTemp);
+      if (chartHistoryTemp.length > 20) chartHistoryTemp.shift();
+      document.getElementById('chart-temp-val').innerText = `${currentTemp.toFixed(1)} °C`;
+      document.getElementById('header-temp').innerText = `${currentTemp.toFixed(1)} °C`;
+
+      let dTemp = "M0," + (40 - ((chartHistoryTemp[0] - 15) / 25) * 35);
+      chartHistoryTemp.forEach((v, i) => {
+        const x = (i / (chartHistoryTemp.length - 1)) * 100;
+        const y = 40 - ((v - 15) / 25) * 35;
+        dTemp += ` L${x.toFixed(1)},${y.toFixed(1)}`;
+      });
+      document.getElementById('path-temp').setAttribute('d', dTemp);
+
+      const iaLat = (Math.random() * 0.6 + 0.9).toFixed(1);
+      document.getElementById('chart-ia-val').innerText = `${iaLat} ms`;
+    }
+
+    function drawTacticalRadar() {
+      const cvs = document.getElementById('radar-canvas');
+      if (!cvs) return;
+      const ctx = cvs.getContext('2d');
+      const w = cvs.width;
+      const h = cvs.height;
+
+      ctx.fillStyle = '#050B1B';
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.strokeStyle = '#1E293B';
+      ctx.lineWidth = 1;
+      [18, 36, 46].forEach(r => {
+        ctx.beginPath();
+        ctx.arc(w / 2, h / 2, r, 0, Math.PI * 2);
+        ctx.stroke();
+      });
+
+      // Racks
+      ctx.fillStyle = (currentIncidentKey === 'ransomware') ? '#00FF66' : '#00F0FF';
+      for (let i = 0; i < 5; i++) {
+        ctx.fillRect(w / 2 - 18, 15 + i * 14, 8, 10);
+      }
+      for (let i = 0; i < 5; i++) {
+        ctx.fillRect(w / 2 + 10, 15 + i * 14, 8, 10);
+      }
+
+      // Esclusa mantrap
+      ctx.fillStyle = '#10B981';
+      ctx.fillRect(w - 10, h / 2 + 10, 8, 12);
+
+      // Ping parpadeante
+      if (currentIncidentKey !== 'normal') {
+        const pingTime = Date.now() * 0.005;
+        const pingAlpha = Math.abs(Math.sin(pingTime));
+        ctx.fillStyle = (currentIncidentKey === 'ransomware') ? `rgba(0, 255, 102, ${pingAlpha})` : `rgba(239, 68, 68, ${pingAlpha})`;
+        ctx.beginPath();
+        ctx.arc(w / 2 - 14, 42, 7, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // Dibujar nieve de estática de TV para cámara desconectada
+    function drawCCTVStatic() {
+      const cvs = document.getElementById('cctv-static-canvas');
+      if (!cvs || currentIncidentKey !== 'camara') return;
+      const ctx = cvs.getContext('2d');
+      const w = cvs.width;
+      const h = cvs.height;
+      const imgData = ctx.createImageData(w, h);
+      const data = imgData.data;
+      for (let i = 0; i < data.length; i += 4) {
+        const v = (Math.random() > 0.5) ? 255 : 0;
+        data[i] = v;
+        data[i + 1] = v;
+        data[i + 2] = v;
+        data[i + 3] = 255;
+      }
+      ctx.putImageData(imgData, 0, 0);
+    }
+
+    /* ==========================================================================
+       8. BUCLE PRINCIPAL DE ANIMACIÓN 60 FPS
+       ========================================================================== */
+    function animate() {
+      requestAnimationFrame(animate);
+
+      // Actualizar Matrix Rain si está activo
+      if (currentIncidentKey === 'ransomware' || visualMode === 'matrix') {
+        updateMatrixRain();
+      }
+
+      // Rotación de aspas CRAC (se detienen en corte de energía)
+      if (isBlackoutActive) {
+        // Se frenan a 0
+      } else {
+        const fanSpeed = (currentIncidentKey === 'termico') ? 0.35 : 0.08;
+        hvacFans.forEach(fan => {
+          fan.rotation.z += fanSpeed;
+        });
+      }
+
+      // Parpadeo previo y secuencia de Blackout
+      if (isBlackoutActive) {
+        if (blackoutFlickerTimer > 0) {
+          blackoutFlickerTimer--;
+          const flicker = Math.random() > 0.5;
+          ceilingLights.forEach(l => {
+            if (l.isLight) l.intensity = flicker ? 0.8 : 0.0;
+            else if (l.isMesh) l.material.color.setHex(flicker ? 0xBAE6FD : 0x050B1B);
+          });
+        } else {
+          // Apagón total con luces bajas de emergencia ámbar
+          ceilingLights.forEach(l => {
+            if (l.isLight) l.intensity = 0.04;
+            else if (l.isMesh) l.material.color.setHex(0x111C35);
+          });
+        }
+      }
+
+      // Giro de baliza de alarma 360° en emergencias
+      if (rotatingBeaconGroup && rotatingBeaconLight.intensity > 0) {
+        rotatingBeaconGroup.rotation.y += 0.07;
+      }
+
+      // Animación suave de caída/inclinación de cámaras (agacharse si desconectada)
+      ptzHeadMeshes.forEach(head => {
+        if (head.userData.targetTilt !== undefined) {
+          head.rotation.x += (head.userData.targetTilt - head.rotation.x) * 0.12;
+        }
+      });
+
+      // Animación de partículas de aire frío
+      if (mistParticles) {
+        const pos = mistParticles.geometry.attributes.position.array;
+        for (let i = 1; i < pos.length; i += 3) {
+          pos[i] += 0.006;
+          if (pos[i] > 1.6) pos[i] = 0.05;
+        }
+        mistParticles.geometry.attributes.position.needsUpdate = true;
+      }
+
+      // Animación de partículas de humo
+      if (smokeParticles && currentIncidentKey === 'humo') {
+        const pos = smokeParticles.geometry.attributes.position.array;
+        for (let i = 1; i < pos.length; i += 3) {
+          pos[i] += 0.012;
+          if (pos[i] > 4.2) pos[i] = 2.4;
+        }
+        smokeParticles.geometry.attributes.position.needsUpdate = true;
+        fireLight.intensity = 4.0 + Math.random() * 3.5;
+      }
+
+      // Estática CCTV
+      if (currentIncidentKey === 'camara') {
+        drawCCTVStatic();
+      }
+
+      // Tour 360°
+      if (isAutoTour) {
+        tourAngle += 0.005;
+        camera.position.x = Math.sin(tourAngle) * 7.5;
+        camera.position.z = Math.cos(tourAngle) * 7.5;
+        camera.position.y = 3.6 + Math.sin(tourAngle * 2) * 0.6;
+        controls.target.set(0, 1.4, 0);
+      }
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    function onResize() {
+      const container = document.getElementById('canvas-container');
+      camera.aspect = container.clientWidth / container.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(container.clientWidth, container.clientHeight);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      init3D();
+
+      // Ajustar dimensiones del canvas estático CCTV
+      const scvs = document.getElementById('cctv-static-canvas');
+      if (scvs) {
+        scvs.width = 160;
+        scvs.height = 90;
+      }
+
+      // Reloj digital en tiempo real con milisegundos
+      setInterval(() => {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('es-PE') + '.' + String(Math.floor(now.getMilliseconds() / 100));
+        document.getElementById('header-clock').innerText = timeStr;
+        document.getElementById('cctv-time').innerText = now.toLocaleTimeString('es-PE');
+      }, 100);
+
+      // Actualizaciones continuas
+      setInterval(updateDynamicCharts, 500);
+      setInterval(drawTacticalRadar, 250);
+
+      addSyslogEntry('INFO', 'Sistema de monitoreo 4D Tier III inicializado en línea base.');
+      addSyslogEntry('INFO', 'Módulos de Matrix Rain, desconexión física de cámaras y corte dinámico listos.');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapa Conceptual y Caso Práctico: Seguridad en Data Center</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    .gradient-header {
+      background: linear-gradient(135deg, #0A2540 0%, #1E3A8A 50%, #0F766E 100%);
+    }
+    .card-hover {
+      transition: all 0.25s ease-in-out;
+    }
+    .card-hover:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px -10px rgba(15, 23, 42, 0.2);
+    }
+    .badge-phys {
+      background-color: #EFF6FF;
+      color: #1D4ED8;
+      border: 1px solid #BFDBFE;
+    }
+    .badge-log {
+      background-color: #F0FDFA;
+      color: #0F766E;
+      border: 1px solid #99F6E4;
+    }
+    .active-tab {
+      border-bottom: 3px solid #3B82F6;
+      color: #1D4ED8;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased font-sans min-h-screen">
+
+  <!-- Header Banner -->
+  <header class="gradient-header text-white p-6 shadow-md">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+      <div>
+        <div class="flex items-center gap-2 text-cyan-300 text-xs font-semibold tracking-wider uppercase mb-1">
+          <span>🏛️ I.E.S.T.P. PAITA</span>
+          <span>•</span>
+          <span>ARQUITECTURA DE PLATAFORMAS DE TI</span>
+        </div>
+        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">Seguridad Física y Lógica en un Data Center</h1>
+        <p class="text-slate-300 text-sm mt-1">Caso Práctico «FinanSur Data Cloud» • Mapa Conceptual Infográfico • Normas TIA-942 & ISO 27001</p>
+      </div>
+      <div class="bg-white/10 backdrop-blur-md rounded-xl p-3.5 border border-white/20 text-xs text-slate-200">
+        <p><strong class="text-white">Docente:</strong> Prof. Javier Eduardo Jaramillo Atoche</p>
+        <p class="mt-1"><strong class="text-white">Integrantes:</strong> G. Pintado, M. López, M. Clavijo, P. Aguilar, D. Urbina</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-6xl mx-auto flex gap-8 px-6">
+      <button onclick="switchTab('mapa')" id="tab-btn-mapa" class="py-4 text-sm font-semibold text-slate-600 hover:text-blue-600 active-tab transition flex items-center gap-2">
+        <span>🗺️</span> Mapa Conceptual Interactivo
+      </button>
+      <button onclick="switchTab('caso')" id="tab-btn-caso" class="py-4 text-sm font-semibold text-slate-600 hover:text-blue-600 transition flex items-center gap-2">
+        <span>📋</span> Caso Práctico & Incidente
+      </button>
+      <button onclick="switchTab('galeria')" id="tab-btn-galeria" class="py-4 text-sm font-semibold text-slate-600 hover:text-blue-600 transition flex items-center gap-2">
+        <span>🖼️</span> Galería Gráfica HD
+      </button>
+      <button onclick="switchTab('glosario')" id="tab-btn-glosario" class="py-4 text-sm font-semibold text-slate-600 hover:text-blue-600 transition flex items-center gap-2">
+        <span>📖</span> Glosario de Estándares
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="max-w-6xl mx-auto p-6">
+
+    <!-- SECCIÓN 1: MAPA CONCEPTUAL INTERACTIVO -->
+    <section id="section-mapa" class="space-y-6">
+      
+      <!-- Core Concept Card -->
+      <div class="bg-gradient-to-r from-slate-900 to-indigo-950 text-white rounded-2xl p-6 shadow-lg border border-slate-700 text-center relative overflow-hidden">
+        <div class="relative z-10">
+          <span class="inline-block px-3 py-1 bg-blue-500/20 text-blue-300 text-xs font-bold rounded-full mb-2 uppercase tracking-widest border border-blue-400/30">Núcleo Central</span>
+          <h2 class="text-2xl font-bold tracking-tight">SEGURIDAD INTEGRAL EN EL DATA CENTER</h2>
+          <p class="text-slate-300 text-sm max-w-2xl mx-auto mt-2">
+            Garantizar la protección de activos críticos de TI bajo la <strong>Tríada CID</strong>: Confidencialidad, Integridad y Disponibilidad (SLA 99.982% - Tier III).
+          </p>
+        </div>
+      </div>
+
+      <!-- Filter Controls -->
+      <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-xl border border-slate-200">
+        <div class="flex items-center gap-2 text-sm font-medium text-slate-700">
+          <span>🔍 Filtrar componentes:</span>
+          <button onclick="filterMap('all')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-white hover:bg-slate-700 transition">Todos (10)</button>
+          <button onclick="filterMap('fisica')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition">Seguridad Física (5)</button>
+          <button onclick="filterMap('logica')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-teal-50 text-teal-700 border border-teal-200 hover:bg-teal-100 transition">Seguridad Lógica (5)</button>
+        </div>
+        <span class="text-xs text-slate-500 italic">Haz clic en cada tarjeta para ver detalles técnicos y normativas</span>
+      </div>
+
+      <!-- Component Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <!-- RAMA 1: SEGURIDAD FÍSICA -->
+        <div class="space-y-4" id="col-fisica">
+          <div class="flex items-center gap-2 border-b-2 border-blue-600 pb-2">
+            <span class="p-1.5 bg-blue-100 text-blue-700 rounded-lg text-lg">🏢</span>
+            <h3 class="font-bold text-lg text-blue-900">1. Seguridad Física (Instalaciones y Entorno)</h3>
+          </div>
+
+          <!-- Card 1: Acceso -->
+          <div onclick="showModal('Esclusa Mantrap y Biometría', 'Sistema de doble puerta interbloqueada donde la puerta interior no abre si la exterior no está totalmente cerrada. Requiere autenticación por huella dactilar o reconocimiento facial y tarjeta RFID cifrada.', 'ISO/IEC 27001 - A.7.1 (Perímetro físico) y A.7.2 (Control de accesos físicos).')" class="card-hover bg-white rounded-xl p-5 border border-slate-200 shadow-sm cursor-pointer border-l-4 border-l-blue-600">
+            <div class="flex justify-between items-start">
+              <div class="flex items-center gap-3">
+                <span class="text-2xl">🚪</span>
+                <div>
+                  <h4 class="font-bold text-slate-800">Control de Acceso Perimetral</h4>
+                  <p class="text-xs text-slate-500">Esclusas Mantrap • Biometría facial/dactilar • Tarjetas RFID</p>
+                </div>
+              </div>
+              <span class="badge-phys text-xs px-2.5 py-0.5 rounded-full font-bold">Física</span>
+            </div>
+            <p class="text-sm text-slate-600 mt-3">Evita el "tailgating" (ingreso pegado) y garantiza la trazabilidad con bitácora digital inalterable del 100% de entradas.</p>
+          </div>
+
+          <!-- Card 2: CCTV -->
+          <div onclick="showModal('Videovigilancia y Sensores CCTV', 'Despliegue de cámaras IP HD 24/7 con visión nocturna infrarroja en pasillos fríos, calientes y accesos. Racks con sensores de apertura de puerta vinculados al sistema de alarma.', 'Retención mínima de grabaciones por 90 días en NVR seguro.')" class="card-hover bg-white rounded-xl p-5 border border-slate-200 shadow-sm cursor-pointer border-l-4 border-l-blue-600">
+            <div class="flex justify-between items-start">
+              <div class="flex items-center gap-3">
+                <span class="text-2xl">📹</span>
+                <div>
+                  <h4 class="font-bold text-slate-800">Vigilancia y Detección (CCTV)</h4>
+                  <p class="text-xs text-slate-500">CCTV 24/7 • Sensores en racks • Alertas en tiempo real</p>
+                </div>
+              </div>
+              <span class="badge-phys text-xs px-2.5 py-0.5 rounded-full font-bold">Física</span>
+            </div>
+            <p class="text-sm text-slate-600 mt-3">Monitoreo continuo de toda la sala técnica y detección de presencia no autorizada con inteligencia artificial.</p>
+          </div>
+
+          <!-- Card 3: HVAC -->
+          <div onclick="showModal('Climatización de Precisión HVAC', 'Unidades de aire de precisión con redundancia N+1. Confinamiento de pasillo frío para concentrar el flujo helado en la toma frontal de servidores, manteniendo 18°C a 22°C y humedad 40%-60%.', 'Estándar ASHRAE TC 9.9 y ANSI/TIA-942 Tier III.')" class="card-hover bg-white rounded-xl p-5 border border-slate-200 shadow-sm cursor-pointer border-l-4 border-l-blue-600">
+            <div class="flex justify-between items-start">
+              <div class="flex items-center gap-3">
+                <span class="text-2xl">❄️</span>
+                <div>
+                  <h4 class="font-bold text-slate-800">Climatización de Precisión</h4>
+                  <p class="text-xs text-slate-500">Pasillo Frío / Caliente • Temperatura 18°-22°C • Humedad 40%-60%</p>
+                </div>
+              </div>
+              <span class="badge-phys text-xs px-2.5 py-0.5 rounded-full font-bold">Física</span>
+            </div>
+            <p class="text-sm text-slate-600 mt-3">Evita el recalentamiento de CPUs y la condensación estática con sensores de fuga de agua bajo el piso técnico.</p>
+          </div>
+
+          <!-- Card 4: Fuego -->
+          <div onclick="showModal('Protección Contra Incendios (Gas Limpio)', 'Detección ultra temprana por aspiración de humo (VESDA) capaz de detectar partículas antes de la llama visible. Extinción automática mediante gas Novec 1230 o FM-200. Prohibición total de agua en sala TI.', 'Norma NFPA 2001 (Sistemas de extinción mediante agentes limpios).')" class="card-hover bg-white rounded-xl p-5 border border-slate-200 shadow-sm cursor-pointer border-l-4 border-l-blue-600">
+            <div class="flex justify-between items-start">
+              <div class="flex items-center gap-3">
+                <span class="text-2xl">🧯</span>
+                <div>
+                  <h4 class="font-bold text-slate-800">Extinción por Gas Limpio</h4>
+                  <p class="text-xs text-slate-500">Detección VESDA • Gas Novec 1230 / FM-200 • Cero agua</p>
+                </div>
+              </div>
+              <span class="badge-phys text-xs px-2.5 py-0.5 rounded-full font-bold">Física</span>
+            </div>
+            <p class="text-sm text-slate-600 mt-3">Extingue el fuego por enfriamiento térmico en menos de 10 segundos sin dañar componentes electrónicos ni dejar residuos.</p>
+          </div>
+
+          <!-- Card 5: UPS -->
+          <div onclick="showModal('Respaldo Eléctrico Tier III', 'Doble acometida eléctrica independiente (Rutas A y B). Sistema de UPS trifásico modular de doble conversión online (45 min de autonomía) y grupo electrógeno con conmutador ATS que arranca en 10 segundos.', 'ANSI/TIA-942 Tier III (Disponibilidad 99.982%, mantenimiento concurrente).')" class="card-hover bg-white rounded-xl p-5 border border-slate-200 shadow-sm cursor-pointer border-l-4 border-l-blue-600">
+            <div class="flex justify-between items-start">
+              <div class="flex items-center gap-3">
+                <span class="text-2xl">⚡</span>
+                <div>
+                  <h4 class="font-bold text-slate-800">Respaldo Eléctrico Redundante</h4>
+                  <p class="text-xs text-slate-500">UPS Doble Conversión • Generador Diésel • Conmutación ATS</p>
+                </div>
+              </div>
+              <span class="badge-phys text-xs px-2.5 py-0.5 rounded-full font-bold">Física</span>
+            </div>
+            <p class="text-sm text-slate-600 mt-3">Elimina cualquier punto único de falla (SPOF) garantizando funcionamiento ininterrumpido ante cortes de red pública.</p>
+          </div>
+        </div>
+
+        <!-- RAMA 2: SEGURIDAD LÓGICA -->
+        <div class="space-y-4" id="col-logica">
+          <div class="flex items-center gap-2 border-b-2 border-teal-600 pb-2">
+            <span class="p-1.5 bg-teal-100 text-teal-700 rounded-lg text-lg">🛡️</span>
+            <h3 class="font-bold text-lg text-teal-900">2. Seguridad Lógica (Datos, Redes y Sistemas)</h3>
+          </div>
+
+          <!-- Card 1: Firewall & Redes -->
+          <div onclick="showModal('Firewall NGFW y Segmentación VLAN', 'Firewall de Nueva Generación en clúster activo-pasivo con inspección profunda de paquetes (Capa 7). Aislamiento total de la red en VLANs independientes (Gestión, BD, Web/DMZ y Usuarios) con política Drop All by default.', 'ISO/IEC 27001 - A.8.20 (Seguridad en redes) y A.8.22 (Segregación de redes).')" class="card-hover bg-white rounded-xl p-5 border border-slate-200 shadow-sm cursor-pointer border-l-4 border-l-teal-600">
+            <div class="flex justify-between items-start">
+              <div class="flex items-center gap-3">
+                <span class="text-2xl">🔥</span>
+                <div>
+                  <h4 class="font-bold text-slate-800">Perímetro y Redes (NGFW)</h4>
+                  <p class="text-xs text-slate-500">Firewall Capa 7 • VLANs dedicadas • Zona DMZ</p>
+                </div>
+              </div>
+              <span class="badge-log text-xs px-2.5 py-0.5 rounded-full font-bold">Lógica</span>
+            </div>
+            <p class="text-sm text-slate-600 mt-3">Impide el movimiento lateral de atacantes e inspecciona el tráfico cifrado bloqueando exploits y malware.</p>
+          </div>
+
+          <!-- Card 2: IAM & MFA -->
+          <div onclick="showModal('Control de Identidad y MFA', 'Obligatoriedad de token de autenticación multifactor (MFA/2FA) para todo acceso administrativo a consolas SSH, RDP y paneles web. Implementación del principio de menor privilegio (RBAC) con cuentas nominativas.', 'ISO/IEC 27001 - A.5.15 (Control de acceso) y A.5.17 (Información de autenticación).')" class="card-hover bg-white rounded-xl p-5 border border-slate-200 shadow-sm cursor-pointer border-l-4 border-l-teal-600">
+            <div class="flex justify-between items-start">
+              <div class="flex items-center gap-3">
+                <span class="text-2xl">🔑</span>
+                <div>
+                  <h4 class="font-bold text-slate-800">Identidad y Accesos (IAM / MFA)</h4>
+                  <p class="text-xs text-slate-500">Doble Factor Obligatorio • Roles RBAC • Cero Cuentas Genéricas</p>
+                </div>
+              </div>
+              <span class="badge-log text-xs px-2.5 py-0.5 rounded-full font-bold">Lógica</span>
+            </div>
+            <p class="text-sm text-slate-600 mt-3">Anula los ataques de fuerza bruta y robo de credenciales: una contraseña robada es inútil sin el token secundario.</p>
+          </div>
+
+          <!-- Card 3: Monitoreo SOC / SIEM -->
+          <div onclick="showModal('Detección y Monitoreo (SOC / SIEM)', 'Despliegue de sensores IDS/IPS para bloquear intrusiones y escaneos de puertos en tiempo real. Servidor SIEM centralizado que recopila y correlaciona logs de servidores, firewalls y bases de datos 24/7.', 'ISO/IEC 27001 - A.8.15 (Registro de eventos) y A.8.16 (Actividades de monitoreo).')" class="card-hover bg-white rounded-xl p-5 border border-slate-200 shadow-sm cursor-pointer border-l-4 border-l-teal-600">
+            <div class="flex justify-between items-start">
+              <div class="flex items-center gap-3">
+                <span class="text-2xl">📊</span>
+                <div>
+                  <h4 class="font-bold text-slate-800">Monitoreo y Detección (SIEM)</h4>
+                  <p class="text-xs text-slate-500">Sensores IDS / IPS • Correlación de logs • Alertas 24/7</p>
+                </div>
+              </div>
+              <span class="badge-log text-xs px-2.5 py-0.5 rounded-full font-bold">Lógica</span>
+            </div>
+            <p class="text-sm text-slate-600 mt-3">Permite visibilidad en tiempo real ante intentos de intrusión y asegura evidencia forense inalterable.</p>
+          </div>
+
+          <!-- Card 4: Cifrado -->
+          <div onclick="showModal('Cifrado de Información', 'Cifrado de datos en reposo (AES-256) para bases de datos transaccionales, máquinas virtuales y discos SAN. Cifrado de datos en tránsito obligatorio mediante TLS 1.3 / HTTPS y túneles VPN IPsec.', 'ISO/IEC 27001 - A.8.24 (Uso de criptografía).')" class="card-hover bg-white rounded-xl p-5 border border-slate-200 shadow-sm cursor-pointer border-l-4 border-l-teal-600">
+            <div class="flex justify-between items-start">
+              <div class="flex items-center gap-3">
+                <span class="text-2xl">🔒</span>
+                <div>
+                  <h4 class="font-bold text-slate-800">Cifrado de Datos y DLP</h4>
+                  <p class="text-xs text-slate-500">Cifrado AES-256 (Reposo) • TLS 1.3 (Tránsito) • Prevención de Fugas</p>
+                </div>
+              </div>
+              <span class="badge-log text-xs px-2.5 py-0.5 rounded-full font-bold">Lógica</span>
+            </div>
+            <p class="text-sm text-slate-600 mt-3">Garantiza que incluso si un disco es sustraído físicamente, la información bancaria sea ilegible sin la llave criptográfica.</p>
+          </div>
+
+          <!-- Card 5: Backup 3-2-1 -->
+          <div onclick="showModal('Estrategia de Backup 3-2-1 Inmutable', '3 copias de los datos críticos, en 2 soportes diferentes (almacenamiento local SAN y nube cifrada), con al menos 1 copia fuera de línea e inmutable (WORM - Write Once, Read Many).', 'ISO/IEC 27001 - A.8.13 (Copias de seguridad) y Plan DRP/BCP.')" class="card-hover bg-white rounded-xl p-5 border border-slate-200 shadow-sm cursor-pointer border-l-4 border-l-teal-600">
+            <div class="flex justify-between items-start">
+              <div class="flex items-center gap-3">
+                <span class="text-2xl">💾</span>
+                <div>
+                  <h4 class="font-bold text-slate-800">Respaldos Inmutables (DRP)</h4>
+                  <p class="text-xs text-slate-500">Regla Backup 3-2-1 • Inmutabilidad WORM • Recuperación DRP</p>
+                </div>
+              </div>
+              <span class="badge-log text-xs px-2.5 py-0.5 rounded-full font-bold">Lógica</span>
+            </div>
+            <p class="text-sm text-slate-600 mt-3">Blindaje definitivo contra ataques de Ransomware: las copias no pueden ser cifradas ni borradas por ciberdelincuentes.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- SECCIÓN 2: CASO PRÁCTICO -->
+    <section id="section-caso" class="space-y-6 hidden">
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+        <h3 class="text-xl font-bold text-slate-900 border-b pb-3 mb-4">Caso Práctico: Incidente Crítico en «FinanSur Data Cloud S.A.C.»</h3>
+        
+        <!-- Timeline del Incidente -->
+        <div class="relative border-l-4 border-red-500 ml-4 pl-6 space-y-6 my-6">
+          <div class="relative">
+            <span class="absolute -left-[35px] top-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white"></span>
+            <span class="text-xs font-bold text-red-600 uppercase">11:20 a.m. – El Origen</span>
+            <h4 class="font-bold text-slate-800 text-base">Corte Eléctrico y Falla de UPS</h4>
+            <p class="text-sm text-slate-600">Fallo en la red industrial pública. Las baterías degradadas de las UPS duran solo 7 min. El generador diésel no arranca porque el conmutador ATS estaba en modo manual.</p>
+          </div>
+          <div class="relative">
+            <span class="absolute -left-[35px] top-1 w-4 h-4 bg-amber-500 rounded-full border-2 border-white"></span>
+            <span class="text-xs font-bold text-amber-600 uppercase">11:45 a.m. – Emergencia Térmica</span>
+            <h4 class="font-bold text-slate-800 text-base">Sobrecalentamiento de Servidores a 39°C</h4>
+            <p class="text-sm text-slate-600">Sin aire acondicionado, la sala alcanza 39°C en 25 minutos. Se abren puertas para ventilar y personal externo ingresa sin registro ni bitácora.</p>
+          </div>
+          <div class="relative">
+            <span class="absolute -left-[35px] top-1 w-4 h-4 bg-purple-500 rounded-full border-2 border-white"></span>
+            <span class="text-xs font-bold text-purple-600 uppercase">01:15 p.m. – Ciberataque</span>
+            <h4 class="font-bold text-slate-800 text-base">Ataque de Fuerza Bruta por Puerto RDP 3389</h4>
+            <p class="text-sm text-slate-600">Al volver la red, atacantes descubren el puerto RDP expuesto a Internet sin VPN ni MFA, hackeando la cuenta «Administrador» e inyectando un script malicioso.</p>
+          </div>
+          <div class="relative">
+            <span class="absolute -left-[35px] top-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white"></span>
+            <span class="text-xs font-bold text-emerald-600 uppercase">Resultado – Remediation Plan</span>
+            <h4 class="font-bold text-slate-800 text-base">Plan de Acción Integral</h4>
+            <p class="text-sm text-slate-600">Implementación de Tier III (redundancia N+1, mantrap, biometría, gas limpio) y controles ISO 27001 (NGFW, MFA, VLANs y backups inmutables).</p>
+          </div>
+        </div>
+
+        <!-- Matriz Comparativa Antes vs Después -->
+        <h4 class="font-bold text-slate-800 text-base mt-8 mb-3">Matriz de Soluciones y Mitigación de Riesgos</h4>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left border border-slate-200 rounded-xl overflow-hidden">
+            <thead class="bg-slate-900 text-white text-xs uppercase">
+              <tr>
+                <th class="p-3">Amenaza</th>
+                <th class="p-3">Solución Física</th>
+                <th class="p-3">Solución Lógica</th>
+                <th class="p-3">Impacto Logrado</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200">
+              <tr class="hover:bg-slate-50">
+                <td class="p-3 font-semibold text-slate-800">Acceso no autorizado</td>
+                <td class="p-3">Esclusa Mantrap + Lector Biométrico</td>
+                <td class="p-3">Bloqueo de sesión + Log SIEM</td>
+                <td class="p-3 text-emerald-700 font-bold">100% de trazabilidad</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="p-3 font-semibold text-slate-800">Corte de energía</td>
+                <td class="p-3">UPS modular N+1 + ATS con generador</td>
+                <td class="p-3">Script de apagado ordenado automático</td>
+                <td class="p-3 text-emerald-700 font-bold">99.98% de disponibilidad</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="p-3 font-semibold text-slate-800">Intrusión RDP / Malware</td>
+                <td class="p-3">Racks bajo llave física con sensor</td>
+                <td class="p-3">Firewall NGFW + VPN SSL + MFA</td>
+                <td class="p-3 text-emerald-700 font-bold">Cero puertos expuestos</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="p-3 font-semibold text-slate-800">Sobrecalentamiento</td>
+                <td class="p-3">Clima precisión N+1 + Gas Novec 1230</td>
+                <td class="p-3">Alertas SNMP automáticas en tiempo real</td>
+                <td class="p-3 text-emerald-700 font-bold">Protección total del hardware</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 3: GALERÍA HD -->
+    <section id="section-galeria" class="space-y-6 hidden">
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+        <h3 class="text-xl font-bold text-slate-900 border-b pb-3 mb-4">Galería Gráfica de Renders e Infografías HD</h3>
+        <p class="text-sm text-slate-600 mb-6">Recursos visuales de alta definición generados para el informe técnico y el documento Word oficial:</p>
+
+        <div class="space-y-8">
+          <!-- Infografía -->
+          <div class="border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+            <div class="bg-slate-900 text-white p-3 font-semibold text-sm flex justify-between items-center">
+              <span>Infografía Oficial del Mapa Conceptual (Actividad 2)</span>
+              <span class="text-xs bg-blue-600 px-2.5 py-0.5 rounded-full">HD Vector</span>
+            </div>
+            <img src="mapa_conceptual_infografia.jpg" alt="Mapa Conceptual Infográfico" class="w-full h-auto object-cover max-h-[500px]">
+            <p class="p-3 text-xs text-slate-600 bg-slate-50">Estructura simétrica con 5 componentes de Seguridad Física y 5 componentes de Seguridad Lógica articulados bajo el marco central de protección de Data Center.</p>
+          </div>
+
+          <!-- Grid de Renders -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+              <div class="bg-blue-900 text-white p-3 font-semibold text-sm">
+                <span>Render 3D: Seguridad Física de Data Center</span>
+              </div>
+              <img src="datacenter_seguridad_fisica.jpg" alt="Seguridad Física Data Center" class="w-full h-64 object-cover">
+              <p class="p-3 text-xs text-slate-600 bg-slate-50">Esclusa Mantrap con lector biométrico, sensores VESDA en techo, boquillas Novec 1230, pasillo frío y CCTV 24/7.</p>
+            </div>
+            <div class="border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+              <div class="bg-teal-900 text-white p-3 font-semibold text-sm">
+                <span>Render 3D: Centro de Monitoreo SOC & Ciberseguridad</span>
+              </div>
+              <img src="datacenter_seguridad_logica.jpg" alt="Seguridad Lógica Data Center" class="w-full h-64 object-cover">
+              <p class="p-3 text-xs text-slate-600 bg-slate-50">Monitoreo de topología de red con VLANs segmentadas, estado del Firewall NGFW, escudo activo y cifrado AES-256.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 4: GLOSARIO DE ESTÁNDARES -->
+    <section id="section-glosario" class="space-y-6 hidden">
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+        <h3 class="text-xl font-bold text-slate-900 border-b pb-3 mb-4">Glosario y Normativas Internacionales de Referencia</h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+            <h4 class="font-bold text-blue-900 text-sm">ANSI/TIA-942 (Estándar de Data Centers)</h4>
+            <p class="text-xs text-slate-600 mt-1">Norma que define los 4 niveles Tier de diseño de centros de datos. En el caso se aplica <strong>Tier III</strong>: requiere mantenimiento concurrente, componentes redundantes N+1 y 99.982% de disponibilidad (máximo 1.6 horas de inactividad anual permitida).</p>
+          </div>
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+            <h4 class="font-bold text-teal-900 text-sm">ISO/IEC 27001 (Gestión de Seguridad)</h4>
+            <p class="text-xs text-slate-600 mt-1">Estándar internacional para Sistemas de Gestión de Seguridad de la Información (SGSI). Regula los controles de seguridad física (Cláusula A.7) y seguridad operacional, de redes y accesos lógicos (Cláusula A.8).</p>
+          </div>
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+            <h4 class="font-bold text-slate-900 text-sm">Esclusa Mantrap</h4>
+            <p class="text-xs text-slate-600 mt-1">Cámara de paso con dos puertas interbloqueadas electrónicamente. Si una puerta se abre, la otra permanece bloqueada obligando a la verificación biométrica individual del usuario.</p>
+          </div>
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+            <h4 class="font-bold text-slate-900 text-sm">VESDA (Very Early Smoke Detection Apparatus)</h4>
+            <p class="text-xs text-slate-600 mt-1">Sistema de aspiración continua de aire con sensor láser de alta precisión que detecta trazas de combustión antes de que exista llama visible.</p>
+          </div>
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+            <h4 class="font-bold text-slate-900 text-sm">Inmutabilidad WORM (Write Once, Read Many)</h4>
+            <p class="text-xs text-slate-600 mt-1">Propiedad criptográfica del repositorio de copias de seguridad que bloquea la modificación o borrado durante un periodo de retención prefijado, impidiendo ataques de Ransomware.</p>
+          </div>
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+            <h4 class="font-bold text-slate-900 text-sm">Gas Limpio Novec 1230 / FM-200</h4>
+            <p class="text-xs text-slate-600 mt-1">Agente extintor que sofoca el fuego por absorción de calor sin dejar residuos, sin ser conductor eléctrico y sin agotar el oxígeno respirable.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal Interactivo para Detalles de Tarjetas -->
+  <div id="modal-detalle" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 relative animate-in fade-in zoom-in duration-200">
+      <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-xl font-bold">&times;</button>
+      <div id="modal-icon" class="w-12 h-12 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-2xl mb-4">🛡️</div>
+      <h3 id="modal-title" class="text-xl font-bold text-slate-900">Título</h3>
+      <p id="modal-desc" class="text-sm text-slate-600 mt-2 leading-relaxed">Descripción detallada</p>
+      <div class="mt-4 p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-500">
+        <strong class="text-slate-700">Normativa / Estándar:</strong> <span id="modal-norma">ISO 27001</span>
+      </div>
+      <button onclick="closeModal()" class="w-full mt-5 py-2.5 bg-slate-900 text-white text-sm font-semibold rounded-xl hover:bg-slate-800 transition">Entendido</button>
+    </div>
+  </div>
+
+  <!-- Scripts de interactividad -->
+  <script>
+    function switchTab(tabName) {
+      ['mapa', 'caso', 'galeria', 'glosario'].forEach(t => {
+        document.getElementById('section-' + t).classList.add('hidden');
+        document.getElementById('tab-btn-' + t).classList.remove('active-tab');
+      });
+      document.getElementById('section-' + tabName).classList.remove('hidden');
+      document.getElementById('tab-btn-' + tabName).classList.add('active-tab');
+    }
+
+    function filterMap(category) {
+      const colFisica = document.getElementById('col-fisica');
+      const colLogica = document.getElementById('col-logica');
+      if (category === 'all') {
+        colFisica.classList.remove('hidden');
+        colLogica.classList.remove('hidden');
+      } else if (category === 'fisica') {
+        colFisica.classList.remove('hidden');
+        colLogica.classList.add('hidden');
+      } else if (category === 'logica') {
+        colFisica.classList.add('hidden');
+        colLogica.classList.remove('hidden');
+      }
+    }
+
+    function showModal(title, desc, norma) {
+      document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-desc').innerText = desc;
+      document.getElementById('modal-norma').innerText = norma;
+      document.getElementById('modal-detalle').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('modal-detalle').classList.add('hidden');
+    }
+  </script>
+
+</body>
+</html>
