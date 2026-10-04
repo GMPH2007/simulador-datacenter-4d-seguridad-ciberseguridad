@@ -125,7 +125,7 @@ html_code = r'''<!DOCTYPE html>
       <div class="flex items-center gap-3 bg-slate-800/80 px-4 py-2.5 rounded-xl border border-slate-700 text-xs relative z-10">
         <div>
           <span class="text-slate-400 block text-[10px] font-bold uppercase tracking-wider">DOCENTE ASESOR</span>
-          <span class="font-extrabold text-cyan-300">Prof. Javier Eduardo Jaramillo Atoche</span>
+          <span class="font-extrabold text-cyan-300">Dr. Javier Eduardo Jaramillo Atoche</span>
         </div>
         <div class="h-8 w-px bg-slate-700"></div>
         <div>

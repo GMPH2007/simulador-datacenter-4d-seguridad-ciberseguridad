@@ -113,7 +113,7 @@ def build_pro_case_study():
 
     metadata = [
         ("Estudiante:", "Gerson Misael Pintado Huaman"),
-        ("Docente Asesor:", "Prof. Javier Eduardo Jaramillo Atoche"),
+        ("Docente Asesor:", "Dr. Javier Eduardo Jaramillo Atoche"),
         ("Eje Temático:", "Articulación de Hard Skills (Técnicas) y Soft Skills (Humanas)"),
         ("Propósito:", "Diagnosticar cuellos de botella y diseñar soluciones aplicadas al entorno real")
     ]

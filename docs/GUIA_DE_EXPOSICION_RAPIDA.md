@@ -1,7 +1,7 @@
 # GUÍA DE EXPOSICIÓN RÁPIDA – SEGURIDAD EN DATA CENTER
 ## ESTRATEGIA PARA SACAR 20 EN LA PRESENTACIÓN ANTE EL PROFESOR
 
-* **Docente:** Javier Eduardo Jaramillo Atoche
+* **Docente:** Dr. Javier Eduardo Jaramillo Atoche
 * **Integrantes:** Gerson Misael Pintado, Manuel Danilo López, Mariana Juliet Clavijo, Pedro Miguel Aguilar, Dayron Antonio Urbina.
 * **Tiempo estimado de exposición:** 3 a 5 minutos.
 

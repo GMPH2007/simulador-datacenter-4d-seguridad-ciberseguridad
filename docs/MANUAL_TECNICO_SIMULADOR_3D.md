@@ -3,7 +3,7 @@
 
 * **Institución:** I.E.S.T.P. "Hermanos Cárcamo" - Paita, Piura
 * **Carrera:** Arquitectura de Plataformas y Servicios de Tecnologías de la Información
-* **Docente Asesor:** Prof. Javier Eduardo Jaramillo Atoche
+* **Docente Asesor:** Dr. Javier Eduardo Jaramillo Atoche
 * **Estudiantes (Grupo de 5):**
   1. Gerson Misael Pintado Huamán (Líder / Desarrollador)
   2. Manuel Danilo López Garay
@@ -87,7 +87,7 @@ Cada emergencia cuenta con una firma acústica y cromática diferenciada:
 ### 5. GUÍA PARA LA DEFENSA ANTE EL PROFESOR JARAMILLO
 
 1. **Apertura (30 seg):**
-   > *"Profesor Jaramillo, le presentamos el Simulador 4D de Data Center del IESTP Hermanos Cárcamo. Desarrollamos un gemelo digital interactivo con Three.js que integra los 5 bloques de seguridad que usted nos solicitó, junto con un motor de decisiones algorítmico y una Red Neuronal autónoma."*
+   > *"Doctor Jaramillo, le presentamos el Simulador 4D de Data Center del IESTP Hermanos Cárcamo. Desarrollamos un gemelo digital interactivo con Three.js que integra los 5 bloques de seguridad que usted nos solicitó, junto con un motor de decisiones algorítmico y una Red Neuronal autónoma."*
 
 2. **Demostración de Navegación y Cámaras (1 min):**
    * Presiona **`📹 CAM 02 [Pasillo]`** y muestra la niebla fría flotando a 19.8 °C.

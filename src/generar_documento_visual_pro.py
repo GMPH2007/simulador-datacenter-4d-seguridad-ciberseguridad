@@ -123,7 +123,7 @@ def build_pro_max_document():
     )
 
     meta_items = [
-        ("DOCENTE:", "Prof. Javier Eduardo Jaramillo Atoche"),
+        ("DOCENTE:", "Dr. Javier Eduardo Jaramillo Atoche"),
         ("INTEGRANTES:", integrantes_raw),
         ("SEDE Y AÑO:", "Paita, Piura – Ciclo Lectivo 2026")
     ]

@@ -197,7 +197,7 @@ def get_html():
             </span>
           </h1>
           <p class="text-[11px] text-slate-400">
-            Arquitectura de TI • <span class="text-cyan-300 font-medium">Mg. Javier Eduardo Jaramillo Atoche</span>
+            Arquitectura de TI • <span class="text-cyan-300 font-medium">Dr. Javier Eduardo Jaramillo Atoche</span>
           </p>
         </div>
       </div>
@@ -752,7 +752,7 @@ def get_html():
         I.E.S.T.P. "Hermanos Cárcamo" — Proyecto de Investigación en Arquitectura de Plataformas y Servicios de TI (Paita, 2026)
       </div>
       <div class="text-cyan-400">
-        Cumplimiento ANSI/TIA-942 Tier III & ISO/IEC 27001 • Mg. Javier Eduardo Jaramillo Atoche
+        Cumplimiento ANSI/TIA-942 Tier III & ISO/IEC 27001 • Dr. Javier Eduardo Jaramillo Atoche
       </div>
     </div>
   </footer>
@@ -2231,7 +2231,7 @@ def get_html():
       playTactileClick();
       let text = "=== REGISTRO DE AUDITORÍA SYSLOG RFC 5424 — IESTP HERMANOS CÁRCAMO ===\\n";
       text += `Generado el: ${new Date().toISOString()}\\n`;
-      text += "Estudiante: Gerson Misael Pintado Huamán | Docente: Mg. Javier Eduardo Jaramillo Atoche\\n\\n";
+      text += "Estudiante: Gerson Misael Pintado Huamán | Docente: Dr. Javier Eduardo Jaramillo Atoche\\n\\n";
       syslogHistory.forEach(e => {
         text += `[${e.time}] [${e.severity}] ${e.msg}\\n`;
       });

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Generador Maestro del Simulador 4D / 3D de Data Center Profesional AAA
-Cumplimiento estricto con los requerimientos del docente Mg. Javier Eduardo Jaramillo Atoche:
+Cumplimiento estricto con los requerimientos del docente Dr. Javier Eduardo Jaramillo Atoche:
 - Clasificación estricta: Acceso Físico vs Acceso Lógico
 - Estado de protección: Protegido vs Vulnerabilidad Mitigada
 - Diseño 3D fotorrealista hiperdetallado (sin cajas vacías, sin esferas flotantes, sin vacío negro)

@@ -14,7 +14,7 @@
 * **Institución:** Instituto de Educación Superior Tecnológico Público **"Hermanos Cárcamo"** (Paita, Piura, Perú).
 * **Programa de Estudios:** Arquitectura de Plataformas y Servicios de Tecnologías de la Información.
 * **Unidad Didáctica:** Seguridad Informática y Auditoría de TI.
-* **Docente Especialista:** **Mg. Javier Eduardo Jaramillo Atoche**.
+* **Docente Especialista:** **Dr. Javier Eduardo Jaramillo Atoche** *(Doctor en Tecnologías de la Información y Comunicaciones - UNP)*.
 * **Equipo de Investigación y Desarrollo:**
   1. **Gerson Misael Pintado Huamán** *(Líder de Proyecto / Modelado 3D & Arquitectura)*
   2. **Manuel Danilo López Garay** *(Análisis de Redes y Seguridad Lógica)*
@@ -38,7 +38,7 @@
 
 ## 📋 Matriz de Simulación de Incidentes (Rúbrica del Docente)
 
-El docente **Mg. Javier Eduardo Jaramillo Atoche** estableció como requisito fundamental la simulación interactiva de cada vector de amenaza, clasificando con exactitud si corresponde a **Acceso Físico o Acceso Lógico**, y reportando si el centro de datos queda en estado **Protegido o con Vulnerabilidad Mitigada**.
+El docente **Dr. Javier Eduardo Jaramillo Atoche** *(Doctor en Tecnologías de la Información y Comunicaciones - UNP)* estableció como requisito fundamental la simulación interactiva de cada vector de amenaza, clasificando con exactitud si corresponde a **Acceso Físico o Acceso Lógico**, y reportando si el centro de datos queda en estado **Protegido o con Vulnerabilidad Mitigada**.
 
 | N° | Incidente Simulado | Clasificación Requerida | Estado de Protección | Contramedida Autónoma en el Simulador 4D |
 | :---: | :--- | :---: | :---: | :--- |

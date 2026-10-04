@@ -7,7 +7,7 @@
   - Mariana Juliet Clavijo Pinzón
   - Pedro Miguel Aguilar Flores
   - Dayron Antonio Urbina Zapata
-* **Docente:** Javier Eduardo Jaramillo Atoche
+* **Docente:** Dr. Javier Eduardo Jaramillo Atoche
 * **Tema:** Propuesta de Soluciones en Habilidades Duras y Blandas
 * **Empresa Analizada:** Distribuidora y Servicios Comerciales del Norte S.A.C.
 

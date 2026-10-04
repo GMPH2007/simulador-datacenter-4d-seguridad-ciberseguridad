@@ -119,7 +119,7 @@ def build_full_assignment():
     )
 
     caratula_data = [
-        ("DOCENTE:", "Prof. Javier Eduardo Jaramillo Atoche"),
+        ("DOCENTE:", "Dr. Javier Eduardo Jaramillo Atoche"),
         ("INTEGRANTES:", integrantes_txt),
         ("SEDE Y FECHA:", "Paita, Piura – Ciclo Lectivo 2026")
     ]

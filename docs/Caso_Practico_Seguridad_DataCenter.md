@@ -4,7 +4,7 @@
 
 ---
 
-* **DOCENTE:** Prof. Javier Eduardo Jaramillo Atoche
+* **DOCENTE:** Dr. Javier Eduardo Jaramillo Atoche
 * **INTEGRANTES:**
   - Gerson Misael Pintado Huamán
   - Manuel Danilo López Garay
