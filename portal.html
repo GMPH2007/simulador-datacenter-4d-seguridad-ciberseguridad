@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Maestro de Simuladores Tecnológicos | I.E.S.T.P. Hermanos Cárcamo</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;600;700;900&family=Rajdhani:wght@600;700;800;900&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      background-color: #020617;
+      color: #f8fafc;
+      font-family: 'Inter', system-ui, sans-serif;
+      overflow-x: hidden;
+    }
+
+    .font-mono-code { font-family: 'Fira Code', monospace; }
+    .font-tech { font-family: 'Rajdhani', sans-serif; }
+
+    /* Animated Cyber Background */
+    #bg-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.45;
+    }
+
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.78);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    }
+
+    .glass-panel-sub {
+      background: rgba(30, 41, 59, 0.6);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    /* Animated Neon Gradient Border */
+    @keyframes neonShift {
+      0% { filter: hue-rotate(0deg); }
+      100% { filter: hue-rotate(360deg); }
+    }
+
+    .card-neon {
+      position: relative;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .card-neon:hover {
+      transform: translateY(-6px) scale(1.01);
+    }
+
+    .neon-glow-cyan {
+      box-shadow: 0 0 40px rgba(6, 182, 212, 0.25), inset 0 0 20px rgba(6, 182, 212, 0.1);
+    }
+    .neon-glow-emerald {
+      box-shadow: 0 0 40px rgba(16, 185, 129, 0.25), inset 0 0 20px rgba(16, 185, 129, 0.1);
+    }
+
+    .glow-cyan { text-shadow: 0 0 10px rgba(6, 182, 212, 0.8), 0 0 22px rgba(6, 182, 212, 0.4); }
+    .glow-emerald { text-shadow: 0 0 10px rgba(16, 185, 129, 0.8), 0 0 22px rgba(16, 185, 129, 0.4); }
+    .glow-amber { text-shadow: 0 0 10px rgba(245, 158, 11, 0.8), 0 0 22px rgba(245, 158, 11, 0.4); }
+
+    /* Animated Equalizer Bars */
+    @keyframes eqBar1 { 0%, 100% { height: 4px; } 50% { height: 16px; } }
+    @keyframes eqBar2 { 0%, 100% { height: 14px; } 50% { height: 6px; } }
+    @keyframes eqBar3 { 0%, 100% { height: 8px; } 50% { height: 18px; } }
+    .eq-1 { animation: eqBar1 0.8s infinite ease-in-out; }
+    .eq-2 { animation: eqBar2 0.7s infinite ease-in-out; }
+    .eq-3 { animation: eqBar3 0.9s infinite ease-in-out; }
+
+    /* Modal Animation */
+    .modal-pop {
+      animation: modalPop 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes modalPop {
+      0% { transform: scale(0.92) translateY(20px); opacity: 0; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    /* Certificate print styles */
+    @media print {
+      body * { visibility: hidden; }
+      #certificate-modal, #certificate-modal * { visibility: visible; }
+      #certificate-modal {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        background: white !important;
+        color: black !important;
+        padding: 0;
+        margin: 0;
+        z-index: 999999;
+      }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen relative selection:bg-cyan-500 selection:text-black">
+
+  <!-- Interactive Constellation Canvas Background -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- Header -->
+  <header class="glass-panel border-b border-white/10 px-6 py-4 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
+      <div class="flex items-center gap-3.5">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-600/30 border border-cyan-500/40 flex items-center justify-center shadow-[0_0_25px_rgba(6,182,212,0.4)]">
+          <i class="fa-solid fa-graduation-cap text-cyan-400 text-xl"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-mono-code text-cyan-400 font-bold tracking-wider">I.E.S.T.P. HERMANOS CÁRCAMO · PAITA</span>
+            <span class="text-[9px] px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 font-mono-code border border-cyan-500/30">CAMPUS VIRTUAL</span>
+          </div>
+          <h1 class="text-lg md:text-xl font-black text-white tracking-wider font-tech flex items-center gap-2">
+            SISTEMAS DE TRANSPORTE DE INFORMACIÓN (STI) & CIBERSEGURIDAD
+          </h1>
+        </div>
+      </div>
+      
+      <div class="flex items-center gap-3 text-xs font-mono-code">
+        <!-- Live Peru Clock -->
+        <div class="hidden xl:flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-700/80 text-xs font-mono-code text-cyan-400">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+          <span id="peru-clock" class="font-bold text-white tracking-widest font-tech text-sm">--:--:--</span>
+          <span class="text-[10px] text-gray-400 border-l border-slate-700 pl-2">PAITA, PE (UTC-5)</span>
+        </div>
+
+        <!-- Presentation Slideshow Mode -->
+        <button onclick="openPresentationModal()" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 font-bold shadow-[0_0_20px_rgba(6,182,212,0.4)] transition flex items-center gap-2 transform hover:scale-105">
+          <i class="fa-solid fa-person-chalkboard text-slate-950 text-sm"></i>
+          <span>MODO EXPOSICIÓN</span>
+        </button>
+
+        <!-- Teacher Questions Defense Modal -->
+        <button onclick="openQuestionsModal()" class="px-3 py-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-amber-300 border border-amber-500/40 transition flex items-center gap-2">
+          <i class="fa-solid fa-circle-question text-amber-400"></i>
+          <span>PREGUNTAS PROFESOR</span>
+        </button>
+        <!-- Audio Ambient Button with Equalizer -->
+        <button onclick="toggleAmbientAudio()" id="ambient-btn" class="px-3.5 py-2 rounded-xl bg-slate-900/90 border border-slate-700 text-gray-300 hover:text-white transition flex items-center gap-2">
+          <div class="flex items-end gap-0.5 h-4">
+            <span class="w-1 bg-cyan-400 rounded-full eq-1"></span>
+            <span class="w-1 bg-emerald-400 rounded-full eq-2"></span>
+            <span class="w-1 bg-amber-400 rounded-full eq-3"></span>
+          </div>
+          <span id="ambient-btn-text">AUDIO AMBIENTE: ON</span>
+        </button>
+
+        <button onclick="openExamModal()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold shadow-[0_0_20px_rgba(245,158,11,0.35)] transition flex items-center gap-2">
+          <i class="fa-solid fa-award"></i>
+          <span>EXAMEN DE CERTIFICACIÓN</span>
+        </button>
+
+        <button onclick="openGuideModal()" class="px-3.5 py-2 rounded-xl bg-slate-800 text-gray-300 hover:text-white border border-slate-700 hover:border-slate-500 transition flex items-center gap-2">
+          <i class="fa-solid fa-book-bookmark text-cyan-400"></i>
+          <span>GUÍA LAB</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Content -->
+  <main class="flex-grow max-w-7xl mx-auto w-full p-6 lg:p-10 flex flex-col justify-center gap-10 relative z-10">
+    
+    <!-- Hero Banner -->
+    <div class="text-center max-w-4xl mx-auto space-y-4 pt-4">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-mono-code text-xs shadow-[0_0_15px_rgba(6,182,212,0.2)]">
+        <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+        <span>SUITE TECNOLÓGICA PROFESIONAL V2.0 · EVALUACIÓN ACADÉMICA</span>
+      </div>
+
+      <h2 class="text-3xl md:text-5xl lg:text-6xl font-black text-white font-tech tracking-wide leading-tight">
+        CENTRO DE OPERACIONES <br>
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-emerald-400 to-amber-300">
+          DATA CENTER 3D & CIBERDEFENSA SOC
+        </span>
+      </h2>
+
+      <p class="text-gray-300 text-sm md:text-base leading-relaxed max-w-3xl mx-auto">
+        Plataforma interactiva de alta fidelidad diseñada para el aprendizaje práctico de cableado estructurado de misión crítica (ANSI/TIA-942, TIA-568, Fluke DSX-8000) y operaciones de defensa contra ciberataques bajo el estándar internacional ISO/IEC 27001:2022.
+      </p>
+
+      <!-- Key Academic Badges Bar -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 max-w-3xl mx-auto pt-3">
+        <div class="glass-panel-sub p-3.5 rounded-2xl text-center border border-cyan-500/20 shadow-md">
+          <span class="text-[10px] text-gray-400 font-mono-code block">DISPONIBILIDAD TIER III</span>
+          <span class="text-base font-bold text-cyan-400 font-tech glow-cyan">99.982% UP</span>
+        </div>
+        <div class="glass-panel-sub p-3.5 rounded-2xl text-center border border-emerald-500/20 shadow-md">
+          <span class="text-[10px] text-gray-400 font-mono-code block">NORMA SGSI</span>
+          <span class="text-base font-bold text-emerald-400 font-tech glow-emerald">ISO 27001:2022</span>
+        </div>
+        <div class="glass-panel-sub p-3.5 rounded-2xl text-center border border-amber-500/20 shadow-md">
+          <span class="text-[10px] text-gray-400 font-mono-code block">INSTRUMENTACIÓN</span>
+          <span class="text-base font-bold text-amber-400 font-tech glow-amber">FLUKE DSX & OTDR</span>
+        </div>
+        <div class="glass-panel-sub p-3.5 rounded-2xl text-center border border-purple-500/20 shadow-md">
+          <span class="text-[10px] text-gray-400 font-mono-code block">CÁTEDRA STI</span>
+          <span class="text-base font-bold text-purple-300 font-tech">PROF. JARAMILLO</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cards Grid: 2 Grand Interactive Simulators -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto w-full">
+      
+      <!-- Module 1: Data Center 3D -->
+      <div class="glass-panel card-neon rounded-3xl p-8 border border-cyan-500/40 neon-glow-cyan flex flex-col justify-between group overflow-hidden">
+        <div class="absolute -right-16 -top-16 w-56 h-56 bg-cyan-500/15 rounded-full blur-3xl group-hover:bg-cyan-500/25 transition-all"></div>
+        
+        <div class="space-y-5 relative z-10">
+          <div class="flex justify-between items-center">
+            <div class="w-16 h-16 rounded-2xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center shadow-[0_0_25px_rgba(6,182,212,0.4)] group-hover:scale-105 transition-transform">
+              <i class="fa-solid fa-server text-3xl text-cyan-400"></i>
+            </div>
+            <div class="flex flex-col items-end gap-1 font-mono-code">
+              <span class="text-xs px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold">
+                ESTÁNDAR ANSI/TIA-942
+              </span>
+              <span class="text-[10px] text-cyan-400/80">REDUNDANCIA 2N + TIER III</span>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="text-2xl lg:text-3xl font-bold text-white font-tech group-hover:text-cyan-300 transition-colors">
+              Simulador 3D Data Center II Ultra Max
+            </h3>
+            <p class="text-xs font-mono-code text-cyan-400 mt-1">SALA BLANCA 3D · FLUKE DSX-8000 · EXTINCIÓN GAS NFPA · CCTV 4-CAM</p>
+          </div>
+
+          <p class="text-gray-300 text-xs sm:text-sm leading-relaxed">
+            Laboratorio virtual 3D con Three.js: inspección física de Racks de telecomunicaciones con puertas abatibles, cableado de fibra óptica OM4 MPO, conmutación Spanning Tree en 42ms por corte de enlace, generador diésel 1500 kVA, certificador digital Fluke DSX-8000 y sistema de extinción por gas FM-200.
+          </p>
+
+          <!-- Interactive Highlights Badges -->
+          <div class="grid grid-cols-2 gap-2.5 font-mono-code text-[11px] text-gray-300">
+            <div class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-900/70 border border-cyan-500/20">
+              <i class="fa-solid fa-chart-line text-cyan-400"></i>
+              <span>Fluke DSX-8000 (NEXT / RL)</span>
+            </div>
+            <div class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-900/70 border border-cyan-500/20">
+              <i class="fa-solid fa-fire-extinguisher text-rose-400"></i>
+              <span>Extinción Gas NFPA 2001</span>
+            </div>
+            <div class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-900/70 border border-cyan-500/20">
+              <i class="fa-solid fa-video text-blue-400"></i>
+              <span>CCTV 4-Cam (IR & Térmico)</span>
+            </div>
+            <div class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-900/70 border border-cyan-500/20">
+              <i class="fa-solid fa-bolt text-amber-400"></i>
+              <span>Generador Diésel 1500 kVA</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 pt-5 border-t border-white/10 flex flex-col sm:flex-row gap-3 relative z-10">
+          <a href="datacenter.html" class="flex-1 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-slate-950 font-black font-mono-code text-xs text-center flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(6,182,212,0.5)] transition-all">
+            <i class="fa-solid fa-play"></i>
+            <span>ENTRAR A LA SALA 3D DATA CENTER</span>
+          </a>
+          <a href="datacenter.html#fluke" class="py-3 px-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-cyan-300 font-mono-code text-xs border border-cyan-500/30 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-microchip"></i>
+            <span>PROBAR FLUKE DSX</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Module 2: ISO 27001 Cyber Defense -->
+      <div class="glass-panel card-neon rounded-3xl p-8 border border-emerald-500/40 neon-glow-emerald flex flex-col justify-between group overflow-hidden">
+        <div class="absolute -right-16 -top-16 w-56 h-56 bg-emerald-500/15 rounded-full blur-3xl group-hover:bg-emerald-500/25 transition-all"></div>
+        
+        <div class="space-y-5 relative z-10">
+          <div class="flex justify-between items-center">
+            <div class="w-16 h-16 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center shadow-[0_0_25px_rgba(16,185,129,0.4)] group-hover:scale-105 transition-transform">
+              <i class="fa-solid fa-shield-halved text-3xl text-emerald-400"></i>
+            </div>
+            <div class="flex flex-col items-end gap-1 font-mono-code">
+              <span class="text-xs px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold">
+                ESTÁNDAR ISO/IEC 27001:2022
+              </span>
+              <span class="text-[10px] text-emerald-400/80">OPERACIONES SOC & TRÍADA CID</span>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="text-2xl lg:text-3xl font-bold text-white font-tech group-hover:text-emerald-300 transition-colors">
+              Centro de Ciberdefensa SOC Pro Max
+            </h3>
+            <p class="text-xs font-mono-code text-emerald-400 mt-1">WIRESHARK DPI EN VIVO · SANDBOX PHISHING · SHELL INTERACTIVA</p>
+          </div>
+
+          <p class="text-gray-300 text-xs sm:text-sm leading-relaxed">
+            Simulador militar de operaciones SOC: neutraliza ataques APT por fuerza bruta SSH, botnets DDoS multicapa y ransomware. Aplica controles del Anexo A (A.9, A.10, A.16, A.17), inspecciona tramas con Wireshark DPI con volcado hexadecimal, y ejecuta pentests de 4 fases.
+          </p>
+
+          <!-- Interactive Highlights Badges -->
+          <div class="grid grid-cols-2 gap-2.5 font-mono-code text-[11px] text-gray-300">
+            <div class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-900/70 border border-emerald-500/20">
+              <i class="fa-solid fa-network-wired text-emerald-400"></i>
+              <span>Wireshark DPI & Hex Dump</span>
+            </div>
+            <div class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-900/70 border border-emerald-500/20">
+              <i class="fa-solid fa-envelope-open-text text-amber-400"></i>
+              <span>Sandbox Phishing A.7.2.2</span>
+            </div>
+            <div class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-900/70 border border-emerald-500/20">
+              <i class="fa-solid fa-terminal text-cyan-400"></i>
+              <span>Shell del Analista SOC</span>
+            </div>
+            <div class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-900/70 border border-emerald-500/20">
+              <i class="fa-solid fa-file-contract text-purple-400"></i>
+              <span>Informe Oficial Auditoría</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 pt-5 border-t border-white/10 flex flex-col sm:flex-row gap-3 relative z-10">
+          <a href="ciberdefensa.html" class="flex-1 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-slate-950 font-black font-mono-code text-xs text-center flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(16,185,129,0.5)] transition-all">
+            <i class="fa-solid fa-play"></i>
+            <span>ENTRAR AL CENTRO SOC DE CIBERDEFENSA</span>
+          </a>
+          <a href="ciberdefensa.html#wireshark" class="py-3 px-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-emerald-300 font-mono-code text-xs border border-emerald-500/30 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-terminal"></i>
+            <span>CONSOLA SHELL</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Practical Laboratory Worksheets for Prof. Jaramillo's Course -->
+    <div class="glass-panel p-6 lg:p-8 rounded-3xl max-w-6xl mx-auto w-full border border-white/10 space-y-6">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-6 border-b border-white/10">
+        <div>
+          <span class="text-xs font-mono-code text-amber-400 font-bold block">PLAN DIDÁCTICO & LABORATORIOS EXPERIMENTALES</span>
+          <h3 class="text-xl md:text-2xl font-bold text-white font-tech">GUÍA PRÁCTICA DEL ESTUDIANTE · PROF. JARAMILLO</h3>
+        </div>
+        <button onclick="openExamModal()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-mono-code text-xs font-bold shadow-md transition flex items-center gap-2">
+          <i class="fa-solid fa-award"></i>
+          <span>Rendir Examen de Validación</span>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="glass-panel-sub p-5 rounded-2xl border border-cyan-500/20 space-y-3">
+          <div class="flex items-center gap-2 text-cyan-400 font-bold text-sm font-tech">
+            <span class="w-6 h-6 rounded-full bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-xs">1</span>
+            <span>LAB 1: CABLEADO & RESPALDO TIER III</span>
+          </div>
+          <p class="text-xs text-gray-300 leading-relaxed">
+            Ingresa a <b>datacenter.html</b>, simula un corte de fibra en la Ruta A. Observa la alarma de Spanning Tree, el tiempo de conmutación de respaldo y valida la prueba de atenuación OTDR en el panel de 24 puertos.
+          </p>
+          <a href="datacenter.html" class="text-xs font-mono-code text-cyan-400 hover:underline flex items-center gap-1 font-bold">
+            <span>Iniciar Laboratorio 1</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
+          </a>
+        </div>
+
+        <div class="glass-panel-sub p-5 rounded-2xl border border-emerald-500/20 space-y-3">
+          <div class="flex items-center gap-2 text-emerald-400 font-bold text-sm font-tech">
+            <span class="w-6 h-6 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-xs">2</span>
+            <span>LAB 2: MITIGACIÓN DE AMENAZAS CID</span>
+          </div>
+          <p class="text-xs text-gray-300 leading-relaxed">
+            En <b>ciberdefensa.html</b>, analiza el impacto de la botnet DDoS y el Ransomware. Activa sucesivamente los controles A.9, A.10, A.16 y A.17 para recuperar la Tríada CID y alcanzar el 100% de cumplimiento ISO 27001.
+          </p>
+          <a href="ciberdefensa.html" class="text-xs font-mono-code text-emerald-400 hover:underline flex items-center gap-1 font-bold">
+            <span>Iniciar Laboratorio 2</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
+          </a>
+        </div>
+
+        <div class="glass-panel-sub p-5 rounded-2xl border border-amber-500/20 space-y-3">
+          <div class="flex items-center gap-2 text-amber-400 font-bold text-sm font-tech">
+            <span class="w-6 h-6 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-xs">3</span>
+            <span>LAB 3: AUDITORÍA & DIPLOMA DIGITAL</span>
+          </div>
+          <p class="text-xs text-gray-300 leading-relaxed">
+            Inspecciona la Matriz de Riesgos ISO 27005 (5x5), ejecuta el Pentest automatizado de 4 fases y genera el Certificado Oficial Imprimible con tu nombre como evidencia de evaluación práctica.
+          </p>
+          <button onclick="openExamModal()" class="text-xs font-mono-code text-amber-400 hover:underline flex items-center gap-1 font-bold">
+            <span>Iniciar Evaluación</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Institutional Footer -->
+    <footer class="glass-panel p-5 rounded-2xl text-center text-xs font-mono-code text-gray-400 border border-white/5 flex flex-col sm:flex-row justify-between items-center gap-3">
+      <div>
+        <span>Plataforma Educativa para el curso de Redes y Telecomunicaciones · <b>I.E.S.T.P. Hermanos Cárcamo</b></span>
+      </div>
+      <div class="flex items-center gap-3 text-gray-300">
+        <span>Docente Titular: <b class="text-cyan-400">Prof. Jaramillo</b></span>
+        <span>•</span>
+        <span>Paita, Piura - Perú · Ciclo 2026</span>
+      </div>
+    </footer>
+
+  </main>
+
+  
+  <!-- ==================== MODO EXPOSICIÓN ACADÉMICA (DIAPOSITIVAS INTERACTIVAS) ==================== -->
+  <div id="presentation-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl flex flex-col justify-between p-4 md:p-6 hidden">
+    
+    <!-- Presentation Top Controls Bar -->
+    <div class="glass-panel px-6 py-3 rounded-2xl flex flex-wrap justify-between items-center gap-4 border border-cyan-500/30 shrink-0">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400">
+          <i class="fa-solid fa-display text-lg"></i>
+        </div>
+        <div>
+          <span class="text-[10px] font-mono-code text-cyan-400 font-bold tracking-widest block">I.E.S.T.P. HERMANOS CÁRCAMO · PAITA</span>
+          <h3 class="text-sm md:text-base font-bold text-white font-tech">DEFENSA TÉCNICA · STI & CIBERSEGURIDAD ISO 27001</h3>
+        </div>
+      </div>
+
+      <!-- Slide Navigation Pills -->
+      <div class="flex items-center gap-1.5 bg-slate-950/80 p-1.5 rounded-xl border border-white/10 font-mono-code text-xs">
+        <button onclick="goToSlide(1)" id="slide-pill-1" class="px-2.5 py-1 rounded-lg bg-cyan-500 text-slate-950 font-bold">1</button>
+        <button onclick="goToSlide(2)" id="slide-pill-2" class="px-2.5 py-1 rounded-lg text-gray-400 hover:text-white">2</button>
+        <button onclick="goToSlide(3)" id="slide-pill-3" class="px-2.5 py-1 rounded-lg text-gray-400 hover:text-white">3</button>
+        <button onclick="goToSlide(4)" id="slide-pill-4" class="px-2.5 py-1 rounded-lg text-gray-400 hover:text-white">4</button>
+        <button onclick="goToSlide(5)" id="slide-pill-5" class="px-2.5 py-1 rounded-lg text-gray-400 hover:text-white">5</button>
+        <button onclick="goToSlide(6)" id="slide-pill-6" class="px-2.5 py-1 rounded-lg text-gray-400 hover:text-white">6</button>
+      </div>
+
+      <div class="flex items-center gap-2 font-mono-code text-xs">
+        <span id="slide-counter" class="text-cyan-400 px-3 py-1.5 bg-slate-900 rounded-lg border border-slate-700">SLIDE 1 / 6</span>
+        <button onclick="prevSlide()" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white border border-slate-700" title="Anterior (Flecha Izquierda)">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button onclick="nextSlide()" class="p-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white border border-cyan-400" title="Siguiente (Flecha Derecha / Espacio)">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+        <button onclick="toggleFullscreenPresentation()" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-gray-300" title="Pantalla Completa">
+          <i id="fs-icon" class="fa-solid fa-expand"></i>
+        </button>
+        <button onclick="closePresentationModal()" class="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold" title="Cerrar (Esc)">
+          <i class="fa-solid fa-xmark mr-1"></i> SALIR
+        </button>
+      </div>
+    </div>
+
+    <!-- Presentation Slide Body -->
+    <div class="flex-grow my-4 relative flex items-center justify-center overflow-y-auto">
+      
+      <!-- Slide 1: Portada y Resumen -->
+      <div id="slide-1" class="presentation-slide w-full max-w-5xl glass-panel p-8 md:p-12 rounded-3xl border border-cyan-500/40 space-y-6 text-center">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-mono-code">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+          PROYECTO FINAL DE APLICACIÓN PRÁCTICA PROFESIONAL · CICLO 2026
+        </div>
+        
+        <h1 class="text-3xl md:text-5xl font-black text-white font-tech leading-tight">
+          DISEÑO E IMPLEMENTACIÓN DE DATA CENTER TIER III Y SISTEMA DE CIBERDEFENSA SOC ISO/IEC 27001:2022
+        </h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-left font-mono-code text-xs pt-4">
+          <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-700/80">
+            <span class="text-gray-400 block text-[10px] uppercase">INSTITUCIÓN EDUCATIVA</span>
+            <span class="text-cyan-400 font-bold text-sm block mt-1">I.E.S.T.P. Hermanos Cárcamo</span>
+            <span class="text-gray-400 text-[11px]">Paita - Piura, Perú</span>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-700/80">
+            <span class="text-gray-400 block text-[10px] uppercase">DOCENTE A CARGO</span>
+            <span class="text-emerald-400 font-bold text-sm block mt-1">Prof. Jaramillo</span>
+            <span class="text-gray-400 text-[11px]">Sistemas de Transporte de Información</span>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-700/80">
+            <span class="text-gray-400 block text-[10px] uppercase">NORMATIVAS VINCULADAS</span>
+            <span class="text-amber-400 font-bold text-sm block mt-1">ANSI/TIA-942 · ISO 27001</span>
+            <span class="text-gray-400 text-[11px]">TIA-568.2-D · NFPA 2001</span>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-cyan-950/40 border border-cyan-500/30 text-left text-xs text-gray-300 leading-relaxed font-mono-code">
+          <b class="text-cyan-300">Resumen Ejecutivo:</b> Esta plataforma integra la infraestructura física crítica de un centro de datos corporativo con mantenimiento concurrente (Tier III, disponibilidad 99.982%) y un Centro de Operaciones de Seguridad (SOC) defensivo con mitigación en tiempo real para 6 vectores de ataque cibernético.
+        </div>
+
+        <div class="flex justify-center gap-3 pt-2">
+          <button onclick="nextSlide()" class="px-6 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold font-mono-code text-xs flex items-center gap-2">
+            <span>INICIAR PRESENTACIÓN</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Slide 2: Arquitectura Data Center TIA-942 -->
+      <div id="slide-2" class="presentation-slide w-full max-w-5xl glass-panel p-8 md:p-10 rounded-3xl border border-cyan-500/40 space-y-6 hidden">
+        <div class="flex justify-between items-center border-b border-white/10 pb-3">
+          <div>
+            <span class="text-xs font-mono-code text-cyan-400 font-bold tracking-wider">CAPÍTULO 1 · INFRAESTRUCTURA FÍSICA</span>
+            <h2 class="text-2xl font-black text-white font-tech">ARQUITECTURA DE SALA BLANCA SEGÚN ANSI/TIA-942 TIER III</h2>
+          </div>
+          <span class="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 font-mono-code text-xs font-bold border border-cyan-500/30">99.982% UPTIME</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs font-mono-code">
+          <div class="space-y-4">
+            <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-700/80 space-y-2">
+              <h4 class="font-bold text-cyan-400 flex items-center gap-2 text-sm">
+                <i class="fa-solid fa-server"></i> Topología de Racks 42U
+              </h4>
+              <ul class="space-y-1.5 text-gray-300 list-disc list-inside">
+                <li><b class="text-white">Rack A (Core Network):</b> ODF de fibra óptica OM4, switches Nexus/Catalyst redundantes, canalización superior TIA-569.</li>
+                <li><b class="text-white">Rack B (Distribución & Patch):</b> Patch Panels 24P Cat 6A T568B, organizadores horizontales y verticales.</li>
+                <li><b class="text-white">Rack C (Cómputo & Blades):</b> Chasis Blade modular con fuentes de poder hot-swap y extracción en caliente.</li>
+              </ul>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-700/80 space-y-2">
+              <h4 class="font-bold text-emerald-400 flex items-center gap-2 text-sm">
+                <i class="fa-solid fa-snowflake"></i> Climatización ASHRAE TC 9.9
+              </h4>
+              <p class="text-gray-300 leading-relaxed">
+                Confinamiento de <b class="text-white">Pasillo Frío (18°C - 22°C)</b> y extracción de calor en <b class="text-white">Pasillo Caliente (30°C - 35°C)</b> para maximizar eficiencia PUE &lt; 1.35.
+              </p>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-700/80 space-y-2">
+              <h4 class="font-bold text-amber-400 flex items-center gap-2 text-sm">
+                <i class="fa-solid fa-bolt"></i> Respaldo Energético 2N (Concurrente)
+              </h4>
+              <p class="text-gray-300 leading-relaxed">
+                Sistema ininterrumpido de energía con doble barra (UPS A + UPS B) soportado por <b class="text-white">Grupo Electrógeno Diésel de 1500 kVA</b> con arranque y transferencia automática ATS en menos de 10 segundos.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-700/80 space-y-2">
+              <h4 class="font-bold text-purple-400 flex items-center gap-2 text-sm">
+                <i class="fa-solid fa-network-wired"></i> Redundancia de Enlace STP
+              </h4>
+              <p class="text-gray-300 leading-relaxed">
+                Ruta A Principal de Fibra OM4 (100 Gbps) respaldada por Ruta B Redundante. Conmutación Spanning Tree en <b class="text-white">&lt; 50 ms</b> ante cualquier corte físico sin pérdida de paquetes.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 3: Certificación TIA-568 y Fluke DSX-8000 -->
+      <div id="slide-3" class="presentation-slide w-full max-w-5xl glass-panel p-8 md:p-10 rounded-3xl border border-cyan-500/40 space-y-6 hidden">
+        <div class="flex justify-between items-center border-b border-white/10 pb-3">
+          <div>
+            <span class="text-xs font-mono-code text-amber-400 font-bold tracking-wider">CAPÍTULO 2 · CABLEADO ESTRUCTURADO</span>
+            <h2 class="text-2xl font-black text-white font-tech">CERTIFICACIÓN PERMANENT LINK CON FLUKE DSX-8000</h2>
+          </div>
+          <span class="px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 font-mono-code text-xs font-bold border border-amber-500/30">TIA-568.2-D CAT 6A</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono-code">
+          <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-700/80 space-y-2">
+            <span class="text-[10px] text-cyan-400 uppercase font-bold">PARÁMETRO 1</span>
+            <h4 class="text-white font-bold text-sm">NEXT (Near-End Crosstalk)</h4>
+            <p class="text-gray-300 text-[11px] leading-relaxed">
+              Mide la interferencia electromagnética que se acopla entre pares trenzados en el extremo transmisor. Margen mínimo exigido: <b class="text-emerald-400">&gt; 5.2 dB</b>.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-700/80 space-y-2">
+            <span class="text-[10px] text-cyan-400 uppercase font-bold">PARÁMETRO 2</span>
+            <h4 class="text-white font-bold text-sm">Pérdida de Retorno (RL)</h4>
+            <p class="text-gray-300 text-[11px] leading-relaxed">
+              Reflejo de señal causado por variaciones en la impedancia característica de 100 &Omega;. Margen medido: <b class="text-emerald-400">&gt; 4.8 dB PASS</b>.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-700/80 space-y-2">
+            <span class="text-[10px] text-cyan-400 uppercase font-bold">PARÁMETRO 3</span>
+            <h4 class="text-white font-bold text-sm">Pérdida de Inserción (IL)</h4>
+            <p class="text-gray-300 text-[11px] leading-relaxed">
+              Atenuación total de la señal a lo largo de los 32 metros de enlace horizontal Cat 6A. Límite de 38.4 dB a 500 MHz.
+            </p>
+          </div>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-slate-950/80 border border-cyan-500/30 space-y-3 font-mono-code text-xs">
+          <h4 class="font-bold text-cyan-400 flex items-center gap-2">
+            <i class="fa-solid fa-diagram-project"></i> Asignación de Pines T568B (Pinout Oficial)
+          </h4>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-center text-[11px]">
+            <div class="p-2 rounded-xl bg-orange-950/40 border border-orange-500/40 text-orange-300">Pin 1: Blanco/Naranja</div>
+            <div class="p-2 rounded-xl bg-orange-950/40 border border-orange-500/40 text-orange-300">Pin 2: Naranja</div>
+            <div class="p-2 rounded-xl bg-emerald-950/40 border border-emerald-500/40 text-emerald-300">Pin 3: Blanco/Verde</div>
+            <div class="p-2 rounded-xl bg-blue-950/40 border border-blue-500/40 text-blue-300">Pin 4: Azul</div>
+            <div class="p-2 rounded-xl bg-blue-950/40 border border-blue-500/40 text-blue-300">Pin 5: Blanco/Azul</div>
+            <div class="p-2 rounded-xl bg-emerald-950/40 border border-emerald-500/40 text-emerald-300">Pin 6: Verde</div>
+            <div class="p-2 rounded-xl bg-amber-950/40 border border-amber-800/40 text-amber-200">Pin 7: Blanco/Marrón</div>
+            <div class="p-2 rounded-xl bg-amber-950/40 border border-amber-800/40 text-amber-200">Pin 8: Marrón</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 4: Seguridad Física, NFPA 2001 y CCTV -->
+      <div id="slide-4" class="presentation-slide w-full max-w-5xl glass-panel p-8 md:p-10 rounded-3xl border border-cyan-500/40 space-y-6 hidden">
+        <div class="flex justify-between items-center border-b border-white/10 pb-3">
+          <div>
+            <span class="text-xs font-mono-code text-rose-400 font-bold tracking-wider">CAPÍTULO 3 · PROTECCIÓN DE INFRAESTRUCTURA</span>
+            <h2 class="text-2xl font-black text-white font-tech">SEGURIDAD AMBIENTAL, EXTINCIÓN NFPA 2001 & CCTV</h2>
+          </div>
+          <span class="px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 font-mono-code text-xs font-bold border border-rose-500/30">NFPA 2001</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs font-mono-code">
+          <div class="p-5 rounded-2xl bg-rose-950/30 border border-rose-500/40 space-y-3">
+            <h4 class="font-bold text-rose-400 flex items-center gap-2 text-sm">
+              <i class="fa-solid fa-fire-extinguisher"></i> Extinción por Agente Limpio FM-200 / Novec
+            </h4>
+            <p class="text-gray-300 leading-relaxed">
+              En salas blancas de servidores está <b class="text-rose-300">estrictamente prohibido el uso de agua</b> (rociadores convencionales) debido a que causan cortocircuitos irreversibles en equipos energizados.
+            </p>
+            <ul class="space-y-1.5 text-gray-300 list-disc list-inside">
+              <li>No conduce electricidad ni deja residuos químicos sobre los circuitos.</li>
+              <li>Tiempo de pre-descarga de <b class="text-white">10 segundos</b> con alarma sonora y estroboscópica para evacuación de operadores.</li>
+              <li>Sofoca el conato de incendio por absorción térmica a nivel molecular.</li>
+            </ul>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-blue-950/30 border border-blue-500/40 space-y-3">
+            <h4 class="font-bold text-cyan-400 flex items-center gap-2 text-sm">
+              <i class="fa-solid fa-video"></i> Circuito Cerrado CCTV Multi-Espectro
+            </h4>
+            <p class="text-gray-300 leading-relaxed">
+              Monitoreo continuo de 4 canales en tiempo real para detección perimetral y termográfica:
+            </p>
+            <ul class="space-y-1.5 text-gray-300 list-disc list-inside">
+              <li><b class="text-white">Modo RGB:</b> Vigilancia diurna de pasillos y acceso biométrico.</li>
+              <li><b class="text-white">Modo IR Infrarrojo:</b> Visión nocturna 0 lux ante apagones de iluminación.</li>
+              <li><b class="text-white">Modo Térmico FLIR:</b> Detección temprana de sobrecalentamiento en fuentes de alimentación y switches antes de una falla crítica.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 5: Ciberdefensa SOC ISO 27001 -->
+      <div id="slide-5" class="presentation-slide w-full max-w-5xl glass-panel p-8 md:p-10 rounded-3xl border border-cyan-500/40 space-y-6 hidden">
+        <div class="flex justify-between items-center border-b border-white/10 pb-3">
+          <div>
+            <span class="text-xs font-mono-code text-emerald-400 font-bold tracking-wider">CAPÍTULO 4 · CIBERSEGURIDAD DEFENSIVA</span>
+            <h2 class="text-2xl font-black text-white font-tech">CENTRO DE OPERACIONES SOC & CONTROLES ISO/IEC 27001:2022</h2>
+          </div>
+          <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-mono-code text-xs font-bold border border-emerald-500/30">ISO/IEC 27001</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs font-mono-code">
+          <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-blue-500/40 space-y-1.5">
+            <span class="text-[10px] text-blue-400 font-bold">CONTROL A.9 / A.8.1</span>
+            <h4 class="text-white font-bold text-xs">Control de Acceso</h4>
+            <p class="text-gray-400 text-[11px]">Principio de mínimo privilegio, autenticación MFA y defensa perimetral Zero Trust.</p>
+          </div>
+
+          <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-emerald-500/40 space-y-1.5">
+            <span class="text-[10px] text-emerald-400 font-bold">CONTROL A.10 / A.8.24</span>
+            <h4 class="text-white font-bold text-xs">Criptografía</h4>
+            <p class="text-gray-400 text-[11px]">Cifrado AES-256 en reposo y TLS 1.3 con intercambio Diffie-Hellman en tránsito.</p>
+          </div>
+
+          <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-purple-500/40 space-y-1.5">
+            <span class="text-[10px] text-purple-400 font-bold">CONTROL A.16 / A.8.16</span>
+            <h4 class="text-white font-bold text-xs">Monitoreo SIEM</h4>
+            <p class="text-gray-400 text-[11px]">Correlación de eventos, detección de anomalías y reglas Suricata/Snort.</p>
+          </div>
+
+          <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-amber-500/40 space-y-1.5">
+            <span class="text-[10px] text-amber-400 font-bold">CONTROL A.17 / A.8.14</span>
+            <h4 class="text-white font-bold text-xs">Continuidad</h4>
+            <p class="text-gray-400 text-[11px]">Respaldo inmutable 3-2-1 y conmutación automática a nodo secundario.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono-code">
+          <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-700/80 space-y-2">
+            <h4 class="font-bold text-cyan-400 flex items-center gap-2">
+              <i class="fa-solid fa-magnifying-glass"></i> Inspección Profunda Wireshark DPI
+            </h4>
+            <p class="text-gray-300 text-[11px] leading-relaxed">
+              Decodificación en vivo de cabeceras Ethernet II, IPv4, TCP flags (SYN, ACK, RST) y volcado hexadecimal con detección de payloads maliciosos.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-700/80 space-y-2">
+            <h4 class="font-bold text-rose-400 flex items-center gap-2">
+              <i class="fa-solid fa-shield-virus"></i> Sandbox de Phishing (A.7.2.2)
+            </h4>
+            <p class="text-gray-300 text-[11px] leading-relaxed">
+              Validación de firmas SPF, DKIM, DMARC y detonación segura de adjuntos maliciosos con respuesta automatizada del CSIRT.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 6: Demostración en Vivo y Lanzador -->
+      <div id="slide-6" class="presentation-slide w-full max-w-5xl glass-panel p-8 md:p-12 rounded-3xl border border-cyan-500/40 space-y-8 text-center hidden">
+        <div>
+          <span class="text-xs font-mono-code text-cyan-400 font-bold tracking-widest block">DEMOSTRACIÓN INTERACTIVA EN TIEMPO REAL</span>
+          <h2 class="text-3xl md:text-4xl font-black text-white font-tech mt-1">LANZADORES DE SIMULACIÓN PARA EL PROFESOR</h2>
+          <p class="text-gray-300 text-xs md:text-sm font-mono-code mt-2 max-w-2xl mx-auto">
+            Haga clic en cualquiera de los entornos para iniciar la defensa práctica interactiva:
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+          <a href="datacenter.html" target="_blank" class="glass-panel-sub p-6 rounded-3xl border border-cyan-500/40 hover:border-cyan-400 hover:shadow-[0_0_35px_rgba(6,182,212,0.3)] transition transform hover:-translate-y-1 flex flex-col justify-between group">
+            <div class="space-y-3">
+              <div class="w-12 h-12 rounded-2xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                <i class="fa-solid fa-cubes"></i>
+              </div>
+              <h3 class="text-xl font-black text-white font-tech group-hover:text-cyan-400 transition">SIMULADOR 3D DATA CENTER II</h3>
+              <p class="text-gray-400 text-xs font-mono-code leading-relaxed">
+                Recorrido 3D, Fluke DSX-8000, CCTV 4-Canales PiP, extinción de gas NFPA 2001, corte de fibra y conmutación STP.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/10 flex justify-between items-center text-xs font-mono-code text-cyan-400 font-bold">
+              <span>ABRIR EN NUEVA PESTAÑA</span>
+              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            </div>
+          </a>
+
+          <a href="ciberdefensa.html" target="_blank" class="glass-panel-sub p-6 rounded-3xl border border-emerald-500/40 hover:border-emerald-400 hover:shadow-[0_0_35px_rgba(16,185,129,0.3)] transition transform hover:-translate-y-1 flex flex-col justify-between group">
+            <div class="space-y-3">
+              <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                <i class="fa-solid fa-shield-halved"></i>
+              </div>
+              <h3 class="text-xl font-black text-white font-tech group-hover:text-emerald-400 transition">CENTRO DEFENSIVO SOC ISO 27001</h3>
+              <p class="text-gray-400 text-xs font-mono-code leading-relaxed">
+                Wireshark DPI en vivo, Sandbox de Phishing, Matriz de Riesgos ISO 27005, terminal shell analista y escudo holográfico.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/10 flex justify-between items-center text-xs font-mono-code text-emerald-400 font-bold">
+              <span>ABRIR EN NUEVA PESTAÑA</span>
+              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            </div>
+          </a>
+        </div>
+
+        <div class="flex flex-wrap justify-center items-center gap-4 pt-2">
+          <button onclick="goToSlide(1)" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-gray-300 font-mono-code text-xs">
+            <i class="fa-solid fa-rotate-left mr-1.5"></i> Volver a la Portada
+          </button>
+          <button onclick="openExamModal(); closePresentationModal();" class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold font-mono-code text-xs">
+            <i class="fa-solid fa-award mr-1.5"></i> Rendir Examen y Generar Diploma
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Presentation Bottom Info Bar -->
+    <div class="px-6 py-2 rounded-xl bg-slate-950/80 border border-white/10 flex justify-between items-center font-mono-code text-[11px] text-gray-400 shrink-0">
+      <div class="flex items-center gap-3">
+        <span class="text-cyan-400 font-bold"><i class="fa-solid fa-keyboard mr-1"></i> Atajos:</span>
+        <span>&larr; &rarr; / Barra Espaciadora: Navegar</span>
+        <span>· Esc: Salir</span>
+      </div>
+      <div class="flex items-center gap-2 text-gray-400">
+        <span>SISTEMAS DE TRANSPORTE DE INFORMACIÓN · I.E.S.T.P. HERMANOS CÁRCAMO</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== BALOTARIO DE PREGUNTAS DEL PROFESOR ==================== -->
+  <div id="questions-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="glass-panel border-2 border-amber-500/50 rounded-3xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-[0_0_60px_rgba(245,158,11,0.3)] overflow-hidden modal-pop">
+      
+      <div class="p-6 border-b border-white/10 flex justify-between items-center bg-slate-900/80">
+        <div class="flex items-center gap-3.5">
+          <div class="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 text-2xl">
+            <i class="fa-solid fa-graduation-cap"></i>
+          </div>
+          <div>
+            <span class="text-xs font-mono-code text-amber-400 font-bold tracking-widest block">GUÍA DE SUSTENTACIÓN ORAL</span>
+            <h3 class="text-xl font-black text-white font-tech">BALOTARIO TÉCNICO: PREGUNTAS TÍPICAS DEL PROFESOR</h3>
+          </div>
+        </div>
+        <button onclick="closeQuestionsModal()" class="w-9 h-9 rounded-xl bg-slate-800 text-gray-400 hover:text-white flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="p-6 overflow-y-auto space-y-4 font-mono-code text-xs">
+        
+        <!-- Q1 -->
+        <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-700/80 space-y-2">
+          <div class="flex items-center gap-2 text-amber-400 font-bold text-sm">
+            <span class="w-6 h-6 rounded-full bg-amber-500/20 flex items-center justify-center text-xs">1</span>
+            <span>¿Por qué se clasifica este Data Center como Tier III según ANSI/TIA-942?</span>
+          </div>
+          <p class="text-gray-300 text-xs leading-relaxed pl-8">
+            <b class="text-cyan-300">Respuesta:</b> La norma TIA-942 define Tier III como infraestructura con <b class="text-white">Mantenimiento Concurrente</b>. Significa que cualquier componente de distribución eléctrica (UPS, PDU) o climatización puede ser desconectado y reparado sin detener las operaciones de TI, garantizando un uptime de <b class="text-white">99.982%</b> (máximo 1.6 horas de caída anual). Requiere rutas activas y redundantes simultáneas.
+          </p>
+        </div>
+
+        <!-- Q2 -->
+        <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-700/80 space-y-2">
+          <div class="flex items-center gap-2 text-amber-400 font-bold text-sm">
+            <span class="w-6 h-6 rounded-full bg-amber-500/20 flex items-center justify-center text-xs">2</span>
+            <span>¿Cuál es la diferencia entre diafonía NEXT y FEXT en la prueba Fluke?</span>
+          </div>
+          <p class="text-gray-300 text-xs leading-relaxed pl-8">
+            <b class="text-cyan-300">Respuesta:</b> <b class="text-white">NEXT (Near-End Crosstalk)</b> mide la interferencia inducida en los pares vecinos en el mismo extremo donde se inyecta la señal. <b class="text-white">FEXT (Far-End Crosstalk)</b> mide el acoplamiento en el extremo remoto del cable. NEXT es el parámetro más crítico porque la señal local es más potente y el ruido inducido puede enmascarar los datos recibidos.
+          </p>
+        </div>
+
+        <!-- Q3 -->
+        <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-700/80 space-y-2">
+          <div class="flex items-center gap-2 text-amber-400 font-bold text-sm">
+            <span class="w-6 h-6 rounded-full bg-amber-500/20 flex items-center justify-center text-xs">3</span>
+            <span>¿Por qué la norma NFPA 2001 exige gas FM-200 / Novec y prohíbe agua?</span>
+          </div>
+          <p class="text-gray-300 text-xs leading-relaxed pl-8">
+            <b class="text-cyan-300">Respuesta:</b> Los sistemas de rociadores con agua causan cortocircuitos catastróficos y destrucción irreversible de componentes electrónicos energizados. Los agentes limpios según <b class="text-white">NFPA 2001</b> son gases dieléctricos que no conducen la electricidad, no dejan residuos corrosivos, absorben el calor de la llama por enfriamiento térmico y permiten evacuar de forma segura a los operadores en los 10s de alarma.
+          </p>
+        </div>
+
+        <!-- Q4 -->
+        <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-700/80 space-y-2">
+          <div class="flex items-center gap-2 text-amber-400 font-bold text-sm">
+            <span class="w-6 h-6 rounded-full bg-amber-500/20 flex items-center justify-center text-xs">4</span>
+            <span>¿Cuál es el cambio estructural clave de la norma ISO/IEC 27001 versión 2022?</span>
+          </div>
+          <p class="text-gray-300 text-xs leading-relaxed pl-8">
+            <b class="text-cyan-300">Respuesta:</b> En ISO/IEC 27001:2022, el Anexo A redujo los controles de 114 a <b class="text-white">93 controles</b> agrupados en solo <b class="text-white">4 temas principales</b>: Organizacionales (37), Personas (8), Físicos (14) y Tecnológicos (34). Además, incorporó 11 nuevos controles críticos como Inteligencia de Amenazas (A.5.7), Seguridad en la Nube (A.8.23) y Prevención de Fuga de Datos (A.8.12).
+          </p>
+        </div>
+
+        <!-- Q5 -->
+        <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-700/80 space-y-2">
+          <div class="flex items-center gap-2 text-amber-400 font-bold text-sm">
+            <span class="w-6 h-6 rounded-full bg-amber-500/20 flex items-center justify-center text-xs">5</span>
+            <span>¿Por qué se eligió el esquema de colores T568B para el cableado estructurado?</span>
+          </div>
+          <p class="text-gray-300 text-xs leading-relaxed pl-8">
+            <b class="text-cyan-300">Respuesta:</b> Aunque tanto T568A como T568B son aprobados por ANSI/TIA-568.2-D, la norma exige consistencia absoluta en ambos extremos para evitar cables cruzados inadvertidos. El estándar <b class="text-white">T568B</b> es el más ampliamente implementado en instalaciones comerciales y corporativas de América Latina y garantiza compatibilidad con equipos activos Cisco y patch panels modulares.
+          </p>
+        </div>
+
+        <!-- Q6 -->
+        <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-700/80 space-y-2">
+          <div class="flex items-center gap-2 text-amber-400 font-bold text-sm">
+            <span class="w-6 h-6 rounded-full bg-amber-500/20 flex items-center justify-center text-xs">6</span>
+            <span>¿Cómo funciona la mitigación Spanning Tree (STP) en el simulador?</span>
+          </div>
+          <p class="text-gray-300 text-xs leading-relaxed pl-8">
+            <b class="text-cyan-300">Respuesta:</b> Ante un corte físico en la fibra principal (Ruta A), el protocolo Rapid Spanning Tree (802.1w) transfiere el puerto alternativo en estado 'Blocking' a estado 'Forwarding' en un tiempo de convergencia de <b class="text-white">42 milisegundos</b>, reconduciendo el tráfico por la Ruta B sin caída del servicio.
+          </p>
+        </div>
+
+      </div>
+
+      <div class="p-4 border-t border-white/10 bg-slate-900/90 flex justify-end">
+        <button onclick="closeQuestionsModal()" class="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold font-mono-code text-xs">
+          ENTENDIDO · CERRAR GUÍA
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== EXAM MODAL ==================== -->
+  <div id="exam-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="glass-panel border-2 border-amber-500/50 rounded-3xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-[0_0_60px_rgba(245,158,11,0.3)] overflow-hidden modal-pop">
+      
+      <!-- Modal Header -->
+      <div class="p-6 border-b border-white/10 flex justify-between items-center bg-slate-900/80">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 text-lg">
+            <i class="fa-solid fa-graduation-cap"></i>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-white font-tech">EXAMEN DE CERTIFICACIÓN ACADÉMICA</h3>
+            <p class="text-xs font-mono-code text-amber-400">I.E.S.T.P. HERMANOS CÁRCAMO · PROF. JARAMILLO</p>
+          </div>
+        </div>
+        <button onclick="closeExamModal()" class="text-gray-400 hover:text-white text-lg p-2">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Student Input & Instructions -->
+      <div class="p-6 overflow-y-auto space-y-6 flex-grow custom-scroll">
+        
+        <div class="glass-panel-sub p-4 rounded-2xl border border-white/10 space-y-3">
+          <label class="block text-xs font-mono-code text-gray-300 font-bold">NOMBRE COMPLETO DEL ESTUDIANTE:</label>
+          <div class="flex gap-3">
+            <input id="student-name-input" type="text" placeholder="Ej. Juan Pérez Cárcamo" class="flex-grow px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-700 focus:border-amber-400 text-white font-mono-code text-sm outline-none transition">
+            <button onclick="startQuiz()" id="start-quiz-btn" class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold font-mono-code text-xs transition flex items-center gap-2">
+              <span>INICIAR</span>
+              <i class="fa-solid fa-play"></i>
+            </button>
+          </div>
+          <p class="text-[11px] text-gray-400">
+            Responde 6 preguntas clave de infraestructura TIA-942 y ciberseguridad ISO 27001. Aprobación mínima: 80% para obtener tu Diploma Oficial Digital.
+          </p>
+        </div>
+
+        <!-- Questions Container -->
+        <div id="quiz-container" class="space-y-6 hidden">
+          <!-- Injected via JavaScript -->
+        </div>
+
+        <!-- Quiz Result & Certificate Button -->
+        <div id="quiz-result" class="hidden p-6 rounded-2xl text-center space-y-4">
+          <!-- Injected via JavaScript -->
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 border-t border-white/10 bg-slate-900/80 flex justify-between items-center text-xs font-mono-code text-gray-400">
+        <span>Evaluación reglamentaria de la unidad didáctica</span>
+        <button onclick="closeExamModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white">
+          Cerrar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== CERTIFICATE MODAL ==================== -->
+  <div id="certificate-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-lg flex items-center justify-center p-4 hidden">
+    <div class="relative bg-white text-slate-900 rounded-3xl max-w-4xl w-full p-8 md:p-12 border-8 border-double border-amber-600 shadow-[0_0_80px_rgba(245,158,11,0.5)] overflow-hidden modal-pop">
+      
+      <!-- Watermark / Background Ornament -->
+      <div class="absolute inset-0 opacity-5 pointer-events-none flex items-center justify-center">
+        <i class="fa-solid fa-shield-halved text-[380px] text-slate-900"></i>
+      </div>
+
+      <!-- Certificate Header -->
+      <div class="text-center space-y-2 relative z-10 border-b-2 border-amber-500/40 pb-6">
+        <div class="flex justify-center items-center gap-4 mb-2">
+          <i class="fa-solid fa-building-columns text-3xl text-amber-700"></i>
+          <div>
+            <h4 class="text-xs font-bold tracking-widest text-amber-800 uppercase">REPÚBLICA DEL PERÚ · MINISTERIO DE EDUCACIÓN</h4>
+            <h2 class="text-2xl md:text-3xl font-black tracking-wide text-slate-900 font-tech">I.E.S.T.P. HERMANOS CÁRCAMO - PAITA</h2>
+          </div>
+          <i class="fa-solid fa-award text-3xl text-amber-700"></i>
+        </div>
+        <p class="text-xs font-semibold text-slate-600 tracking-wider">PROGRAMA DE ESTUDIOS DE ARQUITECTURA DE PLATAFORMAS & TI</p>
+      </div>
+
+      <!-- Certificate Body -->
+      <div class="text-center my-8 space-y-4 relative z-10">
+        <p class="text-sm italic text-slate-600 font-serif">Otorga el presente</p>
+        <h1 class="text-3xl md:text-5xl font-black text-amber-900 font-serif tracking-wide">
+          CERTIFICADO DE EXCELENCIA
+        </h1>
+        <p class="text-sm text-slate-600 font-serif">A favor de:</p>
+        
+        <div class="border-b-2 border-slate-900 max-w-lg mx-auto py-2">
+          <span id="cert-student-name" class="text-2xl md:text-3xl font-bold text-slate-900 tracking-wide uppercase font-serif">
+            ESTUDIANTE DESTACADO
+          </span>
+        </div>
+
+        <p class="text-xs md:text-sm text-slate-700 max-w-2xl mx-auto leading-relaxed pt-2">
+          Por haber aprobado satisfactoriamente la evaluación teórico-práctica sobre <b>Infraestructura de Data Centers (ANSI/TIA-942 Tier III, Cableado Estructurado TIA-568)</b> y <b>Sistemas de Gestión de Ciberdefensa (ISO/IEC 27001:2022)</b>, demostrando idoneidad técnica en conmutación de respaldo de fibra óptica y mitigación de amenazas críticas.
+        </p>
+
+        <!-- Stats badge on certificate -->
+        <div class="inline-flex items-center gap-6 bg-amber-50 border border-amber-300 px-6 py-2 rounded-xl text-xs font-mono">
+          <span>CALIFICACIÓN: <b id="cert-score" class="text-amber-800 text-sm">20 / 20 (100%)</b></span>
+          <span>•</span>
+          <span>CÓDIGO VERIFICACIÓN: <b id="cert-hash" class="text-slate-800 font-mono">HC-STI-2026-9842</b></span>
+        </div>
+      </div>
+
+      <!-- Signatures -->
+      <div class="grid grid-cols-2 gap-8 pt-8 mt-6 border-t border-slate-300 relative z-10 text-center">
+        <div>
+          <div class="w-40 border-b border-slate-800 mx-auto mb-1"></div>
+          <p class="text-xs font-bold text-slate-900">Prof. Jaramillo</p>
+          <p class="text-[10px] text-slate-600">Docente Titular STI & Redes</p>
+          <p class="text-[9px] text-slate-500">I.E.S.T.P. Hermanos Cárcamo</p>
+        </div>
+        <div>
+          <div class="w-40 border-b border-slate-800 mx-auto mb-1"></div>
+          <p class="text-xs font-bold text-slate-900">Comité Académico TI</p>
+          <p class="text-[10px] text-slate-600">Dirección de Asuntos Académicos</p>
+          <p class="text-[9px] text-slate-500">Paita, Piura - Perú</p>
+        </div>
+      </div>
+
+      <!-- Action Buttons (No-print) -->
+      <div class="no-print mt-8 pt-4 border-t border-slate-200 flex justify-between items-center">
+        <button onclick="closeCertModal()" class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition">
+          <i class="fa-solid fa-arrow-left mr-1"></i> Volver al Portal
+        </button>
+        <button onclick="window.print()" class="px-6 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs shadow-lg transition flex items-center gap-2">
+          <i class="fa-solid fa-print"></i>
+          <span>IMPRIMIR / GUARDAR EN PDF</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== LAB GUIDE MODAL ==================== -->
+  <div id="guide-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="glass-panel border-2 border-cyan-500/50 rounded-3xl max-w-3xl w-full max-h-[85vh] flex flex-col shadow-[0_0_60px_rgba(6,182,212,0.3)] overflow-hidden modal-pop">
+      <div class="p-6 border-b border-white/10 flex justify-between items-center bg-slate-900/80">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-book-open text-cyan-400 text-2xl"></i>
+          <div>
+            <h3 class="text-xl font-bold text-white font-tech">GUÍA OFICIAL DE LABORATORIO</h3>
+            <p class="text-xs font-mono-code text-cyan-400">OBJETIVOS DE APRENDIZAJE · PRÁCTICAS 1 A 4</p>
+          </div>
+        </div>
+        <button onclick="closeGuideModal()" class="text-gray-400 hover:text-white text-lg p-2">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="p-6 overflow-y-auto space-y-4 text-xs font-mono-code text-gray-300 leading-relaxed custom-scroll">
+        <div class="p-4 rounded-xl bg-slate-900/80 border border-cyan-500/30 space-y-2">
+          <h4 class="text-cyan-400 font-bold text-sm">PRÁCTICA 1: TIA-942 REDUNDANCIA DE FIBRA ÓPTICA</h4>
+          <p>1. Iniciar <b>datacenter.html</b> y posicionar la cámara en vista isométrica.</p>
+          <p>2. Presionar el botón <b>"Cortar Enlace (Simular Fallo)"</b>. Observar el salto del flujo de paquetes a la Ruta B en menos de 10ms.</p>
+          <p>3. Abrir el modal <b>"Panel ODF 24P"</b> y realizar una prueba de reflectometría OTDR en el puerto 12.</p>
+        </div>
+        <div class="p-4 rounded-xl bg-slate-900/80 border border-emerald-500/30 space-y-2">
+          <h4 class="text-emerald-400 font-bold text-sm">PRÁCTICA 2: ISO 27001 MITIGACIÓN DE AMENAZAS</h4>
+          <p>1. Ingresar a <b>ciberdefensa.html</b> con todas las defensas desactivadas (Exposición 0%).</p>
+          <p>2. Activar control A.9 y verificar el bloqueo del ataque de fuerza bruta SSH.</p>
+          <p>3. Activar A.10 (Cifrado AES-256) y A.16 (SIEM) para neutralizar Ransomware y DDoS.</p>
+          <p>4. Abrir la <b>Matriz de Riesgo ISO 27005</b> y verificar la transición de celdas a verde.</p>
+        </div>
+        <div class="p-4 rounded-xl bg-slate-900/80 border border-amber-500/30 space-y-2">
+          <h4 class="text-amber-400 font-bold text-sm">PRÁCTICA 3: MANTENIMIENTO HOT-SWAP & TÉRMICO</h4>
+          <p>1. En el simulador 3D, abrir la puerta del Rack C e invocar <b>"Mantenimiento Hot-Swap"</b> para extraer un servidor Blade en caliente.</p>
+          <p>2. Alternar el <b>Visor Térmico ASHRAE TC 9.9</b> y verificar los rangos de temperatura entre Pasillo Frío (18°C-21°C) y Pasillo Caliente (32°C-44°C).</p>
+        </div>
+      </div>
+      <div class="p-4 border-t border-white/10 bg-slate-900/80 text-right">
+        <button onclick="closeGuideModal()" class="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs font-mono-code transition">
+          Entendido
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ----------------------------------------------------
+    // Animated Constellation Particle Background
+    // ----------------------------------------------------
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const particles = [];
+    for (let i = 0; i < 65; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.7,
+        vy: (Math.random() - 0.5) * 0.7,
+        radius: Math.random() * 2 + 1,
+        color: Math.random() > 0.5 ? '#06b6d4' : '#10b981'
+      });
+    }
+
+    function drawParticles() {
+      ctx.clearRect(0, 0, width, height);
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 0) p.x = width;
+        if (p.x > width) p.x = 0;
+        if (p.y < 0) p.y = height;
+        if (p.y > height) p.y = 0;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = p.color;
+        ctx.fill();
+
+        for (let j = i + 1; j < particles.length; j++) {
+          const p2 = particles[j];
+          const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+          if (dist < 110) {
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = `rgba(6, 182, 212, ${1 - dist / 110})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(drawParticles);
+    }
+    drawParticles();
+
+    // ----------------------------------------------------
+    // Ambient Audio Synthesizer (Web Audio API)
+    // ----------------------------------------------------
+    let audioCtx = null;
+    let ambientActive = false;
+    let ambientInterval = null;
+
+    function toggleAmbientAudio() {
+      ambientActive = !ambientActive;
+      const text = document.getElementById('ambient-btn-text');
+      if (ambientActive) {
+        text.innerText = 'AUDIO AMBIENTE: ON';
+        startAmbientDrone();
+      } else {
+        text.innerText = 'AUDIO AMBIENTE: OFF';
+        stopAmbientDrone();
+      }
+    }
+
+    function startAmbientDrone() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      const chords = [220, 261.63, 329.63, 392.00, 440, 523.25];
+      ambientInterval = setInterval(() => {
+        if (!ambientActive) return;
+        const note = chords[Math.floor(Math.random() * chords.length)];
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(note, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.04, audioCtx.currentTime + 0.8);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 3.2);
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + 3.2);
+      }, 2000);
+    }
+
+    function stopAmbientDrone() {
+      if (ambientInterval) clearInterval(ambientInterval);
+    }
+
+    // ----------------------------------------------------
+    // Quiz Questions Database
+    // ----------------------------------------------------
+    const quizData = [
+      {
+        question: "1. Según la norma ANSI/TIA-568, ¿cuál es la longitud máxima permitida para un enlace permanente de par trenzado Categoría 6A en el data center?",
+        options: [
+          "100 metros en total de punta a punta",
+          "90 metros de enlace permanente + 10 metros para patch cords (Total 100m canal)",
+          "150 metros si se utiliza cable blindado S/FTP",
+          "50 metros para evitar problemas de diafonía NEXT"
+        ],
+        correct: 1,
+        feedback: "Correcto: El estándar TIA-568 establece 90m para el enlace permanente (horizontal) y un máximo combinado de 10m para patch cords."
+      },
+      {
+        question: "2. En el estándar ANSI/TIA-942, un centro de datos clasificado como Tier III exige una disponibilidad de:",
+        options: [
+          "99.671% (hasta 28.8 horas anuales de caída)",
+          "99.982% (máximo 1.6 horas anuales de inactividad, con mantenimiento concurrente)",
+          "99.999% (los famosos cinco nueves sin ninguna caída jamás)",
+          "95.000% con un único camino de distribución eléctrica"
+        ],
+        correct: 1,
+        feedback: "Correcto: Tier III garantiza 99.982% de disponibilidad y permite mantenimiento concurrente sin apagar la carga crítica."
+      },
+      {
+        question: "3. En la norma ISO/IEC 27001:2022, el control del Anexo A clasificado como A.10 corresponde a:",
+        options: [
+          "Seguridad en las relaciones con los proveedores",
+          "Criptografía y gestión del ciclo de vida de claves criptográficas",
+          "Control de accesos y autenticación multifactor",
+          "Respaldo de información y redundancia DRP"
+        ],
+        correct: 1,
+        feedback: "Correcto: A.10 define las políticas criptográficas y la gestión adecuada de claves de cifrado para proteger la confidencialidad."
+      },
+      {
+        question: "4. Según las recomendaciones de ASHRAE TC 9.9 para centros de datos clase A1/A2, el rango recomendado de temperatura en el Pasillo Frío es:",
+        options: [
+          "Entre 5°C y 10°C con humedad relativa bajo cero",
+          "Entre 18°C y 27°C con punto de rocío y humedad controlada",
+          "Entre 30°C y 40°C para ahorrar en consumo de enfriadoras",
+          "Exactamente 0°C para congelar los procesadores de alta densidad"
+        ],
+        correct: 1,
+        feedback: "Correcto: ASHRAE recomienda entre 18°C y 27°C para maximizar la confiabilidad y la eficiencia energética (PUE)."
+      },
+      {
+        question: "5. ¿Qué evento ocurre cuando se produce un corte en el cableado de fibra óptica principal (Ruta A) en una red con topología en anillo redundante?",
+        options: [
+          "La red se apaga por completo hasta que llegue un técnico a fusionar la fibra",
+          "El protocolo Spanning Tree (STP) o ERP conmuta el tráfico a la Ruta B en milisegundos sin pérdida de sesión",
+          "Los paquetes de datos se acumulan en el buffer del servidor hasta saturar la memoria RAM",
+          "Se funde el puerto SFP+ del switch core por sobretensión"
+        ],
+        correct: 1,
+        feedback: "Correcto: El protocolo Spanning Tree / Rapid Spanning Tree detecta la caída del enlace y abre el camino alternativo en milisegundos."
+      },
+      {
+        question: "6. Un ataque de Ransomware compromete principalmente qué pilar de la Tríada CID de la seguridad de la información:",
+        options: [
+          "Únicamente la autenticación de usuarios remotos",
+          "La Integridad y la Disponibilidad de los datos empresariales al cifrarlos sin autorización",
+          "La velocidad del reloj de los servidores en la placa madre",
+          "La tensión eléctrica suministrada por la UPS"
+        ],
+        correct: 1,
+        feedback: "Correcto: El ransomware altera la Integridad y destruye la Disponibilidad de los datos al impedir su acceso legítimo mediante cifrado malicioso."
+      }
+    ];
+
+    function openExamModal() {
+      document.getElementById('exam-modal').classList.remove('hidden');
+    }
+
+    function closeExamModal() {
+      document.getElementById('exam-modal').classList.add('hidden');
+    }
+
+    function openGuideModal() {
+      document.getElementById('guide-modal').classList.remove('hidden');
+    }
+
+    function closeGuideModal() {
+      document.getElementById('guide-modal').classList.add('hidden');
+    }
+
+    function startQuiz() {
+      const studentName = document.getElementById('student-name-input').value.trim();
+      if (!studentName) {
+        alert('Por favor ingresa tu nombre completo para personalizar tu examen.');
+        document.getElementById('student-name-input').focus();
+        return;
+      }
+
+      document.getElementById('start-quiz-btn').disabled = true;
+      document.getElementById('start-quiz-btn').classList.add('opacity-50');
+      
+      const container = document.getElementById('quiz-container');
+      container.innerHTML = '';
+      container.classList.remove('hidden');
+
+      quizData.forEach((q, qIndex) => {
+        const qCard = document.createElement('div');
+        qCard.className = 'glass-panel-sub p-5 rounded-2xl border border-white/10 space-y-3';
+        
+        let optionsHtml = '';
+        q.options.forEach((opt, oIndex) => {
+          optionsHtml += `
+            <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-slate-700/50 cursor-pointer transition">
+              <input type="radio" name="question_${qIndex}" value="${oIndex}" class="mt-1 accent-amber-400">
+              <span class="text-xs text-gray-200">${opt}</span>
+            </label>
+          `;
+        });
+
+        qCard.innerHTML = `
+          <h4 class="text-sm font-bold text-amber-300 font-tech">${q.question}</h4>
+          <div class="space-y-2 pt-1">${optionsHtml}</div>
+          <div id="feedback_${qIndex}" class="hidden text-xs font-mono-code p-2.5 rounded-lg"></div>
+        `;
+        container.appendChild(qCard);
+      });
+
+      const submitBtn = document.createElement('button');
+      submitBtn.className = 'w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold font-mono-code text-xs uppercase tracking-wider shadow-[0_0_25px_rgba(245,158,11,0.4)] transition';
+      submitBtn.innerHTML = '<i class="fa-solid fa-check-double mr-2"></i>Calificar Examen & Generar Certificado';
+      submitBtn.onclick = evaluateQuiz;
+      container.appendChild(submitBtn);
+    }
+
+    function evaluateQuiz() {
+      let score = 0;
+      let allAnswered = true;
+
+      quizData.forEach((q, qIndex) => {
+        const selected = document.querySelector(`input[name="question_${qIndex}"]:checked`);
+        const feedbackEl = document.getElementById(`feedback_${qIndex}`);
+        feedbackEl.classList.remove('hidden');
+
+        if (!selected) {
+          allAnswered = false;
+          feedbackEl.className = 'text-xs font-mono-code p-2.5 rounded-lg bg-red-950/70 border border-red-500/30 text-red-300';
+          feedbackEl.innerText = 'Pregunta sin responder.';
+        } else {
+          const val = parseInt(selected.value);
+          if (val === q.correct) {
+            score++;
+            feedbackEl.className = 'text-xs font-mono-code p-2.5 rounded-lg bg-emerald-950/70 border border-emerald-500/30 text-emerald-300';
+            feedbackEl.innerHTML = `<i class="fa-solid fa-check mr-1 text-emerald-400"></i> ${q.feedback}`;
+          } else {
+            feedbackEl.className = 'text-xs font-mono-code p-2.5 rounded-lg bg-rose-950/70 border border-rose-500/30 text-rose-300';
+            feedbackEl.innerHTML = `<i class="fa-solid fa-xmark mr-1 text-rose-400"></i> Incorrecto. ${q.feedback}`;
+          }
+        }
+      });
+
+      if (!allAnswered) {
+        alert('Por favor responde todas las preguntas del examen antes de calificar.');
+        return;
+      }
+
+      const total = quizData.length;
+      const percentage = Math.round((score / total) * 100);
+      const studentName = document.getElementById('student-name-input').value.trim();
+      const resultEl = document.getElementById('quiz-result');
+      resultEl.classList.remove('hidden');
+
+      if (percentage >= 80) {
+        resultEl.className = 'p-6 rounded-2xl text-center space-y-4 bg-emerald-950/50 border border-emerald-500/40';
+        resultEl.innerHTML = `
+          <div class="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center mx-auto text-emerald-400 text-3xl shadow-[0_0_30px_rgba(16,185,129,0.4)]">
+            <i class="fa-solid fa-award"></i>
+          </div>
+          <div>
+            <h4 class="text-xl font-bold text-white font-tech">¡EXCELENTE TRABAJO! EVALUACIÓN APROBADA</h4>
+            <p class="text-xs font-mono-code text-emerald-400 mt-1">Has alcanzado el ${percentage}% de aciertos (${score}/${total} preguntas correctas).</p>
+          </div>
+          <button onclick="generateCertificate('${studentName}', ${score}, ${total}, ${percentage})" class="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold font-mono-code text-xs uppercase shadow-[0_0_20px_rgba(245,158,11,0.5)] transition inline-flex items-center gap-2">
+            <i class="fa-solid fa-file-invoice"></i>
+            <span>VER DIPLOMA OFICIAL DE CERTIFICACIÓN</span>
+          </button>
+        `;
+      } else {
+        resultEl.className = 'p-6 rounded-2xl text-center space-y-4 bg-rose-950/50 border border-rose-500/40';
+        resultEl.innerHTML = `
+          <div class="w-16 h-16 rounded-full bg-rose-500/20 border border-rose-500/40 flex items-center justify-center mx-auto text-rose-400 text-3xl">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <div>
+            <h4 class="text-xl font-bold text-white font-tech">EVALUACIÓN NO ALCANZADA</h4>
+            <p class="text-xs font-mono-code text-rose-400 mt-1">Tu puntuación es ${percentage}% (${score}/${total}). Se requiere al menos un 80% para certificar.</p>
+            <p class="text-xs text-gray-400 mt-2">Revisa el simulador 3D y el centro SOC antes de volver a intentarlo.</p>
+          </div>
+        `;
+      }
+    }
+
+    function generateCertificate(name, score, total, percentage) {
+      document.getElementById('cert-student-name').innerText = name.toUpperCase();
+      document.getElementById('cert-score').innerText = `${score * 3 + 2} / 20 (${percentage}%)`;
+      
+      const randomId = Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('cert-hash').innerText = `HC-STI-2026-${randomId}`;
+
+      closeExamModal();
+      document.getElementById('certificate-modal').classList.remove('hidden');
+    }
+
+    function closeCertModal() {
+      document.getElementById('certificate-modal').classList.add('hidden');
+    }
+  
+    // ----------------------------------------------------
+    // Audio Sound Effects (Web Audio API)
+    // ----------------------------------------------------
+    function playUiSound(type) {
+      try {
+        if (!audioCtx) initAudio();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const now = audioCtx.currentTime;
+
+        if (type === 'click') {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(800, now);
+          osc.frequency.exponentialRampToValueAtTime(300, now + 0.04);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+          osc.start(now);
+          osc.stop(now + 0.04);
+        } else if (type === 'slide') {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(320, now);
+          osc.frequency.exponentialRampToValueAtTime(640, now + 0.08);
+          gain.gain.setValueAtTime(0.06, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+          osc.start(now);
+          osc.stop(now + 0.08);
+        } else if (type === 'open') {
+          [440, 660, 880].forEach((f, idx) => {
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.connect(g);
+            g.connect(audioCtx.destination);
+            o.frequency.value = f;
+            g.gain.setValueAtTime(0.04, now + idx * 0.03);
+            g.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.03 + 0.1);
+            o.start(now + idx * 0.03);
+            o.stop(now + idx * 0.03 + 0.1);
+          });
+        }
+      } catch(e) {}
+    }
+
+    // ----------------------------------------------------
+    // Live Peru Digital Clock (UTC-5 Lima / Paita)
+    // ----------------------------------------------------
+    function updatePeruClock() {
+      const clockEl = document.getElementById('peru-clock');
+      if (!clockEl) return;
+      const now = new Date();
+      // UTC-5 Lima / Peru timezone
+      const timeStr = now.toLocaleTimeString('es-PE', { hour12: false, timeZone: 'America/Lima' });
+      clockEl.innerText = timeStr;
+    }
+    setInterval(updatePeruClock, 1000);
+    updatePeruClock();
+
+    // ----------------------------------------------------
+    // Presentation Slideshow Controller
+    // ----------------------------------------------------
+    let currentSlide = 1;
+    const totalSlides = 6;
+
+    function openPresentationModal() {
+      playUiSound('open');
+      document.getElementById('presentation-modal').classList.remove('hidden');
+      goToSlide(currentSlide);
+    }
+
+    function closePresentationModal() {
+      playUiSound('click');
+      document.getElementById('presentation-modal').classList.add('hidden');
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    function goToSlide(n) {
+      if (n < 1 || n > totalSlides) return;
+      playUiSound('slide');
+      currentSlide = n;
+
+      for (let i = 1; i <= totalSlides; i++) {
+        const slide = document.getElementById(`slide-${i}`);
+        const pill = document.getElementById(`slide-pill-${i}`);
+        if (slide) {
+          if (i === currentSlide) {
+            slide.classList.remove('hidden');
+            slide.classList.add('modal-pop');
+          } else {
+            slide.classList.add('hidden');
+            slide.classList.remove('modal-pop');
+          }
+        }
+        if (pill) {
+          if (i === currentSlide) {
+            pill.className = 'px-2.5 py-1 rounded-lg bg-cyan-500 text-slate-950 font-bold';
+          } else {
+            pill.className = 'px-2.5 py-1 rounded-lg text-gray-400 hover:text-white';
+          }
+        }
+      }
+
+      const counter = document.getElementById('slide-counter');
+      if (counter) counter.innerText = `SLIDE ${currentSlide} / ${totalSlides}`;
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        goToSlide(currentSlide + 1);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        goToSlide(currentSlide - 1);
+      }
+    }
+
+    function toggleFullscreenPresentation() {
+      const modal = document.getElementById('presentation-modal');
+      const icon = document.getElementById('fs-icon');
+      if (!document.fullscreenElement) {
+        modal.requestFullscreen().then(() => {
+          if (icon) icon.className = 'fa-solid fa-compress';
+        }).catch(() => {});
+      } else {
+        document.exitFullscreen().then(() => {
+          if (icon) icon.className = 'fa-solid fa-expand';
+        }).catch(() => {});
+      }
+    }
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (e) => {
+      const presModal = document.getElementById('presentation-modal');
+      if (!presModal || presModal.classList.contains('hidden')) return;
+
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key === 'Escape') {
+        closePresentationModal();
+      }
+    });
+
+    // ----------------------------------------------------
+    // Teacher Questions Defense Modal
+    // ----------------------------------------------------
+    function openQuestionsModal() {
+      playUiSound('open');
+      document.getElementById('questions-modal').classList.remove('hidden');
+    }
+
+    function closeQuestionsModal() {
+      playUiSound('click');
+      document.getElementById('questions-modal').classList.add('hidden');
+    }
+
+  </script>
+
+</body>
+</html>

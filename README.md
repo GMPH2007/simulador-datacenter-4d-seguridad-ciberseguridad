@@ -1,10 +1,11 @@
-# 🏢 Simulador 4D de Centro de Datos Tier III & SOC de Ciberseguridad
+# 🏢 Suite Tecnológica de Centro de Datos Tier III & SOC de Ciberdefensa ISO/IEC 27001
 
 [![GitHub Pages](https://img.shields.io/badge/Demo_en_Vivo-GitHub_Pages-00F0FF?style=for-the-badge&logo=github&logoColor=white)](https://gmph2007.github.io/simulador-datacenter-4d-seguridad-ciberseguridad/)
-[![Tier III SLA](https://img.shields.io/badge/TIA--942-Tier_III_99.999%25_SLA-10B981?style=for-the-badge&logo=serverfault&logoColor=white)](https://gmph2007.github.io/simulador-datacenter-4d-seguridad-ciberseguridad/)
-[![ISO 27001](https://img.shields.io/badge/Estándar-ISO%2FIEC_27001-3B82F6?style=for-the-badge&logo=securityscorecard&logoColor=white)](https://gmph2007.github.io/simulador-datacenter-4d-seguridad-ciberseguridad/)
-[![Three.js](https://img.shields.io/badge/Motor_3D-Three.js_r128-black?style=for-the-badge&logo=three.js&logoColor=white)](https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js)
-[![Web Audio API](https://img.shields.io/badge/Audio-Web_Audio_Sintetizado-purple?style=for-the-badge&logo=audacity&logoColor=white)](https://gmph2007.github.io/simulador-datacenter-4d-seguridad-ciberseguridad/)
+[![Tier III SLA](https://img.shields.io/badge/ANSI%2FTIA--942-Tier_III_99.982%25_Disponibilidad-10B981?style=for-the-badge&logo=serverfault&logoColor=white)](https://gmph2007.github.io/simulador-datacenter-4d-seguridad-ciberseguridad/datacenter.html)
+[![ISO 27001](https://img.shields.io/badge/Estándar-ISO%2FIEC_27001%3A2022-3B82F6?style=for-the-badge&logo=securityscorecard&logoColor=white)](https://gmph2007.github.io/simulador-datacenter-4d-seguridad-ciberseguridad/ciberdefensa.html)
+[![Fluke Networks](https://img.shields.io/badge/Certificación-Fluke_DSX--8000_Cat_6A-F59E0B?style=for-the-badge&logo=fluke&logoColor=white)](https://gmph2007.github.io/simulador-datacenter-4d-seguridad-ciberseguridad/datacenter.html)
+[![Three.js](https://img.shields.io/badge/Motor_3D-Three.js_WebGL-black?style=for-the-badge&logo=three.js&logoColor=white)](https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js)
+[![Web Audio API](https://img.shields.io/badge/Audio-Sintetizador_DSP_Nativo-purple?style=for-the-badge&logo=audacity&logoColor=white)](https://gmph2007.github.io/simulador-datacenter-4d-seguridad-ciberseguridad/)
 [![Licencia](https://img.shields.io/badge/Licencia-MIT-green?style=for-the-badge)](LICENSE)
 
 ---
@@ -13,10 +14,11 @@
 
 * **Institución:** Instituto de Educación Superior Tecnológico Público **"Hermanos Cárcamo"** (Paita, Piura, Perú).
 * **Programa de Estudios:** Arquitectura de Plataformas y Servicios de Tecnologías de la Información.
-* **Unidad Didáctica:** Seguridad Informática y Auditoría de TI.
-* **Docente Especialista:** **Dr. Javier Eduardo Jaramillo Atoche** *(Doctor en Tecnologías de la Información y Comunicaciones - UNP)*.
-* **Equipo de Investigación y Desarrollo:**
-  1. **Gerson Misael Pintado Huamán** *(Líder de Proyecto / Modelado 3D & Arquitectura)*
+* **Unidad Didáctica:** Sistemas de Transporte de Información (STI) / Seguridad Informática y Auditoría de TI.
+* **Docente Especialista:** **Dr. Javier Eduardo Jaramillo Atoche** *(Doctor en Tecnologías de la Información y Comunicaciones - SUNEDU)*.
+* **Líder y Desarrollador Principal:** **Gerson Misael Pintado Huamán** *(Arquitectura de Software, Modelado 3D Three.js, Shaders & Telecomunicaciones)*.
+* **Equipo de Investigación y Colaboración Académica:**
+  1. **Gerson Misael Pintado Huamán** *(Arquitectura Global, Telecomunicaciones & Simulación 3D)*
   2. **Manuel Danilo López Garay** *(Análisis de Redes y Seguridad Lógica)*
   3. **Mariana Juliet Clavijo Pinzón** *(Evaluación de Riesgos y Matriz ISO 27001)*
   4. **Pedro Miguel Aguilar Flores** *(Infraestructura Eléctrica y Climatización TIA-942)*
@@ -24,125 +26,137 @@
 
 ---
 
-## 🌐 Enlaces de Acceso Inmediato
+## 🌐 Enlaces de Acceso Inmediato en la Nube (GitHub Pages)
 
-| Recurso | Enlace Directo | Descripción |
+Todos los módulos están desplegados en tiempo real y son 100% interactivos desde cualquier navegador web (computadora, tablet o móvil), sin requerir instalación de programas ni servidores locales:
+
+| Recurso | Enlace Directo | Descripción Funcional |
 | :--- | :--- | :--- |
-| **🚀 Simulador 4D en Vivo (GitHub Pages)** | [**Abrir Simulador 4D Online**](https://gmph2007.github.io/simulador-datacenter-4d-seguridad-ciberseguridad/) | Ejecución 100% web en tiempo real sin instalar programas. |
-| **🗺️ Mapa Conceptual Interactivo** | [**Abrir Mapa Conceptual**](https://gmph2007.github.io/simulador-datacenter-4d-seguridad-ciberseguridad/MAPA_CONCEPTUAL_INTERACTIVO.html) | Dashboard dinámico de conceptos clave de seguridad física y lógica. |
-| **📄 Informe Académico PDF** | [**Ver Documento PDF**](docs/TRABAJO_DATA_CENTER_PRO_MAX.pdf) | Monografía formal completa con rúbrica, cuestionario y matriz de riesgos. |
-| **📘 Manual Técnico 3D** | [**Ver Manual Técnico**](docs/MANUAL_TECNICO_SIMULADOR_3D.md) | Especificaciones de Three.js, shaders, Web Audio y telemetría. |
-| **🎤 Guía de Exposición Rápida** | [**Ver Guía de Exposición**](docs/GUIA_DE_EXPOSICION_RAPIDA.md) | Discurso paso a paso para la defensa ante el profesor. |
+| **🚀 Portal Maestro Hub** | [**Abrir Portal Maestro**](https://gmph2007.github.io/simulador-datacenter-4d-seguridad-ciberseguridad/) | Centro de mando unificado, Modo Exposición (6 diapositivas para proyector), balotario de preguntas de defensa, examen de certificación con diploma imprimible y sintetizador de audio ambiental. |
+| **🏢 Simulador 3D Data Center II Ultra Max** | [**Abrir Simulador 3D**](https://gmph2007.github.io/simulador-datacenter-4d-seguridad-ciberseguridad/datacenter.html) | Arquitectura física ANSI/TIA-942 Tier III, 3 racks 42U interactivos con apertura de puertas de cristal, servidor blade hot-swap, certificador Fluke DSX-8000, grupo electrógeno 1500 kVA, failover STP de fibra óptica y CCTV 4-canales. |
+| **🛡️ Centro de Ciberdefensa SOC ISO 27001** | [**Abrir SOC Ciberdefensa**](https://gmph2007.github.io/simulador-datacenter-4d-seguridad-ciberseguridad/ciberdefensa.html) | Arena de ciberseguridad con 4 actores de amenazas simétricos en esquinas, conductos vectoriales SVG con flechas pulsantes, escudos ISO 27001:2022 (A.9, A.10, A.16, A.17), Wireshark DPI, sandbox de phishing y matriz 5x5. |
+| **🗺️ Mapa Conceptual Interactivo** | [**Abrir Mapa Conceptual**](https://gmph2007.github.io/simulador-datacenter-4d-seguridad-ciberseguridad/MAPA_CONCEPTUAL_INTERACTIVO.html) | Dashboard dinámico de conceptos clave de seguridad física, climatización y transporte de información. |
+| **📄 Monografía Completa (PDF)** | [**Descargar Informe PDF**](docs/TRABAJO_DATA_CENTER_PRO_MAX.pdf) | Documento académico formal con rúbrica, análisis de casos y matrices de ingeniería. |
 
 ---
 
-## 📋 Matriz de Simulación de Incidentes (Rúbrica del Docente)
+## 📸 Galería Visual de la Suite
 
-El docente **Dr. Javier Eduardo Jaramillo Atoche** *(Doctor en Tecnologías de la Información y Comunicaciones - UNP)* estableció como requisito fundamental la simulación interactiva de cada vector de amenaza, clasificando con exactitud si corresponde a **Acceso Físico o Acceso Lógico**, y reportando si el centro de datos queda en estado **Protegido o con Vulnerabilidad Mitigada**.
+<div align="center">
 
-| N° | Incidente Simulado | Clasificación Requerida | Estado de Protección | Contramedida Autónoma en el Simulador 4D |
-| :---: | :--- | :---: | :---: | :--- |
-| **0** | **Operación Normal (Baseline)** | **Físico y Lógico** | **PROTEGIDO** | Monitoreo continuo de 128 sensores IoT. Variables dentro de parámetros TIA-942 e ISO 27001. |
-| **1** | **Intrusión en Esclusa Mantrap** | **ACCESO FÍSICO** | **BLOQUEADO Y PROTEGIDO** | Tarjeta RFID clonada sin match biométrico. Bloqueo electromagnético (1200 lbs), baliza estroboscópica 360°, sirena policial y PTZ enfocada. |
-| **2** | **Detección de Humo y Fuego** | **FÍSICO / AMBIENTAL** | **EXTINCIÓN ACTIVA (PROTEGIDO)** | Sensor óptico y VESDA aspiran combustión en Rack A1. Corte selectivo EPO y descarga de gas limpio **NOVEC 1230** sin daño a componentes. |
-| **3** | **Sobrecalentamiento Térmico** | **FÍSICO / CLIMATIZACIÓN** | **CONMUTACIÓN N+1 (PROTEGIDO)** | Falla en compresor CRAC-01 (>28°C). Conmutación automática a turbina CRAC-02 a **1450 RPM** y apertura de ventilación de piso técnico. |
-| **4** | **Cámara Desconectada (Caída 3D)** | **FÍSICO / VULNERABILIDAD** | **VULNERABILIDAD MITIGADA** | Corte de cable PoE en CAM-02. **La cámara se agacha físicamente cayendo 80° con chispas**, estática en CCTV, activación de cobertura cruzada y PIR. |
-| **5** | **Corte de Energía (Blackout)** | **FÍSICO / ELÉCTRICO** | **CONTINUIDAD TIER III (PROTEGIDO)** | Caída de acometida pública. **Parpadeo de tensión, sonido de disyuntor y apagón total**, transferencia a UPS 2N en 4ms y arranque de diésel ATS. |
-| **6** | **Ciberataque DDoS (85 Gbps)** | **ACCESO LÓGICO** | **MITIGACIÓN LÓGICA (PROTEGIDO)** | Inundación SYN-Flood hacia la base de datos. Desvío BGP Anycast a Scrubbing Center, filtrado en NGFW Fortinet y microsegmentación Zero Trust. |
-| **7** | **Ataque de Ransomware (Matrix)** | **ACCESO LÓGICO** | **SELLADO INMUTABLE (PROTEGIDO)** | Intento de cifrado en FinanSur Core DB. **Cascada digital Matrix en verde fluyendo en los racks**, sellado WORM inmutable en SAN y aislamiento de VLAN. |
+### 1. Portal Maestro Hub & Centro de Certificación
+![Portal Maestro Hub](assets/screenshot_portal.png)
 
----
+### 2. Simulador 3D Data Center Tier III (ANSI/TIA-942 & Fluke DSX-8000)
+![Simulador 3D Data Center](assets/screenshot_datacenter.png)
 
-## 🎮 Efectos Especiales y Gráficos 4D de Grado Industrial
+### 3. Centro de Ciberdefensa SOC ISO/IEC 27001:2022
+![Centro de Ciberdefensa SOC](assets/screenshot_ciberdefensa.png)
 
-```
-                           SISTEMA 4D INTEGRADO
-     ┌─────────────────────────────────────────────────────────────┐
-     │                    CANVAS WEBGL THREE.JS                    │
-     │  ┌─────────────────┐ ┌─────────────────┐ ┌───────────────┐  │
-     │  │  10 Racks 42U   │ │ Turbinas CRAC   │ │  Esclusa      │  │
-     │  │  Blades + LEDs  │ │  6 Aspas 3D     │ │  Biométrica   │  │
-     │  └────────┬────────┘ └────────┬────────┘ └───────┬───────┘  │
-     │           │                   │                  │          │
-     │  ┌────────┴───────────────────┴──────────────────┴───────┐  │
-     │  │  Efectos: Cascada Matrix Verde | Caída Cámara 3D      │  │
-     │  │  Apagón Dinámico | Baliza 360° | Niebla Criogénica    │  │
-     │  └────────────────────────────┬──────────────────────────┘  │
-     └───────────────────────────────┼─────────────────────────────┘
-                                     │
-     ┌───────────────────────────────┴─────────────────────────────┐
-     │                 TABLERO DE MANDO SOC & TELEMETRÍA           │
-     │  ┌───────────────┐ ┌─────────────────┐ ┌─────────────────┐  │
-     │  │ 4 Gráficas    │ │  Mente Propia   │ │  Terminal       │  │
-     │  │ SVG en Vivo   │ │  Red Neuronal   │ │  Syslog RFC5424 │  │
-     │  └───────────────┘ └─────────────────┘ └─────────────────┘  │
-     └─────────────────────────────────────────────────────────────┘
-```
-
-1. **📷 Cámara Desconectada y Caída Física 3D**:
-   * Al simular el fallo, la cámara del pasillo frío (**CAM-02**) rota su eje `X` suavemente hasta los 80°, **agachándose hacia el suelo** como un equipo descolgado por pérdida de alimentación PoE.
-   * Se emiten **chispas eléctricas de partículas** en la caja de paso conduit.
-   * La pantalla del monitor CCTV conmuta inmediatamente a **estática de nieve animada**, cambiando el indicador a `OFFLINE`.
-2. **❇️ Cascada Digital Matrix en Verde Fósforo**:
-   * En caso de ataque de virus o ransomware, la fachada frontal de los servidores blade se recubre de una **lluvia digital animada de caracteres Matrix (`#00FF66`)** generada dinámicamente en memoria canvas a 60 FPS.
-   * El Rack A2 de la Base de Datos FinanSur Core queda protegido dentro de un **escudo holográfico verde de cuarentena inmutable**.
-3. **⚡ Apagón Eléctrico Dinámico (Blackout Comercial)**:
-   * Simula un corte real de media tensión: las luces troffer parpadean 3 veces erráticamente, salta un arco de chispas en el tablero, y la sala queda **completamente a oscuras** con un estruendoso golpe de disyuntor (`CLACK!`), entrando únicamente tenues luces de emergencia nocturnas.
-   * Las aspas de las turbinas CRAC se frenan a 0 RPM.
-4. **🚨 Baliza Giratoria 360° y Alarma Sonora Nítida**:
-   * Baliza estroboscópica de domo rojo instalada en el techo que rota continuamente en 3D proyectando un foco SpotLight de 360° sobre las paredes durante las alertas.
-   * Sirena industrial modulada en frecuencia con doble oscilador sintetizado por **Web Audio API** para máxima nitidez sonora.
-5. **❄️ Contención de Pasillo Frío (*Cold Aisle Containment*)**:
-   * Techo abovedado de policarbonato translúcido y puertas corredizas de vidrio templado en los extremos del pasillo de servidores con tiras LED cyan.
-6. **🌀 Unidades CRAC con Turbinas 3D Giratorias**:
-   * Dos unidades de climatización industrial con túnel de viento cilíndrico, 6 aspas anguladas girando en tiempo real, rejillas concéntricas de seguridad y anillo LED de estado.
-7. **🖧 Bandejas Portacables & FiberGuide Amarillo**:
-   * Sistema de malla electrogalvanizada suspendida del techo con varillas roscadas *unistrut*, mazo de cables CAT6A azul y canaleta amarilla FiberGuide de fibra óptica con bajantes en cascada a cada rack.
+</div>
 
 ---
 
-## 🔊 Motor de Audio Sintetizado en Tiempo Real (Web Audio API)
+## 🔬 Arquitectura y Módulos del Ecosistema
 
-No requiere archivos de audio externos (cero enlaces rotos, 100% autónomo y funcional sin conexión):
-
-* **Clic Táctil Cyber:** Respuesta mecánica táctil de 1400 Hz a 800 Hz en cada interacción.
-* **Sirena Policial de Intrusión:** Oscilador de onda diente de sierra modulado entre 600 Hz y 1100 Hz.
-* **Buzzer Triple de Evacuación:** Tres ráfagas de onda cuadrada a 920 Hz para incendios y humo.
-* **Chispa Eléctrica y Desconexión:** Ráfaga de ruido blanco pasabanda de 2200 Hz y caída de tono.
-* **Colapso Eléctrico:** Disyuntor mecánico seguido de caída en sub-graves (*sub-bass drop*) de 120 Hz a 20 Hz.
-* **Matrix Cyber Synth:** Arpegios electrónicos rápidos en escala pentatónica para ciberataques.
-* **Zumbido Ambiental CRAC:** Tono grave de 62 Hz con filtro pasa-bajo que simula las turbinas en marcha (activable con el botón `🌀`).
-* **Narrador de Voz con IA:** Síntesis de voz en español (`SpeechSynthesisUtterance`) que narra el vector de amenaza y la contramedida en tiempo real.
+### 1. 🚀 Módulo 1: Portal Maestro Hub (`index.html` / `portal.html`)
+El punto de entrada central diseñado para la presentación oficial y evaluación académica:
+* **Modo Proyector para Exposición:** Presentación interactiva en pantalla completa de 6 diapositivas técnicas diseñadas específicamente para la sustentación ante el **Dr. Javier Eduardo Jaramillo Atoche**, con control mediante teclado:
+  * `[→]` / `[Espacio]`: Diapositiva siguiente.
+  * `[←]`: Diapositiva anterior.
+  * `[Esc]`: Salir del modo proyector.
+* **Balotario de Defensa Oral:** Banco con las 6 preguntas técnicas más rigurosas sobre cálculo de atenuación óptica, diafonía NEXT en Cat 6A, contención térmica de pasillos, mantenimiento concurrente Tier III y controles de ciberdefensa.
+* **Examen de Certificación & Diploma de Excelencia:** Evaluación aleatoria de conocimientos técnicos que, al ser aprobada, genera automáticamente un **Certificado Oficial de Excelencia Académica** con sello digital, fecha dinámica, firma del estudiante y botón para impresión/exportación a PDF.
+* **Sintetizador de Audio Ambiental DSP:** Motor de sonido envolvente con osciladores Web Audio API y ecualizador animado de 3 bandas en tiempo real.
+* **Reloj Digital Nacional:** Sincronizado en tiempo real con la hora oficial de Perú (UTC-5, Lima / Paita).
 
 ---
 
-## 📂 Estructura del Repositorio
+### 2. 🏢 Módulo 2: Simulador 3D Data Center II Ultra Max (`datacenter.html`)
+Simulador de ingeniería en 3D basado en **Three.js** y estándares internacionales de telecomunicaciones:
+* **Clasificación ANSI/TIA-942 Tier III:** Disponibilidad del 99.982% (máximo 1.6 horas de inactividad anual) con topología de **Mantenimiento Concurrente** (*Concurrent Maintainability*).
+* **Racks 42U de Alta Fidelidad Visual:**
+  * **Rack A (Core / ODF):** Distribuidor de Fibra Óptica OM4 50/125 $\mu$m con conectores MPO/LC troncales de 100 Gbps y conmutación STP redundante.
+  * **Rack B (Distribución Horizontal):** Patch panel modular de 24 puertos Cat 6A según norma ANSI/TIA-568.2-D con esquema de crimpado T568B.
+  * **Rack C (Cómputo Blade):** Chasis modular con servidor blade extraíble en caliente (*Hot-Swap*) con animación 3D de eyección e inserción en vivo.
+  * **Puertas de Cristal y Señalización 3D:** Puertas de vidrio tintado con apertura dinámica (`toggleRackDoor`), etiquetas flotantes luminosas de alta resolución sobre cada rack, barras beacon RGB y LEDs parpadeantes de actividad por cada unidad de servidor.
+* **Analizador de Redes Fluke DSX-8000 CableAnalyzer™:**
+  * Curva paramétrica interactiva de diafonía NEXT (*Near-End Crosstalk*) y Pérdida de Retorno (*Return Loss*) frente al límite normativo.
+  * Mapeo de hilos 1:1 en tiempo real con simulación de 4 fallas físicas inyectables: Par Dividido (*Split Pair*), Cable Cruzado (*Miswire*), Par Abierto (*Open Pair*) y Destrenzado Excesivo (*Excessive Untwist*).
+  * Generador de **Reporte Oficial de Certificación Fluke** con formato de impresión formal.
+* **Bandeja Portacables & Conmutación STP:** Bandeja aérea con fibra óptica luminosa. El botón *Corte de Fibra* simula una ruptura en la Ruta Primaria A y demuestra la conmutación autónoma en menos de 50 ms a la Ruta B mediante Rapid Spanning Tree Protocol (IEEE 802.1w).
+* **Grupo Electrógeno Diésel 1500 kVA:** Motor Cat/Cummins acoplado a Transferencia Automática (ATS) con arranque simulado en menos de 10 segundos ante corte de red comercial.
+* **Sistema de Extinción de Incendios NFPA 2001:** Descarga de gas limpio (Inergen / Novec 1230) con temporizador regresivo de evacuación de 10 segundos y pulsador de paro de emergencia (*EPO Abort*).
+* **Dársena de Cámaras 3D:** Barra dock en píldora de vidrio con 7 ángulos predeterminados: General Isométrica, Rack A, Rack B, Rack C, Grupo Electrógeno, Pasillo Frío y Planta Cenital.
+* **Telemetría en Vivo:** Tacómetro SVG radial de ancho de banda (0 a 100 Gbps) y termómetro de pasillo frío (18°C a 35°C) que reacciona a las fallas de climatización CRAC.
+
+---
+
+### 3. 🛡️ Módulo 3: Centro de Ciberdefensa SOC ISO/IEC 27001:2022 (`ciberdefensa.html`)
+Plataforma de simulación de ciberataques y mitigación defensiva en tiempo real:
+* **Distribución Simétrica de Amenazas en 4 Esquinas:**
+  * **Top-Left (Noroeste):** `APT_GROUP_X` (Exfiltración sigilosa C2 sobre HTTPS / Puerto 443).
+  * **Top-Right (Noreste):** `DDOS_BOTNET` (Inundación volumétrica SYN/UDP Flood masiva).
+  * **Bottom-Left (Suroeste):** `RANSOMWARE_PAYLOAD` (Cifrado malicioso de almacenamiento y base de datos).
+  * **Bottom-Right (Sureste):** `PHISHING_ENGINE` (Campañas dirigidas de Spear-Phishing y BEC).
+* **Conductos Vectoriales SVG con Flechas Pulsantes:** Capa matemática de láseres de ataque con cabezas de flecha direccionales (`#arrow-red`, `#arrow-blue`, `#arrow-purple`, `#arrow-emerald`) y paquetes de energía cinéticos que viajan a través de los conductos hacia el servidor central.
+* **Escudos de Mitigación ISO/IEC 27001 Interactivos:**
+  * **Control A.9 (Control de Acceso Lógico):** Escudo azul rotativo con Zero Trust y MFA que bloquea la exfiltración de APT_GROUP_X y conmuta el láser a azul.
+  * **Control A.16 (Gestión de Incidentes de Seguridad):** Radar de barrido cónico SIEM que detecta y disipa la inundación de DDOS_BOTNET convirtiendo el haz en púrpura.
+  * **Control A.10 (Criptografía y Cifrado Fuerte):** Escudo esmeralda de cifrado AES-256-GCM que neutraliza el cifrado no autorizado de RANSOMWARE y torna el conducto a verde.
+  * **Control A.17 (Redundancia y Respaldo DRP):** Activación de sincronización espejo en caliente hacia el Servidor Secundario de Contingencia (DRP Mirror).
+* **Inspector Wireshark DPI Integrado:** Captura y desglose de tramas Ethernet II, IPv4, TCP/UDP y carga útil binaria en hexadecimal/ASCII.
+* **Sandbox CSIRT de Phishing:** Simulador de cliente de correo donde el usuario evalúa correos sospechosos y aplica acciones de aislamiento, reporte a CSIRT o cuarentena.
+* **Matriz de Riesgo 5x5:** Cuadrícula de probabilidad vs. impacto con clasificación de severidad y cálculo dinámico de riesgo residual.
+* **Generador de Informe de Auditoría:** Reporte ejecutivo con estado de cumplimiento de los 93 controles de la norma ISO/IEC 27001:2022.
+
+---
+
+## ⌨️ Atajos de Teclado y Controles de Navegación
+
+| Tecla / Acción | Módulo Activo | Efecto en la Simulación |
+| :---: | :--- | :--- |
+| `[→]` / `[Espacio]` | Portal Maestro (Modo Presentación) | Avanzar a la siguiente diapositiva técnica. |
+| `[←]` | Portal Maestro (Modo Presentación) | Retroceder a la diapositiva anterior. |
+| `[Esc]` | Todos los módulos | Cerrar modales abiertos (Fluke, Wireshark, Examen, CCTV, etc.). |
+| **Arrastrar Clic Izq.** | Simulador 3D Data Center | Rotación orbital libre de la cámara en 3D. |
+| **Arrastrar Clic Der.** | Simulador 3D Data Center | Desplazamiento panorámico (*Pan*) de la sala. |
+| **Rueda de Ratón** | Simulador 3D Data Center | Acercamiento / alejamiento (*Zoom in/out*). |
+| **Clic en Rack 3D** | Simulador 3D Data Center | Abre la puerta del rack seleccionado y despliega sus especificaciones. |
+
+---
+
+## 📂 Estructura Limpia del Repositorio
 
 ```bash
-├── index.html                               # Aplicación principal 4D lista para GitHub Pages
-├── SIMULADOR_DATA_CENTER_3D.html            # Archivo maestro del simulador 3D / 4D
-├── MAPA_CONCEPTUAL_INTERACTIVO.html        # Mapa conceptual interactivo en HTML5/CSS3
-├── README.md                                # Documentación técnica y académica completa
+├── index.html                               # Portal Maestro Hub (Página de inicio en GitHub Pages)
+├── portal.html                              # Alias de compatibilidad del Portal Maestro
+├── datacenter.html                          # Simulador 3D Data Center Tier III (ANSI/TIA-942)
+├── ciberdefensa.html                        # Centro de Ciberdefensa SOC (ISO/IEC 27001:2022)
+├── iniciar_simuladores.bat                  # Lanzador automático en 1 clic para Windows
+├── MAPA_CONCEPTUAL_INTERACTIVO.html        # Mapa conceptual dinámico complementario
+├── SIMULADOR_DATA_CENTER_3D.html            # Versión de archivo histórico del simulador
+├── README.md                                # Documentación técnica y académica integral
 ├── LICENSE                                  # Licencia de código abierto MIT
-├── .gitignore                               # Exclusiones de Git
+├── .gitignore                               # Configuración de exclusiones de Git
 │
-├── docs/                                    # Carpeta de Documentación Formal
-│   ├── TRABAJO_DATA_CENTER_PRO_MAX.pdf      # Informe académico final en formato PDF (667 KB)
-│   ├── TRABAJO_DATA_CENTER_PRO_MAX.docx     # Informe editable en Microsoft Word (2.35 MB)
-│   ├── Caso_Practico_Seguridad_DataCenter.md# Análisis detallado de los casos prácticos
-│   ├── MANUAL_TECNICO_SIMULADOR_3D.md       # Manual de ingeniería y Three.js
-│   ├── GUIA_DE_EXPOSICION_RAPIDA.md         # Guion de defensa oral ante el jurado
-│   └── Caso_Practico_Habilidades_Blandas.md # Caso complementario de habilidades
-│
-├── assets/                                  # Recursos Gráficos e Infografías
+├── assets/                                  # Capturas HD, diagramas y recursos gráficos
+│   ├── screenshot_portal.png                # Captura oficial del Portal Maestro Hub
+│   ├── screenshot_datacenter.png            # Captura oficial del Simulador 3D Data Center
+│   ├── screenshot_ciberdefensa.png          # Captura oficial del Centro de Ciberdefensa SOC
 │   ├── datacenter_seguridad_fisica.jpg      # Render de infraestructura física
 │   ├── datacenter_seguridad_logica.jpg      # Render de seguridad lógica y redes
-│   ├── mapa_conceptual_datacenter.png       # Diagrama de mapa conceptual
-│   ├── mapa_conceptual_datacenter_hd.png    # Versión en alta resolución HD
-│   └── mapa_conceptual_infografia.jpg       # Infografía ejecutiva de seguridad
+│   └── mapa_conceptual_datacenter_hd.png    # Mapa conceptual en alta definición
 │
-└── src/                                     # Scripts de Generación y Herramientas Python
-    ├── make_simulator_html.py               # Generador del simulador 4D
+├── docs/                                    # Documentación formal y monografías
+│   ├── TRABAJO_DATA_CENTER_PRO_MAX.pdf      # Informe académico final en formato PDF
+│   ├── TRABAJO_DATA_CENTER_PRO_MAX.docx     # Informe editable en Microsoft Word
+│   ├── MANUAL_TECNICO_SIMULADOR_3D.md       # Manual de ingeniería y Three.js
+│   ├── GUIA_DE_EXPOSICION_RAPIDA.md         # Guion de defensa oral para la exposición
+│   └── Caso_Practico_Seguridad_DataCenter.md# Análisis de casos prácticos y contingencias
+│
+└── src/                                     # Scripts de generación y herramientas complementarias
+    ├── make_simulator_html.py               # Generador automatizado de plantillas
     ├── generar_mapa_hd.py                   # Generador del mapa conceptual
     └── crear_doc_datacenter.py              # Generador de documentos Word/PDF
 ```
@@ -151,23 +165,24 @@ No requiere archivos de audio externos (cero enlaces rotos, 100% autónomo y fun
 
 ## 🛠️ Instalación y Ejecución Local
 
-No requiere NodeJS, servidores Apache ni dependencias complejas. Es completamente autónomo:
+El proyecto es completamente **autónomo y *zero-dependency*** (no requiere Node.js, Python, bases de datos ni servidores web locales):
 
-```bash
-# 1. Clonar el repositorio
-git clone https://github.com/GMPH2007/simulador-datacenter-4d-seguridad-ciberseguridad.git
+### Opción A: Ejecución Directa en Windows (Recomendada)
+1. Descargue el repositorio o clone mediante Git:
+   ```bash
+   git clone https://github.com/GMPH2007/simulador-datacenter-4d-seguridad-ciberseguridad.git
+   ```
+2. Haga doble clic en el archivo `iniciar_simuladores.bat`.
+3. Automáticamente se abrirán los tres módulos en pestañas organizadas de su navegador web por defecto.
 
-# 2. Entrar al directorio
-cd simulador-datacenter-4d-seguridad-ciberseguridad
-
-# 3. Abrir en cualquier navegador moderno (Chrome, Edge, Firefox, Brave)
-start index.html
-```
+### Opción B: Ejecución Manual
+Simplemente abra `index.html` con cualquier navegador moderno (Google Chrome, Microsoft Edge, Mozilla Firefox, Brave u Opera).
 
 ---
 
-## 📜 Licencia y Derechos de Autor
+## 📜 Licencia y Acreditación
 
-Este proyecto ha sido desarrollado con fines académicos y de investigación científica para el **I.E.S.T.P. "Hermanos Cárcamo" - Paita**. Distribuido bajo los términos de la [Licencia MIT](LICENSE).
+Este proyecto ha sido desarrollado con fines de excelencia académica, investigación tecnológica y divulgación científica para el **I.E.S.T.P. "Hermanos Cárcamo" - Paita**, bajo la cátedra del **Dr. Javier Eduardo Jaramillo Atoche**. Distribuido bajo los términos de la [Licencia MIT](LICENSE).
 
-**© 2026 Gerson Misael Pintado Huamán y Equipo de Investigación.**
+**© 2026 Gerson Misael Pintado Huamán y Equipo de Investigación.**  
+*Arquitectura de Plataformas y Servicios de Tecnologías de la Información · Paita, Perú.*

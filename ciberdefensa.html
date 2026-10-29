@@ -1,0 +1,2492 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISO/IEC 27001 | Cyber Defense Simulator Pro Max</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;600;700;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --glow-red: rgba(239, 68, 68, 0.7);
+            --glow-blue: rgba(59, 130, 246, 0.7);
+            --glow-emerald: rgba(16, 185, 129, 0.7);
+            --glow-purple: rgba(168, 85, 247, 0.7);
+            --glow-cyan: rgba(6, 182, 212, 0.7);
+        }
+
+        body {
+            background-color: #020617;
+            color: #f8fafc;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .font-mono-code { font-family: 'Fira Code', monospace; }
+        .font-tech { font-family: 'Rajdhani', sans-serif; }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.78);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.55);
+        }
+
+        .glass-panel-sub {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        
+        /* Cyberspace 3D Grid */
+        .cyber-grid {
+            background-image: 
+                linear-gradient(rgba(56, 189, 248, 0.07) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(56, 189, 248, 0.07) 1px, transparent 1px);
+            background-size: 44px 44px;
+            transform: perspective(600px) rotateX(60deg) translateY(-80px) translateZ(-150px);
+            animation: moveGrid 18s linear infinite;
+        }
+        @keyframes moveGrid { 
+            from { background-position: 0 0; } 
+            to { background-position: 0 44px; } 
+        }
+
+        /* Glowing text utilities */
+        .glow-text-red { text-shadow: 0 0 10px rgba(239, 68, 68, 0.8), 0 0 22px rgba(239, 68, 68, 0.5); }
+        .glow-text-blue { text-shadow: 0 0 10px rgba(59, 130, 246, 0.8), 0 0 22px rgba(59, 130, 246, 0.5); }
+        .glow-text-emerald { text-shadow: 0 0 10px rgba(16, 185, 129, 0.8), 0 0 22px rgba(16, 185, 129, 0.5); }
+        .glow-text-purple { text-shadow: 0 0 10px rgba(168, 85, 247, 0.8), 0 0 22px rgba(168, 85, 247, 0.5); }
+        .glow-text-cyan { text-shadow: 0 0 10px rgba(6, 182, 212, 0.8), 0 0 22px rgba(6, 182, 212, 0.5); }
+
+        /* The Core Server */
+        .core { 
+            transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        .core.vulnerable {
+            box-shadow: 0 0 35px rgba(239, 68, 68, 0.6), inset 0 0 25px rgba(239, 68, 68, 0.4);
+            border-color: #ef4444;
+            animation: pulse-red 2s infinite ease-in-out;
+        }
+        .core.secured {
+            box-shadow: 0 0 45px rgba(16, 185, 129, 0.5), inset 0 0 25px rgba(16, 185, 129, 0.35);
+            border-color: #10b981;
+            animation: pulse-green 4s infinite ease-in-out;
+        }
+        @keyframes pulse-red { 
+            0%, 100% { box-shadow: 0 0 25px rgba(239, 68, 68, 0.5), inset 0 0 15px rgba(239, 68, 68, 0.3); } 
+            50% { box-shadow: 0 0 65px rgba(239, 68, 68, 0.9), inset 0 0 35px rgba(239, 68, 68, 0.6); } 
+        }
+        @keyframes pulse-green { 
+            0%, 100% { box-shadow: 0 0 35px rgba(16, 185, 129, 0.4); } 
+            50% { box-shadow: 0 0 65px rgba(16, 185, 129, 0.75); } 
+        }
+
+        /* Shields */
+        .shield {
+            position: absolute; 
+            border-radius: 50%; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%) scale(0.6);
+            opacity: 0; 
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            pointer-events: none;
+        }
+        
+        
+        /* Animated SVG Laser Attack Conduits & Flowing Arrowheads */
+        .conduit-track {
+            stroke: rgba(255, 255, 255, 0.08);
+            stroke-width: 2;
+            stroke-dasharray: 4 6;
+        }
+        .laser-beam {
+            stroke-dasharray: 16 10;
+            animation: laserFlow 0.85s linear infinite;
+            transition: stroke 0.4s, stroke-width 0.4s, x2 0.4s, y2 0.4s;
+        }
+        @keyframes laserFlow {
+            from { stroke-dashoffset: 26; }
+            to { stroke-dashoffset: 0; }
+        }
+        .laser-beam-blocked {
+            stroke-dasharray: 8 8;
+            animation: laserFlowSlow 1.8s linear infinite;
+            opacity: 0.75;
+        }
+        @keyframes laserFlowSlow {
+            from { stroke-dashoffset: 16; }
+            to { stroke-dashoffset: 0; }
+        }
+
+        /* Threat Actor Card Enhancements */
+        .threat-actor-card {
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+        }
+        .threat-actor-card:hover {
+            transform: scale(1.08);
+        }
+        .threat-actor-card.blocked .actor-icon-box {
+            border-color: rgba(59, 130, 246, 0.5) !important;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4) !important;
+        }
+
+        /* Holographic Concentric Tech Rings around Core Server */
+        .holo-ring-outer {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 360px; height: 360px;
+            border-radius: 50%;
+            border: 1px dashed rgba(56, 189, 248, 0.3);
+            pointer-events: none;
+            animation: spin-slow 35s linear infinite;
+        }
+        .holo-ring-inner {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px; height: 300px;
+            border-radius: 50%;
+            border: 1px dotted rgba(16, 185, 129, 0.35);
+            pointer-events: none;
+            animation: spin-reverse 22s linear infinite;
+        }
+        @keyframes spin-reverse {
+            from { transform: translate(-50%, -50%) rotate(360deg); }
+            to { transform: translate(-50%, -50%) rotate(0deg); }
+        }
+
+        /* Shockwave Ripple Ring */
+        .shockwave-pulse {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0.3);
+            width: 280px; height: 280px;
+            border-radius: 50%;
+            border: 2px solid #38bdf8;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .shockwave-pulse.trigger {
+            animation: shockwaveAnim 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes shockwaveAnim {
+            0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0.95; border-color: #38bdf8; box-shadow: 0 0 20px #38bdf8; }
+            100% { transform: translate(-50%, -50%) scale(1.4); opacity: 0; border-color: #10b981; box-shadow: 0 0 40px rgba(16, 185, 129, 0); }
+        }
+
+        /* Access Control Shield (A.9) */
+        .shield-a9.active {
+            opacity: 1; 
+            transform: translate(-50%, -50%) scale(1);
+            width: 250px; 
+            height: 250px;
+            border: 2px dashed #3b82f6;
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.35) inset, 0 0 25px rgba(59, 130, 246, 0.3);
+            animation: spin-slow 24s linear infinite;
+        }
+
+        /* Encryption Shield (A.10) */
+        .shield-a10.active {
+            opacity: 1; 
+            transform: translate(-50%, -50%) scale(1);
+            width: 180px; 
+            height: 180px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, rgba(16, 185, 129, 0.08) 60%, transparent 75%);
+            border: 3px solid rgba(16, 185, 129, 0.7);
+            box-shadow: 0 0 30px #10b981;
+            backdrop-filter: blur(3px);
+            animation: pulse-shield-green 3s ease-in-out infinite;
+        }
+
+        /* SIEM Radar (A.16) */
+        .shield-a16 {
+            width: 330px; 
+            height: 330px; 
+            border-radius: 50%; 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%);
+            background: conic-gradient(from 0deg, transparent 72%, rgba(168, 85, 247, 0.45) 100%);
+            border: 1px dashed rgba(168, 85, 247, 0.3);
+            opacity: 0; 
+            pointer-events: none; 
+            transition: opacity 0.8s;
+        }
+        .shield-a16.active { 
+            opacity: 1; 
+            animation: radar-spin 3s linear infinite; 
+        }
+
+        @keyframes spin-slow { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+        @keyframes radar-spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+        @keyframes pulse-shield-green {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 25px #10b981; }
+            50% { transform: translate(-50%, -50%) scale(1.04); box-shadow: 0 0 40px #10b981; }
+        }
+
+        /* Attack Particle System */
+        .attack-particle {
+            position: absolute; 
+            width: 4px; 
+            height: 24px; 
+            background: #ef4444; 
+            border-radius: 4px;
+            box-shadow: 0 0 14px #ef4444, 0 0 25px rgba(239, 68, 68, 0.8); 
+            opacity: 0; 
+            pointer-events: none;
+        }
+        
+        /* Direct attack trajectories toward core (50%, 50%) */
+        @keyframes shoot1 { 
+            0% { top: 14%; left: 14%; opacity: 1; transform: rotate(45deg); } 
+            80% { opacity: 1; }
+            100% { top: 46%; left: 46%; opacity: 0; transform: rotate(45deg); } 
+        }
+        @keyframes shoot2 { 
+            0% { bottom: 14%; left: 14%; opacity: 1; transform: rotate(-45deg); } 
+            80% { opacity: 1; }
+            100% { bottom: 46%; left: 46%; opacity: 0; transform: rotate(-45deg); } 
+        }
+        @keyframes shoot3 { 
+            0% { top: 14%; right: 14%; opacity: 1; transform: rotate(-45deg); } 
+            80% { opacity: 1; }
+            100% { top: 46%; right: 46%; opacity: 0; transform: rotate(-45deg); } 
+        }
+
+        /* Deflection animations */
+        @keyframes deflect1 { 
+            0% { top: 14%; left: 14%; opacity: 1; transform: rotate(45deg); } 
+            70% { top: 34%; left: 34%; opacity: 1; transform: rotate(45deg); box-shadow: 0 0 15px #ef4444; } 
+            71% { top: 34%; left: 34%; opacity: 1; transform: rotate(0deg) scale(1.8); background: #3b82f6; width: 14px; height: 14px; border-radius: 50%; box-shadow: 0 0 25px #3b82f6; } 
+            100% { top: 34%; left: 34%; opacity: 0; transform: rotate(0deg) scale(4); background: #3b82f6; width: 14px; height: 14px; border-radius: 50%; } 
+        }
+        @keyframes deflect2 { 
+            0% { bottom: 14%; left: 14%; opacity: 1; transform: rotate(-45deg); } 
+            70% { bottom: 38%; left: 38%; opacity: 1; transform: rotate(-45deg); box-shadow: 0 0 15px #ef4444; } 
+            71% { bottom: 38%; left: 38%; opacity: 1; transform: rotate(0deg) scale(1.8); background: #10b981; width: 14px; height: 14px; border-radius: 50%; box-shadow: 0 0 25px #10b981; } 
+            100% { bottom: 38%; left: 38%; opacity: 0; transform: rotate(0deg) scale(4); background: #10b981; width: 14px; height: 14px; border-radius: 50%; } 
+        }
+        @keyframes deflect3 { 
+            0% { top: 14%; right: 14%; opacity: 1; transform: rotate(-45deg); } 
+            65% { top: 30%; right: 30%; opacity: 1; transform: rotate(-45deg); box-shadow: 0 0 15px #ef4444; } 
+            66% { top: 30%; right: 30%; opacity: 1; transform: rotate(0deg) scale(1.8); background: #a855f7; width: 14px; height: 14px; border-radius: 50%; box-shadow: 0 0 25px #a855f7; } 
+            100% { top: 30%; right: 30%; opacity: 0; transform: rotate(0deg) scale(4); background: #a855f7; width: 14px; height: 14px; border-radius: 50%; } 
+        }
+
+        .attack-1 { animation: shoot1 1.4s infinite cubic-bezier(0.2, 0.8, 0.4, 1); }
+        .attack-2 { animation: shoot2 1.8s infinite 0.4s cubic-bezier(0.2, 0.8, 0.4, 1); }
+        .attack-3 { animation: shoot3 1.6s infinite 0.2s cubic-bezier(0.2, 0.8, 0.4, 1); }
+
+        /* Custom Toggle Switch */
+        .cyber-switch { position: relative; width: 56px; height: 30px; display: inline-block; flex-shrink: 0; }
+        .cyber-switch input { opacity: 0; width: 0; height: 0; }
+        .cyber-slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #1e293b; transition: .35s; border-radius: 34px;
+            border: 1px solid #334155;
+        }
+        .cyber-slider:before {
+            position: absolute; content: ""; height: 22px; width: 22px; left: 3px; bottom: 3px;
+            background-color: #94a3b8; transition: .35s; border-radius: 50%;
+        }
+        input:checked + .cyber-slider { 
+            background-color: #10b981; 
+            box-shadow: 0 0 18px rgba(16, 185, 129, 0.6); 
+            border-color: #10b981; 
+        }
+        input:checked + .cyber-slider:before { 
+            transform: translateX(26px); 
+            background-color: #ffffff; 
+        }
+
+        /* Progress Bar */
+        .progress-bar { width: 0%; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        /* Attacker container states */
+        .attacker-container { transition: all 0.4s ease; cursor: pointer; }
+        .attacker-container:hover { transform: scale(1.08); }
+        .attacker-container.blocked i { 
+            color: #475569 !important; 
+            text-shadow: none !important; 
+            animation: none !important; 
+        }
+        .attacker-container.blocked .atk-status { color: #64748b !important; }
+
+        /* Data Sync Animation */
+        @keyframes moveSync { 
+            0% { left: 0%; opacity: 0; } 
+            30% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { left: 100%; opacity: 0; } 
+        }
+
+        /* Scanlines */
+        .scanlines {
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+        }
+
+        /* Terminal Scrollbar */
+        .terminal-scroll::-webkit-scrollbar { width: 5px; }
+        .terminal-scroll::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
+        .terminal-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .terminal-scroll::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+    
+    <!-- Top Global Navbar (Conectado con Portal y Simulador Data Center 3D) -->
+    <nav class="glass-panel sticky top-0 z-50 px-5 py-3 border-b border-white/10">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-3">
+            <div class="flex items-center gap-3">
+                <a href="index.html" class="flex items-center gap-2 text-xs font-mono-code text-gray-400 hover:text-emerald-400 transition bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-emerald-500/50">
+                    <i class="fa-solid fa-house"></i>
+                    <span class="hidden sm:inline">PORTAL</span>
+                </a>
+                <div class="h-4 w-[1px] bg-slate-700"></div>
+
+                <!-- Simulator Switcher Tabs (Conexión HTML instantánea) -->
+                <div class="flex items-center gap-1.5 bg-slate-900/90 p-1 rounded-xl border border-slate-700/80">
+                    <a href="index.html" class="px-3 py-1.5 text-xs font-mono-code rounded-lg bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40 shadow-[0_0_12px_rgba(16,185,129,0.3)] flex items-center gap-1.5">
+                        <i class="fa-solid fa-shield-halved text-emerald-400"></i>
+                        <span>ISO 27001 CIBERDEFENSA</span>
+                    </a>
+                    <a href="datacenter.html" class="px-3 py-1.5 text-xs font-mono-code rounded-lg text-gray-400 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-server text-cyan-400"></i>
+                        <span class="hidden md:inline">DATA CENTER 3D II</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Header Controls & Status -->
+            <div class="flex items-center gap-3">
+                <!-- Sound Toggle -->
+                <button id="sound-toggle" onclick="toggleAudio()" class="text-xs font-mono-code px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700 text-gray-300 hover:text-white hover:border-slate-500 transition flex items-center gap-2">
+                    <i id="sound-icon" class="fa-solid fa-volume-high text-emerald-400"></i>
+                    <span id="sound-text" class="hidden sm:inline">SFX: ON</span>
+                </button>
+
+                <!-- Status Pill -->
+                <div class="glass-panel-sub px-3 py-1.5 rounded-lg border border-slate-700 flex items-center gap-2 text-xs font-mono-code">
+                    <span class="text-gray-400">ESTADO:</span>
+                    <span id="nav-status" class="text-red-500 font-bold animate-pulse">CRITICAL_THREAT</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-[1440px] mx-auto w-full p-4 lg:p-6 flex flex-col gap-5">
+        
+        <!-- Header Info -->
+        <header class="glass-panel px-5 py-3 rounded-2xl flex flex-wrap justify-between items-center gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-500/20 border border-blue-500/40 flex items-center justify-center text-blue-400 text-lg">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-mono-code px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">SGSI ISO/IEC 27001:2022</span>
+                        <span class="text-[10px] font-mono-code text-gray-400 hidden sm:inline">| SOC PRO MAX</span>
+                    </div>
+                    <h1 class="text-lg lg:text-xl font-black text-white tracking-wide font-tech">CENTRO DE OPERACIONES DE CIBERDEFENSA</h1>
+                </div>
+            </div>
+
+            <!-- Header Action Controls -->
+            <div class="flex flex-wrap items-center gap-1.5 font-mono-code text-xs">
+                <button onclick="startSocDemo()" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 font-bold shadow-[0_0_15px_rgba(6,182,212,0.4)] transition flex items-center gap-1.5 transform hover:scale-105">
+                    <i class="fa-solid fa-person-chalkboard text-slate-950"></i>
+                    <span>DEMO EXPOSICIÓN</span>
+                </button>
+                <button onclick="setAllControls(true)" class="px-2.5 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/25 transition flex items-center gap-1">
+                    <i class="fa-solid fa-shield-check"></i> 100% DEF
+                </button>
+                <button onclick="setAllControls(false)" class="px-2.5 py-1.5 rounded-xl bg-red-500/15 border border-red-500/40 text-red-300 hover:bg-red-500/25 transition flex items-center gap-1">
+                    <i class="fa-solid fa-skull"></i> 0% BRECHA
+                </button>
+                <button onclick="openWiresharkModal()" class="px-2.5 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/40 text-cyan-300 hover:bg-cyan-500/25 transition flex items-center gap-1">
+                    <i class="fa-solid fa-network-wired text-cyan-400"></i> WIRESHARK
+                </button>
+                <button onclick="openPhishingModal()" class="px-2.5 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/40 text-amber-300 hover:bg-amber-500/25 transition flex items-center gap-1">
+                    <i class="fa-solid fa-envelope-open-text text-amber-400"></i> PHISHING
+                </button>
+                <button onclick="openRiskMatrix()" class="px-2.5 py-1.5 rounded-xl bg-blue-500/15 border border-blue-500/40 text-blue-300 hover:bg-blue-500/25 transition flex items-center gap-1">
+                    <i class="fa-solid fa-table-cells"></i> RIESGO 5x5
+                </button>
+                <button onclick="openAuditReport()" class="px-2.5 py-1.5 rounded-xl bg-slate-800 border border-slate-600 text-gray-300 hover:text-white transition flex items-center gap-1">
+                    <i class="fa-solid fa-file-shield text-emerald-400"></i> INFORME
+                </button>
+                <button onclick="toggleVoiceAssistant()" id="voice-btn" class="px-2.5 py-1.5 rounded-xl bg-slate-800 border border-slate-600 text-purple-300 transition flex items-center gap-1">
+                    <i id="voice-icon" class="fa-solid fa-volume-high text-purple-400"></i>
+                    <span id="voice-text">VOZ: ON</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Dedicated Global Threat Intel Ticker Bar (Full Width, Zero Collision) -->
+        <div class="w-full glass-panel-sub px-5 py-2.5 rounded-2xl border border-red-500/30 flex flex-wrap items-center justify-between gap-3 text-xs font-mono-code mb-4 shadow-[0_0_20px_rgba(239,68,68,0.15)]">
+            <div class="flex items-center gap-2.5 overflow-hidden text-ellipsis whitespace-nowrap">
+                <span class="text-red-400 font-bold flex items-center gap-1.5"><i class="fa-solid fa-satellite-dish animate-pulse text-red-500"></i> DARK WEB FEED:</span>
+                <span id="live-threat-feed" class="text-gray-200">IoC Detectado: IP 185.220.101.5 escaneando puerto 22 SSH · Bloqueo preventivo en curso</span>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+                <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+                <span class="text-[10px] bg-red-950/90 text-red-300 px-2.5 py-0.5 rounded-full border border-red-500/40 font-bold">SIEM STREAM EN VIVO</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-grow">
+            
+            <!-- Left: Simulation Canvas (WOW Factor) -->
+            <div class="lg:col-span-7 glass-panel rounded-3xl relative overflow-hidden flex flex-col justify-between h-[560px] border border-white/10 shadow-2xl">
+                
+                <!-- Scanline Effect -->
+                <div class="scanlines absolute inset-0 z-30 opacity-25 pointer-events-none"></div>
+                <!-- Guided SOC Demo Banner -->
+                <div id="demo-banner" class="absolute top-4 left-1/2 -translate-x-1/2 z-40 max-w-xl w-[92%] glass-panel border-2 border-cyan-400/60 rounded-2xl p-3.5 shadow-[0_0_35px_rgba(6,182,212,0.4)] hidden transition-all duration-300">
+                    <div class="flex justify-between items-center border-b border-cyan-500/20 pb-2 mb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+                            <span id="demo-badge" class="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-mono-code text-[11px] font-bold border border-cyan-500/30">DEMO PASO 1 / 5</span>
+                            <h4 id="demo-title" class="text-xs sm:text-sm font-bold text-white font-tech tracking-wide truncate">DEMO SOC AUDITORÍA</h4>
+                        </div>
+                        <button onclick="stopSocDemo()" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-gray-400 hover:text-white flex items-center justify-center transition" title="Cerrar demostración">
+                            <i class="fa-solid fa-xmark text-xs"></i>
+                        </button>
+                    </div>
+                    <p id="demo-desc" class="text-xs text-cyan-100 font-mono-code leading-relaxed"></p>
+                </div>
+
+
+                <!-- Top HUD Bar inside Canvas -->
+                <div class="relative z-20 flex justify-between items-start p-5 font-mono-code text-xs text-gray-400">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="inline-block w-2.5 h-2.5 rounded-full bg-blue-400 animate-ping"></span>
+                            <span>RED: <span class="text-blue-400 font-bold">CORPORATE_MAIN_NET</span></span>
+                        </div>
+                        <div>AMENAZA: <span id="hud-threat" class="text-red-500 font-bold glow-text-red">CRÍTICA (0% DEF)</span></div>
+                    </div>
+
+                    <!-- Top-Right HUD: System Integrity -->
+                    <div class="glass-panel-sub px-4 py-2 rounded-2xl border border-white/10 text-right">
+                        <div class="text-[10px] text-gray-400 font-mono-code uppercase tracking-widest">INTEGRIDAD DEL SISTEMA</div>
+                        <div id="hud-integrity" class="text-2xl lg:text-3xl font-black text-red-500 glow-text-red font-tech">0%</div>
+                    </div>
+                </div>
+
+                <!-- Cyber Grid 3D Background -->
+                <div class="absolute inset-0 overflow-hidden flex justify-center items-center pointer-events-none">
+                    <div class="cyber-grid w-[240%] h-[240%] absolute"></div>
+                </div>
+
+                <!-- SVG Vector Laser Conduits Layer with Flowing Arrowheads -->
+                <svg id="attack-svg-layer" class="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 1000 560" preserveAspectRatio="none">
+                    <defs>
+                        <!-- Directional Arrowhead Markers -->
+                        <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 1 L 9 5 L 0 9 z" fill="#ef4444" />
+                        </marker>
+                        <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 1 L 9 5 L 0 9 z" fill="#3b82f6" />
+                        </marker>
+                        <marker id="arrow-emerald" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 1 L 9 5 L 0 9 z" fill="#10b981" />
+                        </marker>
+                        <marker id="arrow-purple" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 1 L 9 5 L 0 9 z" fill="#a855f7" />
+                        </marker>
+                        <filter id="glow-red">
+                            <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#ef4444"/>
+                        </filter>
+                        <filter id="glow-blue">
+                            <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#3b82f6"/>
+                        </filter>
+                        <filter id="glow-emerald">
+                            <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#10b981"/>
+                        </filter>
+                        <filter id="glow-purple">
+                            <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#a855f7"/>
+                        </filter>
+                    </defs>
+
+                    <!-- Conduit Base Tracks -->
+                    <line x1="120" y1="130" x2="450" y2="265" class="conduit-track" />
+                    <line x1="880" y1="130" x2="550" y2="265" class="conduit-track" />
+                    <line x1="120" y1="430" x2="450" y2="295" class="conduit-track" />
+                    <line x1="880" y1="430" x2="550" y2="295" class="conduit-track" />
+
+                    <!-- Dynamic Laser Conduits -->
+                    <!-- 1. APT -> Core -->
+                    <line id="laser-1" class="laser-beam" x1="120" y1="130" x2="450" y2="265" stroke="#ef4444" stroke-width="3" marker-end="url(#arrow-red)" filter="url(#glow-red)" />
+                    <!-- 2. DDoS -> Core -->
+                    <line id="laser-2" class="laser-beam" x1="880" y1="130" x2="550" y2="265" stroke="#ef4444" stroke-width="3" marker-end="url(#arrow-red)" filter="url(#glow-red)" />
+                    <!-- 3. Ransomware -> Core -->
+                    <line id="laser-3" class="laser-beam" x1="120" y1="430" x2="450" y2="295" stroke="#ef4444" stroke-width="3" marker-end="url(#arrow-red)" filter="url(#glow-red)" />
+                    <!-- 4. Phishing -> Core -->
+                    <line id="laser-4" class="laser-beam" x1="880" y1="430" x2="550" y2="295" stroke="#ef4444" stroke-width="3" marker-end="url(#arrow-red)" filter="url(#glow-red)" />
+
+                    <!-- Flowing Particle Energy Pulses -->
+                    <circle id="pulse-1" r="5" fill="#ef4444" filter="url(#glow-red)">
+                        <animateMotion id="motion-1" dur="1.1s" repeatCount="indefinite" path="M 120 130 L 450 265" />
+                    </circle>
+                    <circle id="pulse-2" r="5" fill="#ef4444" filter="url(#glow-red)">
+                        <animateMotion id="motion-2" dur="0.9s" repeatCount="indefinite" path="M 880 130 L 550 265" />
+                    </circle>
+                    <circle id="pulse-3" r="5" fill="#ef4444" filter="url(#glow-red)">
+                        <animateMotion id="motion-3" dur="1.2s" repeatCount="indefinite" path="M 120 430 L 450 295" />
+                    </circle>
+                    <circle id="pulse-4" r="5" fill="#ef4444" filter="url(#glow-red)">
+                        <animateMotion id="motion-4" dur="1.0s" repeatCount="indefinite" path="M 880 430 L 550 295" />
+                    </circle>
+                </svg>
+
+                <!-- 4 Threat Actors Symmetrically Anchored in the 4 Corners -->
+                <!-- 1. APT Group X (Top-Left) -->
+                <div id="apt-actor" onclick="openThreatIntel('apt')" title="Clic para ver inteligencia de amenaza" class="threat-actor-card absolute top-[85px] left-6 sm:left-10 flex flex-col items-center z-20">
+                    <div class="actor-icon-box w-12 h-12 rounded-2xl bg-slate-900/90 border border-red-500/50 flex items-center justify-center shadow-[0_0_20px_rgba(239,68,68,0.4)]">
+                        <i class="fa-solid fa-user-secret text-2xl text-red-500 glow-text-red animate-pulse"></i>
+                    </div>
+                    <span class="text-[11px] font-mono-code text-red-400 font-bold mt-1.5">APT_GROUP_X</span>
+                    <span id="apt-status" class="atk-status text-[9px] font-mono-code text-red-400 mt-0.5 bg-red-950/70 px-2 py-0.5 rounded border border-red-500/30">[ATTACK: BRUTE_FORCE]</span>
+                </div>
+
+                <!-- 2. DDoS Botnet (Top-Right) -->
+                <div id="ddos-actor" onclick="openThreatIntel('ddos')" title="Clic para ver inteligencia de amenaza" class="threat-actor-card absolute top-[85px] right-6 sm:right-10 flex flex-col items-center z-20">
+                    <div class="actor-icon-box w-12 h-12 rounded-2xl bg-slate-900/90 border border-red-500/50 flex items-center justify-center shadow-[0_0_20px_rgba(239,68,68,0.4)]">
+                        <i class="fa-solid fa-network-wired text-2xl text-red-500 glow-text-red animate-pulse"></i>
+                    </div>
+                    <span class="text-[11px] font-mono-code text-red-400 font-bold mt-1.5">DDOS_BOTNET</span>
+                    <span id="ddos-status" class="atk-status text-[9px] font-mono-code text-red-400 mt-0.5 bg-red-950/70 px-2 py-0.5 rounded border border-red-500/30">[ATTACK: SYN_FLOOD]</span>
+                </div>
+
+                <!-- 3. Ransomware Payload (Bottom-Left) -->
+                <div id="ransom-actor" onclick="openThreatIntel('ransom')" title="Clic para ver inteligencia de amenaza" class="threat-actor-card absolute bottom-[70px] left-6 sm:left-10 flex flex-col items-center z-20">
+                    <div class="actor-icon-box w-12 h-12 rounded-2xl bg-slate-900/90 border border-red-500/50 flex items-center justify-center shadow-[0_0_20px_rgba(239,68,68,0.4)]">
+                        <i class="fa-solid fa-virus text-2xl text-red-500 glow-text-red animate-bounce"></i>
+                    </div>
+                    <span class="text-[11px] font-mono-code text-red-400 font-bold mt-1.5">RANSOMWARE_PAYLOAD</span>
+                    <span id="ransom-status" class="atk-status text-[9px] font-mono-code text-red-400 mt-0.5 bg-red-950/70 px-2 py-0.5 rounded border border-red-500/30">[ATTACK: ENCRYPTING]</span>
+                </div>
+
+                <!-- 4. Phishing Engine (Bottom-Right) -->
+                <div id="phishing-actor" onclick="openThreatIntel('phishing')" title="Clic para ver inteligencia de amenaza" class="threat-actor-card absolute bottom-[70px] right-6 sm:right-10 flex flex-col items-center z-20">
+                    <div class="actor-icon-box w-12 h-12 rounded-2xl bg-slate-900/90 border border-red-500/50 flex items-center justify-center shadow-[0_0_20px_rgba(239,68,68,0.4)]">
+                        <i class="fa-solid fa-envelope-open-text text-2xl text-red-500 glow-text-red animate-pulse"></i>
+                    </div>
+                    <span class="text-[11px] font-mono-code text-red-400 font-bold mt-1.5">PHISHING_ENGINE</span>
+                    <span id="phishing-status" class="atk-status text-[9px] font-mono-code text-red-400 mt-0.5 bg-red-950/70 px-2 py-0.5 rounded border border-red-500/30">[ATTACK: SPEAR_PHISH]</span>
+                </div>
+
+                <!-- Center: The Core Target (Server) & Protective Shields -->
+                <div class="relative z-20 w-44 h-44 mx-auto my-auto flex items-center justify-center">
+                    
+                    <!-- Dynamic Shields -->
+                    <!-- Holographic Tech Rings & Shockwave -->
+                    <div class="holo-ring-outer hidden sm:block"></div>
+                    <div class="holo-ring-inner hidden sm:block"></div>
+                    <div id="shockwave-ring" class="shockwave-pulse"></div>
+
+                    <div id="shield-a16" class="shield-a16"></div> <!-- A.16 SIEM Radar -->
+                    <div id="shield-a9" class="shield shield-a9"></div> <!-- A.9 Firewall / Access Control -->
+                    <div id="shield-a10" class="shield shield-a10"></div> <!-- A.10 Cryptographic Bubble -->
+                    
+                    <!-- Core Server -->
+                    <div id="core-server" onclick="openServerTelemetry()" title="Clic para ver telemetría del servidor" class="core vulnerable relative z-20 w-28 h-28 bg-slate-900 rounded-3xl border-2 flex flex-col items-center justify-center cursor-pointer shadow-2xl hover:scale-105 transition-transform">
+                        <i id="core-icon" class="fa-solid fa-server text-4xl text-red-500 mb-1.5 transition-all duration-500"></i>
+                        <span id="core-text" class="text-[10px] font-bold text-red-500 tracking-widest font-mono-code">BREACHED</span>
+                        <span id="core-sub" class="text-[8px] text-gray-500 font-mono-code">UNPROTECTED</span>
+                    </div>
+
+                    <!-- Backup Server (A.17 Continuity - Right side) -->
+                    <div id="backup-server" class="absolute -right-36 sm:-right-40 top-1/2 -translate-y-1/2 opacity-0 transition-all duration-1000 transform translate-x-8 flex flex-col items-center z-10 pointer-events-none">
+                        <div class="w-14 h-14 rounded-2xl bg-slate-900/90 border border-cyan-400/50 flex flex-col items-center justify-center shadow-[0_0_20px_rgba(6,182,212,0.4)]">
+                            <i class="fa-solid fa-database text-2xl text-cyan-400"></i>
+                            <span class="text-[7px] font-mono-code text-cyan-300 font-bold mt-1">DRP_SYNC</span>
+                        </div>
+                        
+                        <!-- Connecting Data Line -->
+                        <div class="absolute top-1/2 right-[100%] w-16 sm:w-20 border-t-2 border-dashed border-cyan-400/60 -translate-y-1/2"></div>
+                        <!-- Animated Packet -->
+                        <div class="absolute top-1/2 right-[100%] w-3 h-3 bg-cyan-400 -translate-y-1/2 rounded-full shadow-[0_0_12px_#06b6d4]" style="animation: moveSync 1.4s infinite linear;"></div>
+                    </div>
+                </div>
+
+                <!-- Bottom Status Bar inside Canvas -->
+                <div class="relative z-20 flex justify-between items-center p-4 font-mono-code text-[11px] text-gray-400 border-t border-white/5 bg-slate-950/70">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-shield-halved text-cyan-400"></i>
+                        <span>ESCUDOS ACTIVOS: <span id="active-shields-names" class="text-white">Ninguno (Vulnerable)</span></span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span>CONTROLES SGSI: <span id="active-controls-count" class="text-white font-bold">0</span>/4</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Interactive Control Panel & SOC Terminal -->
+            <div class="lg:col-span-5 flex flex-col gap-4">
+                
+                <!-- Integrity Progress Card -->
+                <div class="glass-panel p-5 rounded-3xl space-y-3">
+                    <div class="flex justify-between items-end">
+                        <div>
+                            <span class="text-[11px] font-mono-code text-gray-400 uppercase tracking-wider block">Nivel de Madurez SGSI</span>
+                            <h3 class="font-bold text-white text-base">Cumplimiento ISO 27001</h3>
+                        </div>
+                        <span id="progress-text" class="text-2xl font-black text-red-500 font-mono-code">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-900 rounded-full h-3.5 p-0.5 border border-slate-800">
+                        <div id="progress-bar" class="progress-bar bg-red-500 h-full rounded-full shadow-[0_0_12px_#ef4444]"></div>
+                    </div>
+
+                    <!-- CID Triad Live Meters (Confidencialidad, Integridad, Disponibilidad) -->
+                    <div class="pt-2 border-t border-white/5 grid grid-cols-3 gap-2 text-center font-mono-code text-[10px]">
+                        <div class="p-2 rounded-xl bg-slate-900/60 border border-slate-800">
+                            <span class="text-gray-400 block mb-0.5">CONFIDENCIALIDAD</span>
+                            <b id="cid-c" class="text-red-400 text-xs">0%</b>
+                            <div class="w-full bg-slate-800 h-1 rounded-full mt-1 overflow-hidden">
+                                <div id="bar-c" class="bg-red-500 h-full w-0 transition-all duration-500"></div>
+                            </div>
+                        </div>
+                        <div class="p-2 rounded-xl bg-slate-900/60 border border-slate-800">
+                            <span class="text-gray-400 block mb-0.5">INTEGRIDAD</span>
+                            <b id="cid-i" class="text-red-400 text-xs">0%</b>
+                            <div class="w-full bg-slate-800 h-1 rounded-full mt-1 overflow-hidden">
+                                <div id="bar-i" class="bg-red-500 h-full w-0 transition-all duration-500"></div>
+                            </div>
+                        </div>
+                        <div class="p-2 rounded-xl bg-slate-900/60 border border-slate-800">
+                            <span class="text-gray-400 block mb-0.5">DISPONIBILIDAD</span>
+                            <b id="cid-d" class="text-red-400 text-xs">0%</b>
+                            <div class="w-full bg-slate-800 h-1 rounded-full mt-1 overflow-hidden">
+                                <div id="bar-d" class="bg-red-500 h-full w-0 transition-all duration-500"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ISO Controls List -->
+                <div class="glass-panel p-5 rounded-3xl flex flex-col gap-3.5">
+                    <div class="flex justify-between items-center border-b border-white/10 pb-3">
+                        <h3 class="font-bold text-white text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-blue-400"></i> 
+                            <span>Panel de Políticas de Seguridad</span>
+                        </h3>
+                        <span class="text-[10px] font-mono-code text-gray-400 bg-slate-800 px-2 py-0.5 rounded border border-slate-700">ISO/IEC 27001:2022</span>
+                    </div>
+                    
+                    <!-- Control 1: A.9 -->
+                    <div class="flex items-center justify-between p-3.5 rounded-2xl bg-slate-800/40 border border-slate-700/80 hover:border-blue-500/50 transition-all">
+                        <div class="pr-3">
+                            <div class="flex items-center gap-2">
+                                <span class="bg-blue-500/20 text-blue-400 font-mono-code px-2 py-0.5 rounded text-[11px] font-bold border border-blue-500/30">A.9</span>
+                                <h4 class="font-bold text-white text-sm">Control de Acceso</h4>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1">MFA obligatorio, RBAC y principio de privilegios mínimos.</p>
+                            <span class="text-blue-400 text-[10px] font-mono-code block mt-1.5 flex items-center gap-1">
+                                <i class="fa-solid fa-shield-halved"></i> Bloquea APT Group X (Fuerza bruta / Password Spraying)
+                            </span>
+                        </div>
+                        <label class="cyber-switch">
+                            <input type="checkbox" id="toggle-a9" class="policy-toggle" data-val="25">
+                            <span class="cyber-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Control 2: A.16 -->
+                    <div class="flex items-center justify-between p-3.5 rounded-2xl bg-slate-800/40 border border-slate-700/80 hover:border-purple-500/50 transition-all">
+                        <div class="pr-3">
+                            <div class="flex items-center gap-2">
+                                <span class="bg-purple-500/20 text-purple-400 font-mono-code px-2 py-0.5 rounded text-[11px] font-bold border border-purple-500/30">A.16</span>
+                                <h4 class="font-bold text-white text-sm">Gestión de Incidentes</h4>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1">Monitoreo SIEM 24/7 y respuesta coordinada CSIRT.</p>
+                            <span class="text-purple-400 text-[10px] font-mono-code block mt-1.5 flex items-center gap-1">
+                                <i class="fa-solid fa-radar"></i> Mitiga Botnets DDoS y ataques de inundación SYN
+                            </span>
+                        </div>
+                        <label class="cyber-switch">
+                            <input type="checkbox" id="toggle-a16" class="policy-toggle" data-val="25">
+                            <span class="cyber-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Control 3: A.10 -->
+                    <div class="flex items-center justify-between p-3.5 rounded-2xl bg-slate-800/40 border border-slate-700/80 hover:border-emerald-500/50 transition-all">
+                        <div class="pr-3">
+                            <div class="flex items-center gap-2">
+                                <span class="bg-emerald-500/20 text-emerald-400 font-mono-code px-2 py-0.5 rounded text-[11px] font-bold border border-emerald-500/30">A.10</span>
+                                <h4 class="font-bold text-white text-sm">Criptografía</h4>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1">Cifrado robusto en reposo (AES-256) y tránsito (TLS 1.3).</p>
+                            <span class="text-emerald-400 text-[10px] font-mono-code block mt-1.5 flex items-center gap-1">
+                                <i class="fa-solid fa-key"></i> Inutiliza payloads de Ransomware y robo de datos
+                            </span>
+                        </div>
+                        <label class="cyber-switch">
+                            <input type="checkbox" id="toggle-a10" class="policy-toggle" data-val="25">
+                            <span class="cyber-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Control 4: A.17 -->
+                    <div class="flex items-center justify-between p-3.5 rounded-2xl bg-slate-800/40 border border-slate-700/80 hover:border-cyan-500/50 transition-all">
+                        <div class="pr-3">
+                            <div class="flex items-center gap-2">
+                                <span class="bg-cyan-500/20 text-cyan-400 font-mono-code px-2 py-0.5 rounded text-[11px] font-bold border border-cyan-500/30">A.17</span>
+                                <h4 class="font-bold text-white text-sm">Continuidad del Negocio</h4>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1">Plan de Recuperación (DRP) y replicación de base de datos.</p>
+                            <span class="text-cyan-400 text-[10px] font-mono-code block mt-1.5 flex items-center gap-1">
+                                <i class="fa-solid fa-rotate"></i> Garantiza RTO &lt; 15 min y RPO &lt; 5 min con Backups
+                            </span>
+                        </div>
+                        <label class="cyber-switch">
+                            <input type="checkbox" id="toggle-a17" class="policy-toggle" data-val="25">
+                            <span class="cyber-slider"></span>
+                        </label>
+                    </div>
+
+                </div>
+
+                <!-- SOC Security Event Console (Terminal Log) -->
+                <div class="glass-panel p-4 rounded-3xl flex flex-col flex-grow">
+                    <div class="flex justify-between items-center mb-2 px-1">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-terminal text-emerald-400 text-xs"></i>
+                            <span class="text-xs font-mono-code font-bold text-gray-300">CONSOLA SIEM / LOG DE AUDITORÍA</span>
+                        </div>
+                        <button onclick="clearLogs()" class="text-[10px] font-mono-code text-gray-500 hover:text-gray-300 transition">
+                            [LIMPIAR]
+                        </button>
+                    </div>
+                    <div id="terminal-feed" class="terminal-scroll bg-slate-950/80 rounded-2xl p-3 border border-slate-800 font-mono-code text-[11px] h-36 overflow-y-auto space-y-1.5">
+                        <!-- Dynamic logs populated via JS -->
+                    </div>
+
+                    <!-- Interactive SOC Analyst Command Input Line -->
+                    <form id="terminal-cmd-form" onsubmit="event.preventDefault(); handleTerminalCommand();" class="mt-2.5 flex items-center gap-2 bg-slate-950 border border-slate-700/80 rounded-xl px-3 py-2 font-mono-code text-xs">
+                        <span class="text-emerald-400 font-bold flex items-center gap-1">
+                            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                            <span>soc@analyst:~$</span>
+                        </span>
+                        <input id="terminal-cmd-input" type="text" placeholder="Escribe 'help' o comando (nmap, status, blockip)..." class="bg-transparent text-white focus:outline-none flex-grow text-xs font-mono-code">
+                        <button type="submit" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-gray-300 text-[10px]">EJECUTAR</button>
+                    </form>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Modal 1: Threat Intelligence Dossier (Clic en actores de amenaza) -->
+    <div id="threat-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-panel max-w-lg w-full rounded-3xl p-6 border border-white/10 shadow-2xl relative">
+            <div class="flex justify-between items-start border-b border-white/10 pb-4 mb-4">
+                <div>
+                    <span id="threat-badge" class="text-xs font-mono-code text-red-400 font-bold">THREAT INTELLIGENCE DOSSIER</span>
+                    <h3 id="threat-name" class="text-xl font-bold text-white">Actor de Amenaza</h3>
+                </div>
+                <button onclick="closeThreatModal()" class="w-8 h-8 rounded-full bg-slate-800 text-gray-400 hover:text-white flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div id="threat-body" class="space-y-3 text-xs text-gray-300 terminal-scroll max-h-[55vh] overflow-y-auto">
+                <!-- Injected via JS -->
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <button onclick="closeThreatModal()" class="px-5 py-2 rounded-xl bg-red-500 text-white font-bold font-mono-code text-xs hover:bg-red-400 transition">
+                    CERRAR EXPEDIENTE
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Server Internal Telemetry (Clic en core-server) -->
+    <div id="server-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-panel max-w-lg w-full rounded-3xl p-6 border border-white/10 shadow-2xl relative">
+            <div class="flex justify-between items-start border-b border-white/10 pb-4 mb-4">
+                <div>
+                    <span class="text-xs font-mono-code text-emerald-400 font-bold">CORE SERVER INTERNAL METRICS</span>
+                    <h3 class="text-xl font-bold text-white">Servidor Central de Producción</h3>
+                </div>
+                <button onclick="closeServerModal()" class="w-8 h-8 rounded-full bg-slate-800 text-gray-400 hover:text-white flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-3 text-xs text-gray-300 terminal-scroll max-h-[55vh] overflow-y-auto">
+                <div class="p-3 bg-slate-900 rounded-xl border border-slate-700 font-mono-code">
+                    <div class="flex justify-between text-gray-400 mb-1">
+                        <span>S.O.: Ubuntu Server 24.04 LTS</span>
+                        <span id="srv-status-text" class="text-emerald-400">ACTIVO</span>
+                    </div>
+                    <div class="text-[11px] text-gray-400">Kernel: 6.8.0-40-generic (Hardened)</div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 font-mono-code text-[11px]">
+                    <div class="p-2.5 bg-slate-800 rounded-lg">CPU: <span id="srv-cpu" class="text-white font-bold">14%</span></div>
+                    <div class="p-2.5 bg-slate-800 rounded-lg">RAM: <span class="text-white font-bold">32.4 / 64 GB</span></div>
+                    <div class="p-2.5 bg-slate-800 rounded-lg">Puertos: 22, 80, 443, 3306</div>
+                    <div class="p-2.5 bg-slate-800 rounded-lg">Firewall: <span id="srv-fw" class="text-red-400 font-bold">DESACTIVADO</span></div>
+                </div>
+
+                <div class="p-3 bg-slate-900 rounded-xl border border-slate-700">
+                    <b class="text-white block mb-1">Evaluación de Postura ISO 27001:</b>
+                    <p id="srv-posture" class="text-gray-400">Activa los controles del Anexo A para blindar las capas de transporte, cifrado y continuidad.</p>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <button onclick="closeServerModal()" class="px-5 py-2 rounded-xl bg-slate-800 text-gray-200 font-bold font-mono-code text-xs hover:bg-slate-700 transition">
+                    CERRAR
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Reporte Oficial de Auditoría ISO 27001 (Imprimible) -->
+    <div id="audit-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-panel max-w-2xl w-full rounded-3xl p-6 border border-white/10 shadow-2xl relative bg-slate-900">
+            <div class="flex justify-between items-start border-b border-white/10 pb-4 mb-4">
+                <div>
+                    <span class="text-xs font-mono-code text-emerald-400 font-bold">INFORME DE CUMPLIMIENTO SGSI</span>
+                    <h3 class="text-xl font-bold text-white">Certificación ISO/IEC 27001:2022</h3>
+                </div>
+                <button onclick="closeAuditReport()" class="w-8 h-8 rounded-full bg-slate-800 text-gray-400 hover:text-white flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-3.5 text-xs text-gray-300 terminal-scroll max-h-[58vh] overflow-y-auto pr-1">
+                <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 flex justify-between items-center">
+                    <div>
+                        <span class="text-[10px] text-gray-500 font-mono-code uppercase">Puntaje Global de Auditoría</span>
+                        <div id="audit-score-text" class="text-3xl font-black text-emerald-400 font-tech">0% / 100%</div>
+                    </div>
+                    <div id="audit-seal" class="px-3 py-1.5 rounded-xl bg-red-500/20 text-red-400 font-mono-code text-xs border border-red-500/30 font-bold">
+                        NO CERTIFICADO
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <h4 class="font-bold text-white text-sm">Estado de Controles del Anexo A:</h4>
+                    <div class="p-2.5 rounded-xl bg-slate-800/60 flex justify-between items-center">
+                        <span>A.9 Control de Acceso (Autenticación MFA / RBAC)</span>
+                        <span id="audit-a9" class="font-bold text-red-400">[NO APLICADO]</span>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-slate-800/60 flex justify-between items-center">
+                        <span>A.16 Gestión de Incidentes de Seguridad (SIEM / CSIRT)</span>
+                        <span id="audit-a16" class="font-bold text-red-400">[NO APLICADO]</span>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-slate-800/60 flex justify-between items-center">
+                        <span>A.10 Criptografía (AES-256 en Reposo / TLS 1.3)</span>
+                        <span id="audit-a10" class="font-bold text-red-400">[NO APLICADO]</span>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-slate-800/60 flex justify-between items-center">
+                        <span>A.17 Continuidad del Negocio (DRP / RTO &lt; 15m)</span>
+                        <span id="audit-a17" class="font-bold text-red-400">[NO APLICADO]</span>
+                    </div>
+                </div>
+
+                <div class="p-3 bg-slate-800/40 rounded-xl border border-slate-700/80 text-[11px] text-gray-400">
+                    <b>Dictamen del Auditor:</b>
+                    <span id="audit-dictamen">Se requiere implementar controles obligatorios para mitigar el riesgo inaceptable de secuestro de datos por Ransomware y denegación de servicio.</span>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-between items-center pt-3 border-t border-white/10">
+                <button onclick="window.print()" class="px-4 py-2 rounded-xl bg-slate-800 border border-slate-600 text-gray-300 font-mono-code text-xs hover:text-white transition flex items-center gap-2">
+                    <i class="fa-solid fa-print"></i>
+                    <span>IMPRIMIR INFORME</span>
+                </button>
+                <button onclick="closeAuditReport()" class="px-5 py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold font-mono-code text-xs hover:bg-emerald-400 transition">
+                    CERRAR
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 4: Matriz de Riesgo 5x5 ISO 27005 / ISO 31000 -->
+    <div id="risk-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-panel max-w-2xl w-full rounded-3xl p-6 border border-white/10 shadow-2xl relative bg-slate-900">
+            <div class="flex justify-between items-start border-b border-white/10 pb-4 mb-4">
+                <div>
+                    <span class="text-xs font-mono-code text-blue-400 font-bold">GESTIÓN DE RIESGOS ISO/IEC 27005</span>
+                    <h3 class="text-xl font-bold text-white">Matriz de Riesgo de Seguridad 5x5</h3>
+                </div>
+                <button onclick="closeRiskMatrix()" class="w-8 h-8 rounded-full bg-slate-800 text-gray-400 hover:text-white flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4 text-xs">
+                <div class="flex justify-between items-center p-3 rounded-xl bg-slate-950 border border-slate-800 font-mono-code">
+                    <span>NIVEL DE RIESGO RESIDUAL: <b id="risk-level-badge" class="text-red-400">CRÍTICO (92%)</b></span>
+                    <span class="text-gray-400">Tolerancia al Riesgo: &lt; 25%</span>
+                </div>
+
+                <!-- 5x5 Risk Grid Visualizer -->
+                <div class="p-3 bg-slate-950 rounded-2xl border border-slate-800 space-y-2">
+                    <div class="flex justify-between text-[11px] font-mono-code text-gray-400 px-1">
+                        <span>IMPACTO &rarr;</span>
+                        <span>1 (Menor) &bull; 2 &bull; 3 &bull; 4 &bull; 5 (Catastrófico)</span>
+                    </div>
+
+                    <div class="grid grid-cols-5 gap-1.5 text-center font-mono-code text-[10px]">
+                        <!-- Row 5 (Probabilidad Muy Alta) -->
+                        <div class="p-2 rounded bg-amber-500/20 text-amber-300">Medio</div>
+                        <div class="p-2 rounded bg-orange-500/25 text-orange-300">Alto</div>
+                        <div class="p-2 rounded bg-red-500/30 text-red-300 font-bold">Alto</div>
+                        <div id="risk-cell-ddos" class="p-2 rounded bg-red-600/40 text-red-200 font-bold border border-red-500 transition-all">DDoS</div>
+                        <div id="risk-cell-ransom" class="p-2 rounded bg-red-700/50 text-white font-bold border border-red-400 animate-pulse transition-all">RANSOM</div>
+
+                        <!-- Row 4 -->
+                        <div class="p-2 rounded bg-emerald-500/20 text-emerald-300">Bajo</div>
+                        <div class="p-2 rounded bg-amber-500/20 text-amber-300">Medio</div>
+                        <div class="p-2 rounded bg-orange-500/25 text-orange-300">Alto</div>
+                        <div id="risk-cell-apt" class="p-2 rounded bg-red-600/40 text-red-200 font-bold border border-red-500 transition-all">APT</div>
+                        <div class="p-2 rounded bg-red-600/40 text-red-200 font-bold">Crítico</div>
+
+                        <!-- Row 3 -->
+                        <div class="p-2 rounded bg-emerald-500/20 text-emerald-300">Bajo</div>
+                        <div class="p-2 rounded bg-emerald-500/20 text-emerald-300">Bajo</div>
+                        <div class="p-2 rounded bg-amber-500/20 text-amber-300">Medio</div>
+                        <div class="p-2 rounded bg-orange-500/25 text-orange-300">Alto</div>
+                        <div id="risk-cell-drp" class="p-2 rounded bg-red-500/30 text-red-300 font-bold border border-red-500 transition-all">DRP Fail</div>
+
+                        <!-- Row 2 -->
+                        <div class="p-2 rounded bg-emerald-500/20 text-emerald-300">Bajo</div>
+                        <div class="p-2 rounded bg-emerald-500/20 text-emerald-300">Bajo</div>
+                        <div class="p-2 rounded bg-emerald-500/20 text-emerald-300">Bajo</div>
+                        <div class="p-2 rounded bg-amber-500/20 text-amber-300">Medio</div>
+                        <div class="p-2 rounded bg-orange-500/25 text-orange-300">Alto</div>
+
+                        <!-- Row 1 -->
+                        <div class="p-2 rounded bg-emerald-500/30 text-emerald-200 font-bold">Muy Bajo</div>
+                        <div class="p-2 rounded bg-emerald-500/20 text-emerald-300">Bajo</div>
+                        <div class="p-2 rounded bg-emerald-500/20 text-emerald-300">Bajo</div>
+                        <div class="p-2 rounded bg-emerald-500/20 text-emerald-300">Bajo</div>
+                        <div class="p-2 rounded bg-amber-500/20 text-amber-300">Medio</div>
+                    </div>
+                </div>
+
+                <p class="text-gray-400 text-[11px]">
+                  Al activar los controles del panel, los riesgos son mitigados y se desplazan hacia la zona verde de riesgo aceptable.
+                </p>
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <button onclick="closeRiskMatrix()" class="px-5 py-2 rounded-xl bg-blue-500 text-slate-950 font-bold font-mono-code text-xs hover:bg-blue-400 transition">
+                    CERRAR MATRIZ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 5: Playbooks de Respuesta a Incidentes (CSIRT) -->
+    <div id="playbooks-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-panel max-w-2xl w-full rounded-3xl p-6 border border-white/10 shadow-2xl relative bg-slate-900">
+            <div class="flex justify-between items-start border-b border-white/10 pb-4 mb-4">
+                <div>
+                    <span class="text-xs font-mono-code text-amber-400 font-bold">PROCEDIMIENTOS OPERATIVOS CSIRT</span>
+                    <h3 class="text-xl font-bold text-white">Playbooks de Respuesta a Incidentes (ISO 27035)</h3>
+                </div>
+                <button onclick="closePlaybooksModal()" class="w-8 h-8 rounded-full bg-slate-800 text-gray-400 hover:text-white flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="space-y-3.5 text-xs text-gray-300 terminal-scroll max-h-[55vh] overflow-y-auto pr-1">
+                <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
+                    <h4 class="font-bold text-emerald-400 text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-virus-slash"></i> Playbook 1: Contención de Ransomware
+                    </h4>
+                    <p class="text-gray-400 text-[11px]">Paso 1: Aislamiento automático de hosts infectados mediante EDR (Control A.8.7). Paso 2: Revocación de claves de cifrado en tránsito. Paso 3: Activación de réplica inmutable desde almacenamiento frío DRP (Control A.17).</p>
+                </div>
+
+                <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
+                    <h4 class="font-bold text-purple-400 text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-shield-virus"></i> Playbook 2: Mitigación de Inundación DDoS
+                    </h4>
+                    <p class="text-gray-400 text-[11px]">Paso 1: Detección de umbral SYN-Flood por reglas SIEM (Control A.16). Paso 2: Desvío de tráfico a centro de lavado (Scrubbing Center) mediante BGP Anycast. Paso 3: Aplicación de CAPTCHA y rate-limiting perimetral.</p>
+                </div>
+
+                <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
+                    <h4 class="font-bold text-blue-400 text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-user-lock"></i> Playbook 3: Compromiso de Credenciales & APT
+                    </h4>
+                    <p class="text-gray-400 text-[11px]">Paso 1: Expiración inmediata de tokens de sesión JWT y OAuth. Paso 2: Forzado de reautenticación FIDO2/MFA (Control A.9). Paso 3: Auditoría forense de registros de acceso privilegiado en base de datos.</p>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <button onclick="closePlaybooksModal()" class="px-5 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold font-mono-code text-xs hover:bg-amber-400 transition">
+                    ENTENDIDO
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL 6: WIRESHARK DEEP PACKET INSPECTION (DPI) ====================-->
+    <div id="wireshark-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-panel max-w-5xl w-full rounded-3xl p-6 border-2 border-cyan-500/50 shadow-[0_0_60px_rgba(6,182,212,0.3)] relative bg-slate-950 text-white flex flex-col max-h-[92vh] overflow-hidden">
+            
+            <!-- Wireshark Top Bar -->
+            <div class="flex justify-between items-center pb-4 mb-3 border-b border-white/10">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 text-xl">
+                        <i class="fa-solid fa-network-wired"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-mono-code text-cyan-400 font-bold">WIRESHARK DPI · CAPTURA PROMISCUA EN VIVO</span>
+                            <span class="text-[9px] px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-mono-code">TAP EN PUERTO 1 (CORP_MAIN)</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white font-tech">INSPECCIÓN PROFUNDA DE PAQUETES & ANÁLISIS DE AMENAZAS</h3>
+                    </div>
+                </div>
+                <button onclick="closeWiresharkModal()" class="w-8 h-8 rounded-full bg-slate-800 text-gray-400 hover:text-white flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Filter Toolbar -->
+            <div class="flex items-center gap-2 mb-3 bg-slate-900 p-2 rounded-xl border border-slate-800 font-mono-code text-xs">
+                <span class="text-gray-400 text-[11px] font-bold">Filtro de visualización:</span>
+                <input id="ws-filter-input" type="text" value="tcp.port == 445 || tcp.flags.syn == 1 || http" class="flex-grow px-3 py-1 rounded bg-slate-950 border border-slate-700 text-cyan-300 text-xs focus:outline-none">
+                <button onclick="applyWiresharkFilter()" class="px-3 py-1 rounded bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs">APLICAR</button>
+                <button onclick="resetWiresharkFilter()" class="px-2 py-1 rounded bg-slate-800 text-gray-400 hover:text-white text-xs">LIMPIAR</button>
+            </div>
+
+            <!-- Packet List Table -->
+            <div class="flex-grow overflow-y-auto space-y-4 pr-1 custom-scroll">
+                
+                <div class="border border-slate-800 rounded-xl overflow-hidden bg-slate-900/60 font-mono-code text-[11px]">
+                    <div class="grid grid-cols-12 bg-slate-800/80 p-2 text-gray-400 font-bold border-b border-slate-700">
+                        <span class="col-span-1">No.</span>
+                        <span class="col-span-2">Tiempo</span>
+                        <span class="col-span-2">Origen (Src)</span>
+                        <span class="col-span-2">Destino (Dst)</span>
+                        <span class="col-span-1">Proto</span>
+                        <span class="col-span-1">Len</span>
+                        <span class="col-span-3">Información del Paquete</span>
+                    </div>
+                    <div id="ws-packet-list" class="divide-y divide-slate-800/50 max-h-44 overflow-y-auto custom-scroll">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+
+                <!-- Packet Dissection Tree (Frame, Ethernet, IP, TCP) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    
+                    <!-- Dissection Tree -->
+                    <div class="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 space-y-2 font-mono-code text-xs">
+                        <span class="text-white font-bold block border-b border-slate-800 pb-1.5 flex items-center justify-between">
+                            <span>ÁRBOL DE DISRECCIÓN DE PROTOCOLOS:</span>
+                            <span id="ws-selected-proto-badge" class="text-[10px] text-cyan-400">SELECCIONADO: PKT #2</span>
+                        </span>
+                        
+                        <div id="ws-dissection-tree" class="space-y-1.5 text-[11px] text-gray-300 max-h-44 overflow-y-auto custom-scroll pr-1">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Raw Hex & ASCII Dump -->
+                    <div class="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 space-y-2 font-mono-code text-xs">
+                        <span class="text-white font-bold block border-b border-slate-800 pb-1.5 flex items-center justify-between">
+                            <span>VOLCADO HEXADECIMAL & ASCII:</span>
+                            <span class="text-[10px] text-gray-400">PAYLOAD RAW BYTES</span>
+                        </span>
+                        
+                        <div id="ws-hex-dump" class="p-2.5 rounded-xl bg-slate-950 text-[10px] text-cyan-300 leading-relaxed overflow-x-auto max-h-44 overflow-y-auto custom-scroll font-mono">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Suricata / Snort Alert Signature -->
+                <div id="ws-ids-alert" class="p-3.5 rounded-2xl bg-rose-950/60 border border-rose-500/40 font-mono-code text-xs text-rose-300 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation text-rose-400 text-lg"></i>
+                        <span>REGLA SURICATA MATCH: <b>ET EXPLOIT MS17-010 EternalBlue SMBv1 Buffer Overflow [CVE-2017-0144]</b></span>
+                    </div>
+                    <span class="text-[10px] bg-rose-500/20 px-2 py-0.5 rounded border border-rose-500/40 text-rose-200">PRIORIDAD 1 (ALTA)</span>
+                </div>
+
+            </div>
+
+            <!-- Wireshark Modal Footer -->
+            <div class="mt-4 pt-3 border-t border-white/10 flex justify-between items-center text-xs font-mono-code">
+                <span class="text-gray-400">Capacidad de buffer: 512 MB · Promiscuous Mode Activo</span>
+                <button onclick="closeWiresharkModal()" class="px-5 py-2 rounded-xl bg-cyan-500 text-slate-950 font-bold hover:bg-cyan-400 transition">
+                    CERRAR ANALIZADOR
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ==================== MODAL 7: PHISHING & SOCIAL ENGINEERING SANDBOX ==================== -->
+    <div id="phishing-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-panel max-w-4xl w-full rounded-3xl p-6 border-2 border-amber-500/50 shadow-[0_0_60px_rgba(245,158,11,0.3)] relative bg-slate-950 text-white flex flex-col max-h-[92vh] overflow-hidden">
+            
+            <div class="flex justify-between items-center pb-4 mb-3 border-b border-white/10">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 text-xl">
+                        <i class="fa-solid fa-envelope-open-text"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-mono-code text-amber-400 font-bold">ISO 27001 CONTROL A.7.2.2</span>
+                            <span class="text-[9px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono-code">CONCIENTIZACIÓN & FORMACIÓN</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white font-tech">SANDBOX DE SIMULACIÓN DE PHISHING & SPEAR-PHISHING</h3>
+                    </div>
+                </div>
+                <button onclick="closePhishingModal()" class="w-8 h-8 rounded-full bg-slate-800 text-gray-400 hover:text-white flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="overflow-y-auto space-y-4 flex-grow pr-1 custom-scroll">
+                
+                <!-- Email Selector Tabs -->
+                <div class="flex gap-2 font-mono-code text-xs">
+                    <button onclick="selectPhishingMail(0)" id="phish-tab-0" class="px-3.5 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold transition">
+                        Caso 1: RR.HH. Liquidación (.xlsm)
+                    </button>
+                    <button onclick="selectPhishingMail(1)" id="phish-tab-1" class="px-3.5 py-2 rounded-xl bg-slate-800 text-gray-300 hover:bg-slate-700 transition">
+                        Caso 2: Microsoft 365 Pass Reset
+                    </button>
+                    <button onclick="selectPhishingMail(2)" id="phish-tab-2" class="px-3.5 py-2 rounded-xl bg-slate-800 text-gray-300 hover:bg-slate-700 transition">
+                        Caso 3: Proveedor Factura Urgente
+                    </button>
+                </div>
+
+                <!-- Simulated Email Client Window -->
+                <div class="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
+                    
+                    <!-- Headers -->
+                    <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5 font-mono-code text-xs">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400">DE:</span>
+                            <span id="phish-sender" class="text-rose-400 font-bold">recursos.humanos@hermanos-carcamo-portal.com</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400">PARA:</span>
+                            <span class="text-gray-300">m.jaramillo@instituto-hermanoscarcamo.edu.pe</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400">ASUNTO:</span>
+                            <span id="phish-subject" class="text-white font-bold">URGENTE: Actualización y Firma de Planilla Mensual Octubre 2026</span>
+                        </div>
+                        <div class="pt-2 flex flex-wrap gap-2 text-[10px]">
+                            <span id="phish-spf" class="px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-500/40">SPF: SOFTFAIL (~all)</span>
+                            <span id="phish-dkim" class="px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-500/40">DKIM: UNVERIFIED</span>
+                            <span id="phish-dmarc" class="px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-500/40">DMARC: QUARANTINE</span>
+                        </div>
+                    </div>
+
+                    <!-- Email Body -->
+                    <div id="phish-body" class="p-4 rounded-xl bg-slate-950 text-xs text-gray-300 leading-relaxed space-y-2 border border-slate-800">
+                        <!-- Injected dynamically -->
+                    </div>
+
+                    <!-- Malicious Attachment Sandbox Card -->
+                    <div id="phish-attachment-card" class="p-3 rounded-xl bg-slate-950 border border-amber-500/30 flex items-center justify-between text-xs font-mono-code">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-file-excel text-2xl text-emerald-400"></i>
+                            <div>
+                                <span id="phish-filename" class="text-white font-bold block">Planilla_Liquidacion_Octubre_2026.xlsm</span>
+                                <span class="text-[10px] text-gray-400">Macro habilitado (VBA: TrojanDownloader:O97M/Qakbot)</span>
+                            </div>
+                        </div>
+                        <span class="text-xs text-rose-400 bg-rose-950/60 px-2 py-1 rounded border border-rose-500/30">RIESGO CRÍTICO</span>
+                    </div>
+
+                    <!-- Student Incident Response Actions -->
+                    <div class="pt-2">
+                        <span class="text-xs font-mono-code text-gray-400 block mb-2 font-bold">ACCIÓN DEL ANALISTA / USUARIO:</span>
+                        <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 font-mono-code text-xs">
+                            <button onclick="actionPhishing('report')" class="p-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold transition flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-flag"></i>
+                                <span>Reportar al CSIRT</span>
+                            </button>
+                            <button onclick="actionPhishing('sandbox')" class="p-2.5 rounded-xl bg-cyan-900/60 hover:bg-cyan-800 border border-cyan-500/40 text-cyan-300 transition flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-box"></i>
+                                <span>Detonar en Sandbox</span>
+                            </button>
+                            <button onclick="actionPhishing('quarantine')" class="p-2.5 rounded-xl bg-amber-900/60 hover:bg-amber-800 border border-amber-500/40 text-amber-300 transition flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-lock"></i>
+                                <span>Poner en Cuarentena</span>
+                            </button>
+                            <button onclick="actionPhishing('open')" class="p-2.5 rounded-xl bg-rose-900/60 hover:bg-rose-800 border border-rose-500/40 text-rose-300 transition flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                <span>Abrir Adjunto (Error)</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Feedback Box -->
+                    <div id="phish-feedback" class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 font-mono-code text-xs hidden">
+                        <!-- Populated on click -->
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-white/10 flex justify-between items-center text-xs font-mono-code">
+                <span class="text-gray-400">Medida de desempeño: Tasa de reporte humano &gt; 85%</span>
+                <button onclick="closePhishingModal()" class="px-5 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold hover:bg-amber-400 transition">
+                    CERRAR SANDBOX
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Web Audio API Sound Synthesizer & Interactive Logic -->
+    <script>
+        // DOM Elements
+        const toggles = document.querySelectorAll('.policy-toggle');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const hudThreat = document.getElementById('hud-threat');
+        const hudIntegrity = document.getElementById('hud-integrity');
+        const navStatus = document.getElementById('nav-status');
+        const activeControlsCount = document.getElementById('active-controls-count');
+        const activeShieldsNames = document.getElementById('active-shields-names');
+        const terminalFeed = document.getElementById('terminal-feed');
+        const liveThreatFeed = document.getElementById('live-threat-feed');
+        
+        // CID Triad Elements
+        const cidC = document.getElementById('cid-c');
+        const cidI = document.getElementById('cid-i');
+        const cidD = document.getElementById('cid-d');
+        const barC = document.getElementById('bar-c');
+        const barI = document.getElementById('bar-i');
+        const barD = document.getElementById('bar-d');
+
+        // Core Server
+        const coreServer = document.getElementById('core-server');
+        const coreIcon = document.getElementById('core-icon');
+        const coreText = document.getElementById('core-text');
+        const coreSub = document.getElementById('core-sub');
+
+        // Shields & Backup
+        const shieldA9 = document.getElementById('shield-a9');
+        const shieldA10 = document.getElementById('shield-a10');
+        const shieldA16 = document.getElementById('shield-a16');
+        const backupServer = document.getElementById('backup-server');
+
+        // Attackers & Lasers
+        const atk1 = document.getElementById('atk-1');
+        const atk2 = document.getElementById('atk-2');
+        const atk3 = document.getElementById('atk-3');
+        const aptStatus = document.getElementById('apt-status');
+        const ransomStatus = document.getElementById('ransom-status');
+        const ddosStatus = document.getElementById('ddos-status');
+        const aptActor = document.getElementById('apt-actor');
+        const ransomActor = document.getElementById('ransom-actor');
+        const ddosActor = document.getElementById('ddos-actor');
+
+        // Sound state
+        let soundEnabled = true;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            try {
+                initAudio();
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'click-on') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, now);
+                    osc.frequency.exponentialRampToValueAtTime(880, now + 0.12);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+                    osc.start(now);
+                    osc.stop(now + 0.12);
+                } else if (type === 'click-off') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(500, now);
+                    osc.frequency.exponentialRampToValueAtTime(220, now + 0.15);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+                    osc.start(now);
+                    osc.stop(now + 0.15);
+                } else if (type === 'victory') {
+                    [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+                        const o = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        o.connect(g);
+                        g.connect(audioCtx.destination);
+                        o.frequency.value = freq;
+                        g.gain.setValueAtTime(0.08, now + idx * 0.08);
+                        g.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.35);
+                        o.start(now + idx * 0.08);
+                        o.stop(now + idx * 0.08 + 0.35);
+                    });
+                } else if (type === 'alarm') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(200, now);
+                    osc.frequency.linearRampToValueAtTime(150, now + 0.2);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+                    osc.start(now);
+                    osc.stop(now + 0.2);
+                } else if (type === 'pentest') {
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(800, now);
+                    osc.frequency.exponentialRampToValueAtTime(1200, now + 0.06);
+                    gain.gain.setValueAtTime(0.06, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+                    osc.start(now);
+                    osc.stop(now + 0.06);
+                }
+            } catch(e) {
+                console.log("Audio no soportado");
+            }
+        }
+
+        function toggleAudio() {
+            soundEnabled = !soundEnabled;
+            const soundIcon = document.getElementById('sound-icon');
+            const soundText = document.getElementById('sound-text');
+            if (soundEnabled) {
+                soundIcon.className = 'fa-solid fa-volume-high text-emerald-400';
+                soundText.innerText = 'SFX: ON';
+                playSound('click-on');
+            } else {
+                soundIcon.className = 'fa-solid fa-volume-xmark text-gray-500';
+                soundText.innerText = 'SFX: OFF';
+            }
+        }
+
+        // Live Threat Feed Samples
+        const threatFeedSamples = [
+            "IoC Detectado: IP 185.220.101.5 (Tor Exit Node) escaneando puerto 22 SSH",
+            "Firma de malware detectada: LockBit 3.0 hash e3b0c442... analizado",
+            "Ataque de amplificación DNS detectado desde ASN 4837 (Mitigado por A.16)",
+            "Intento de escalada de privilegios CVE-2024-1086 neutralizado por kernel hardened",
+            "Credential stuffing detectado en endpoint /auth/login bloqueado por MFA A.9",
+            "Almacenamiento NVMe validado con cifrado AES-256 en reposo (Cumple A.10)"
+        ];
+        let threatFeedIdx = 0;
+        setInterval(() => {
+            threatFeedIdx = (threatFeedIdx + 1) % threatFeedSamples.length;
+            if (liveThreatFeed) liveThreatFeed.innerText = threatFeedSamples[threatFeedIdx];
+        }, 3000);
+
+        function logEvent(message, type = 'info') {
+            const time = new Date().toLocaleTimeString('es-ES', { hour12: false });
+            let badge = '';
+            let textColor = 'text-gray-300';
+
+            switch(type) {
+                case 'success':
+                    badge = '<span class="text-emerald-400">[MITIGADO]</span>';
+                    textColor = 'text-emerald-300';
+                    break;
+                case 'danger':
+                    badge = '<span class="text-red-400 animate-pulse">[ALERTA]</span>';
+                    textColor = 'text-red-400';
+                    break;
+                case 'system':
+                    badge = '<span class="text-blue-400">[SISTEMA]</span>';
+                    textColor = 'text-blue-300';
+                    break;
+                case 'warning':
+                    badge = '<span class="text-amber-400">[AVISO]</span>';
+                    textColor = 'text-amber-300';
+                    break;
+                default:
+                    badge = '<span class="text-slate-400">[INFO]</span>';
+            }
+
+            const logItem = document.createElement('div');
+            logItem.className = 'flex items-start gap-1.5 leading-snug';
+            logItem.innerHTML = `<span class="text-gray-600 select-none">${time}</span> ${badge} <span class="${textColor}">${message}</span>`;
+            terminalFeed.appendChild(logItem);
+            terminalFeed.scrollTop = terminalFeed.scrollHeight;
+        }
+
+        function clearLogs() {
+            terminalFeed.innerHTML = '';
+            logEvent('Consola de auditoría reiniciada.', 'system');
+        }
+
+        // Modals management
+        function openThreatIntel(actorKey) {
+            playSound('click-on');
+            const modal = document.getElementById('threat-modal');
+            const name = document.getElementById('threat-name');
+            const body = document.getElementById('threat-body');
+
+            if (actorKey === 'apt') {
+                name.innerText = 'APT_GROUP_X (Amenaza Persistente Avanzada)';
+                body.innerHTML = `
+                    <div class="p-3 bg-slate-900 rounded-xl border border-slate-700">
+                        <b class="text-blue-400 block mb-1">Vector de Ataque:</b>
+                        Ataque dirigido mediante Credential Stuffing, Fuerza Bruta SSH y explotación de cuentas de servicio no rotadas.
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 font-mono-code text-[11px]">
+                        <div class="p-2.5 bg-slate-800 rounded-lg">Táctica: T1110 (Brute Force)</div>
+                        <div class="p-2.5 bg-slate-800 rounded-lg">Severidad: Crítica (CVSS 9.2)</div>
+                        <div class="p-2.5 bg-slate-800 rounded-lg">Control ISO: A.9 Acceso</div>
+                        <div class="p-2.5 bg-slate-800 rounded-lg">Mitigación: MFA + Privilegios 0</div>
+                    </div>
+                    <p class="text-gray-400">Si el control A.9 está desactivado, el atacante obtiene privilegios de administrador y exfiltra la base de datos corporativa.</p>
+                `;
+            } else if (actorKey === 'ddos') {
+                name.innerText = 'DDOS_BOTNET (Red de Bots Mirai)';
+                body.innerHTML = `
+                    <div class="p-3 bg-slate-900 rounded-xl border border-slate-700">
+                        <b class="text-purple-400 block mb-1">Vector de Ataque:</b>
+                        Inundación volumétrica de paquetes SYN y amplificación DNS con más de 250 Gbps de tráfico malicioso.
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 font-mono-code text-[11px]">
+                        <div class="p-2.5 bg-slate-800 rounded-lg">Táctica: T1498 (Network DoS)</div>
+                        <div class="p-2.5 bg-slate-800 rounded-lg">Objetivo: Agotar Ancho de Banda</div>
+                        <div class="p-2.5 bg-slate-800 rounded-lg">Control ISO: A.16 Incidentes</div>
+                        <div class="p-2.5 bg-slate-800 rounded-lg">Mitigación: SIEM + Scrubbing</div>
+                    </div>
+                    <p class="text-gray-400">El control A.16 activa el monitoreo SIEM en tiempo real para detectar anomalías y desviar el tráfico sucio.</p>
+                `;
+            } else if (actorKey === 'ransom') {
+                name.innerText = 'RANSOMWARE_PAYLOAD (Cifrador Malicioso)';
+                body.innerHTML = `
+                    <div class="p-3 bg-slate-900 rounded-xl border border-slate-700">
+                        <b class="text-emerald-400 block mb-1">Vector de Ataque:</b>
+                        Inyección de binario malicioso que ejecuta cifrado local simétrico (ChaCha20/AES) con extorsión doble.
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 font-mono-code text-[11px]">
+                        <div class="p-2.5 bg-slate-800 rounded-lg">Táctica: T1486 (Data Encrypted)</div>
+                        <div class="p-2.5 bg-slate-800 rounded-lg">Impacto: Pérdida Confidencialidad</div>
+                        <div class="p-2.5 bg-slate-800 rounded-lg">Control ISO: A.10 Cripto</div>
+                        <div class="p-2.5 bg-slate-800 rounded-lg">Mitigación: AES-256 en Reposo</div>
+                    </div>
+                    <p class="text-gray-400">Con el control A.10 activo, el almacenamiento ya está cifrado con claves inaccesibles para el malware, neutralizándolo por completo.</p>
+                `;
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeThreatModal() {
+            document.getElementById('threat-modal').classList.add('hidden');
+        }
+
+        function openServerTelemetry() {
+            playSound('click-on');
+            document.getElementById('server-modal').classList.remove('hidden');
+        }
+        function closeServerModal() {
+            document.getElementById('server-modal').classList.add('hidden');
+        }
+
+        function openAuditReport() {
+            playSound('click-on');
+            document.getElementById('audit-modal').classList.remove('hidden');
+        }
+        function closeAuditReport() {
+            document.getElementById('audit-modal').classList.add('hidden');
+        }
+
+        function openRiskMatrix() {
+            playSound('click-on');
+            document.getElementById('risk-modal').classList.remove('hidden');
+        }
+        function closeRiskMatrix() {
+            document.getElementById('risk-modal').classList.add('hidden');
+        }
+
+        function openPlaybooksModal() {
+            playSound('click-on');
+            document.getElementById('playbooks-modal').classList.remove('hidden');
+        }
+        function closePlaybooksModal() {
+            document.getElementById('playbooks-modal').classList.add('hidden');
+        }
+
+        function runPentest() {
+            playSound('pentest');
+            logEvent('Iniciando auditoría técnica de penetración (Red Team vs Blue Team)...', 'system');
+            
+            setTimeout(() => {
+                playSound('pentest');
+                logEvent('[PENTEST] Fase 1: Escaneo Nmap en subred 192.168.10.0/24 completado.', 'info');
+            }, 500);
+
+            setTimeout(() => {
+                playSound('pentest');
+                const a9 = document.getElementById('toggle-a9').checked;
+                if (a9) {
+                    logEvent('[PENTEST] Fase 2: Intento de fuerza bruta bloqueado por MFA y rate-limiting (A.9).', 'success');
+                } else {
+                    logEvent('[PENTEST] Fase 2: VULNERABILIDAD CRÍTICA. Credenciales por defecto explotadas.', 'danger');
+                }
+            }, 1200);
+
+            setTimeout(() => {
+                playSound('pentest');
+                const a10 = document.getElementById('toggle-a10').checked;
+                if (a10) {
+                    logEvent('[PENTEST] Fase 3: Exfiltración de datos bloqueada. Volúmenes cifrados con AES-256 (A.10).', 'success');
+                } else {
+                    logEvent('[PENTEST] Fase 3: VULNERABILIDAD. Datos en texto plano accesibles.', 'danger');
+                }
+            }, 1900);
+
+            setTimeout(() => {
+                let score = 0;
+                toggles.forEach(t => { if(t.checked) score += parseInt(t.dataset.val); });
+                if (score === 100) {
+                    logEvent('[PENTEST] Veredicto Final: SISTEMA APTO para certificación ISO/IEC 27001.', 'success');
+                    playSound('victory');
+                } else {
+                    logEvent(`[PENTEST] Veredicto Final: RIESGO RESIDUAL ELEVADO (${score}% defensa).`, 'danger');
+                    playSound('alarm');
+                }
+            }, 2600);
+        }
+
+        function setAllControls(status) {
+            toggles.forEach(t => t.checked = status);
+            updateSystem(true);
+            playSound(status ? 'victory' : 'alarm');
+        }
+
+        function updateSystem(isBatch = false) {
+            let score = 0;
+            let activeCount = 0;
+            let activeShields = [];
+            
+            const a9 = document.getElementById('toggle-a9').checked;
+            const a16 = document.getElementById('toggle-a16').checked;
+            const a10 = document.getElementById('toggle-a10').checked;
+            const a17 = document.getElementById('toggle-a17').checked;
+
+            if (a9) { score += 25; activeCount++; activeShields.push('A.9 (Acceso)'); }
+            if (a16) { score += 25; activeCount++; activeShields.push('A.16 (SIEM)'); }
+            if (a10) { score += 25; activeCount++; activeShields.push('A.10 (Cripto)'); }
+            if (a17) { score += 25; activeCount++; activeShields.push('A.17 (DRP)'); }
+
+            activeControlsCount.innerText = activeCount;
+            activeShieldsNames.innerText = activeShields.length > 0 ? activeShields.join(', ') : 'Ninguno (Vulnerable)';
+
+            progressBar.style.width = `${score}%`;
+            progressText.innerText = `${score}%`;
+            hudIntegrity.innerText = `${score}%`;
+
+            // CID Triad Calculation
+            const valC = (a9 ? 50 : 0) + (a10 ? 50 : 0);
+            cidC.innerText = `${valC}%`;
+            barC.style.width = `${valC}%`;
+            barC.className = valC === 100 ? 'bg-emerald-500 h-full' : (valC > 0 ? 'bg-amber-500 h-full' : 'bg-red-500 h-full');
+            cidC.className = valC === 100 ? 'text-emerald-400 text-xs' : (valC > 0 ? 'text-amber-400 text-xs' : 'text-red-400 text-xs');
+
+            const valI = (a10 ? 50 : 0) + (a16 ? 50 : 0);
+            cidI.innerText = `${valI}%`;
+            barI.style.width = `${valI}%`;
+            barI.className = valI === 100 ? 'bg-emerald-500 h-full' : (valI > 0 ? 'bg-amber-500 h-full' : 'bg-red-500 h-full');
+            cidI.className = valI === 100 ? 'text-emerald-400 text-xs' : (valI > 0 ? 'text-amber-400 text-xs' : 'text-red-400 text-xs');
+
+            const valD = (a16 ? 50 : 0) + (a17 ? 50 : 0);
+            cidD.innerText = `${valD}%`;
+            barD.style.width = `${valD}%`;
+            barD.className = valD === 100 ? 'bg-emerald-500 h-full' : (valD > 0 ? 'bg-amber-500 h-full' : 'bg-red-500 h-full');
+            cidD.className = valD === 100 ? 'text-emerald-400 text-xs' : (valD > 0 ? 'text-amber-400 text-xs' : 'text-red-400 text-xs');
+
+            // Risk Matrix Heatmap Dynamic Badges
+            const rRansom = document.getElementById('risk-cell-ransom');
+            const rDDoS = document.getElementById('risk-cell-ddos');
+            const rAPT = document.getElementById('risk-cell-apt');
+            const rDRP = document.getElementById('risk-cell-drp');
+            const riskBadge = document.getElementById('risk-level-badge');
+
+            if (a10) {
+                rRansom.className = 'p-2 rounded bg-emerald-700/60 text-emerald-100 font-bold border border-emerald-400 transition-all';
+                rRansom.innerText = 'RANSOM (Bajo)';
+            } else {
+                rRansom.className = 'p-2 rounded bg-red-700/50 text-white font-bold border border-red-400 animate-pulse transition-all';
+                rRansom.innerText = 'RANSOM';
+            }
+
+            if (a16) {
+                rDDoS.className = 'p-2 rounded bg-emerald-700/60 text-emerald-100 font-bold border border-emerald-400 transition-all';
+                rDDoS.innerText = 'DDoS (Bajo)';
+            } else {
+                rDDoS.className = 'p-2 rounded bg-red-600/40 text-red-200 font-bold border border-red-500 transition-all';
+                rDDoS.innerText = 'DDoS';
+            }
+
+            if (a9) {
+                rAPT.className = 'p-2 rounded bg-emerald-700/60 text-emerald-100 font-bold border border-emerald-400 transition-all';
+                rAPT.innerText = 'APT (Bajo)';
+            } else {
+                rAPT.className = 'p-2 rounded bg-red-600/40 text-red-200 font-bold border border-red-500 transition-all';
+                rAPT.innerText = 'APT';
+            }
+
+            if (a17) {
+                rDRP.className = 'p-2 rounded bg-emerald-700/60 text-emerald-100 font-bold border border-emerald-400 transition-all';
+                rDRP.innerText = 'DRP (Bajo)';
+            } else {
+                rDRP.className = 'p-2 rounded bg-red-500/30 text-red-300 font-bold border border-red-500 transition-all';
+                rDRP.innerText = 'DRP Fail';
+            }
+
+            const residualRisk = Math.max(8, 100 - score);
+            riskBadge.innerText = `${residualRisk <= 20 ? 'ACEPTABLE' : (residualRisk <= 50 ? 'MODERADO' : 'CRÍTICO')} (${residualRisk}%)`;
+            riskBadge.className = residualRisk <= 20 ? 'text-emerald-400 font-bold' : (residualRisk <= 50 ? 'text-amber-400 font-bold' : 'text-red-400 font-bold');
+
+            // Audit Modal Sync
+            document.getElementById('audit-score-text').innerText = `${score}% / 100%`;
+            document.getElementById('audit-a9').innerText = a9 ? '[APLICADO]' : '[NO APLICADO]';
+            document.getElementById('audit-a9').className = a9 ? 'font-bold text-emerald-400' : 'font-bold text-red-400';
+            document.getElementById('audit-a16').innerText = a16 ? '[APLICADO]' : '[NO APLICADO]';
+            document.getElementById('audit-a16').className = a16 ? 'font-bold text-emerald-400' : 'font-bold text-red-400';
+            document.getElementById('audit-a10').innerText = a10 ? '[APLICADO]' : '[NO APLICADO]';
+            document.getElementById('audit-a10').className = a10 ? 'font-bold text-emerald-400' : 'font-bold text-red-400';
+            document.getElementById('audit-a17').innerText = a17 ? '[APLICADO]' : '[NO APLICADO]';
+            document.getElementById('audit-a17').className = a17 ? 'font-bold text-emerald-400' : 'font-bold text-red-400';
+
+            const auditSeal = document.getElementById('audit-seal');
+            const auditDictamen = document.getElementById('audit-dictamen');
+            if (score === 100) {
+                auditSeal.innerText = 'CERTIFICADO ISO 27001';
+                auditSeal.className = 'px-3 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-400 font-mono-code text-xs border border-emerald-500/30 font-bold';
+                auditDictamen.innerText = 'Dictamen Favorable: La organización ha implementado eficazmente todos los controles clave del Anexo A, mitigando los riesgos a niveles aceptables.';
+            } else {
+                auditSeal.innerText = 'NO CERTIFICADO';
+                auditSeal.className = 'px-3 py-1.5 rounded-xl bg-red-500/20 text-red-400 font-mono-code text-xs border border-red-500/30 font-bold';
+                auditDictamen.innerText = 'Dictamen Desfavorable: Se encontraron no conformidades mayores en la protección perimetral y continuidad.';
+            }
+
+            document.getElementById('srv-fw').innerText = a9 ? 'ACTIVO (MFA / Zero-Trust)' : 'DESACTIVADO';
+            document.getElementById('srv-fw').className = a9 ? 'text-emerald-400 font-bold' : 'text-red-400 font-bold';
+            document.getElementById('srv-cpu').innerText = score === 100 ? '12%' : '88% (Bajo Ataque)';
+
+            const elementsToColor = [progressBar, progressText, hudIntegrity];
+            elementsToColor.forEach(el => {
+                el.classList.remove(
+                    'bg-red-500', 'bg-amber-500', 'bg-emerald-500',
+                    'text-red-500', 'text-amber-500', 'text-emerald-500',
+                    'shadow-[0_0_12px_#ef4444]', 'shadow-[0_0_12px_#f59e0b]', 'shadow-[0_0_15px_#10b981]',
+                    'glow-text-red', 'glow-text-emerald'
+                );
+            });
+
+            if(score < 50) {
+                progressBar.classList.add('bg-red-500', 'shadow-[0_0_12px_#ef4444]');
+                progressText.classList.add('text-red-500');
+                hudIntegrity.classList.add('text-red-500', 'glow-text-red');
+                hudThreat.innerText = "CRÍTICA (DEFENSA INSUFICIENTE)"; 
+                hudThreat.className = "text-red-500 font-bold glow-text-red";
+                navStatus.innerText = "CRITICAL_THREAT"; 
+                navStatus.className = "text-red-500 font-bold animate-pulse";
+            } else if(score < 100) {
+                progressBar.classList.add('bg-amber-500', 'shadow-[0_0_12px_#f59e0b]');
+                progressText.classList.add('text-amber-500');
+                hudIntegrity.classList.add('text-amber-500');
+                hudThreat.innerText = "ELEVADA (DEFENSAS PARCIALES)"; 
+                hudThreat.className = "text-amber-400 font-bold";
+                navStatus.innerText = "DEFENSES_ACTIVE"; 
+                navStatus.className = "text-amber-400 font-bold";
+            } else {
+                progressBar.classList.add('bg-emerald-500', 'shadow-[0_0_15px_#10b981]');
+                progressText.classList.add('text-emerald-500');
+                hudIntegrity.classList.add('text-emerald-500', 'glow-text-emerald');
+                hudThreat.innerText = "SEGURO (ISO 27001 COMPLIANT)"; 
+                hudThreat.className = "text-emerald-400 font-bold glow-text-emerald";
+                navStatus.innerText = "SYSTEM_OPTIMAL"; 
+                navStatus.className = "text-emerald-400 font-bold";
+            }
+
+            
+            // Visual Simulation Logic with SVG Laser Conduits & Flowing Arrowheads
+            const laser1 = document.getElementById('laser-1');
+            const laser2 = document.getElementById('laser-2');
+            const laser3 = document.getElementById('laser-3');
+            const laser4 = document.getElementById('laser-4');
+            const pulse1 = document.getElementById('pulse-1');
+            const pulse2 = document.getElementById('pulse-2');
+            const pulse3 = document.getElementById('pulse-3');
+            const pulse4 = document.getElementById('pulse-4');
+            const motion1 = document.getElementById('motion-1');
+            const motion2 = document.getElementById('motion-2');
+            const motion3 = document.getElementById('motion-3');
+            const motion4 = document.getElementById('motion-4');
+
+            // 1. Control A.9 (Access Control / Firewall) vs APT Group X
+            if (a9) {
+                shieldA9.classList.add('active');
+                if (laser1) {
+                    laser1.setAttribute('stroke', '#3b82f6');
+                    laser1.setAttribute('marker-end', 'url(#arrow-blue)');
+                    laser1.setAttribute('filter', 'url(#glow-blue)');
+                    laser1.setAttribute('x2', '380');
+                    laser1.setAttribute('y2', '220');
+                    laser1.className.baseVal = 'laser-beam laser-beam-blocked';
+                }
+                if (pulse1) {
+                    pulse1.setAttribute('fill', '#3b82f6');
+                    pulse1.setAttribute('filter', 'url(#glow-blue)');
+                }
+                if (motion1) motion1.setAttribute('path', 'M 120 130 L 380 220');
+                aptStatus.innerText = '[BLOCKED: ACCESS_DENIED]';
+                aptStatus.className = 'atk-status text-[9px] font-mono-code text-blue-400 mt-0.5 bg-blue-950/70 px-2 py-0.5 rounded border border-blue-500/40 glow-text-blue';
+                aptActor.classList.add('blocked');
+            } else {
+                shieldA9.classList.remove('active');
+                if (laser1) {
+                    laser1.setAttribute('stroke', '#ef4444');
+                    laser1.setAttribute('marker-end', 'url(#arrow-red)');
+                    laser1.setAttribute('filter', 'url(#glow-red)');
+                    laser1.setAttribute('x2', '450');
+                    laser1.setAttribute('y2', '320');
+                    laser1.className.baseVal = 'laser-beam';
+                }
+                if (pulse1) {
+                    pulse1.setAttribute('fill', '#ef4444');
+                    pulse1.setAttribute('filter', 'url(#glow-red)');
+                }
+                if (motion1) motion1.setAttribute('path', 'M 120 130 L 450 265');
+                aptStatus.innerText = '[ATTACK: BRUTE_FORCE]';
+                aptStatus.className = 'atk-status text-[9px] font-mono-code text-red-400 mt-0.5 bg-red-950/70 px-2 py-0.5 rounded border border-red-500/30';
+                aptActor.classList.remove('blocked');
+            }
+
+            // 2. Control A.16 (SIEM & Incident Mgmt) vs DDoS Botnet
+            if (a16) {
+                shieldA16.classList.add('active');
+                if (laser2) {
+                    laser2.setAttribute('stroke', '#a855f7');
+                    laser2.setAttribute('marker-end', 'url(#arrow-purple)');
+                    laser2.setAttribute('filter', 'url(#glow-purple)');
+                    laser2.setAttribute('x2', '620');
+                    laser2.setAttribute('y2', '220');
+                    laser2.className.baseVal = 'laser-beam laser-beam-blocked';
+                }
+                if (pulse2) {
+                    pulse2.setAttribute('fill', '#a855f7');
+                    pulse2.setAttribute('filter', 'url(#glow-purple)');
+                }
+                if (motion2) motion2.setAttribute('path', 'M 880 130 L 620 220');
+                ddosStatus.innerText = '[MITIGATED: SIEM_CSIRT]';
+                ddosStatus.className = 'atk-status text-[9px] font-mono-code text-purple-400 mt-0.5 bg-purple-950/70 px-2 py-0.5 rounded border border-purple-500/40 glow-text-purple';
+                ddosActor.classList.add('blocked');
+            } else {
+                shieldA16.classList.remove('active');
+                if (laser2) {
+                    laser2.setAttribute('stroke', '#ef4444');
+                    laser2.setAttribute('marker-end', 'url(#arrow-red)');
+                    laser2.setAttribute('filter', 'url(#glow-red)');
+                    laser2.setAttribute('x2', '550');
+                    laser2.setAttribute('y2', '320');
+                    laser2.className.baseVal = 'laser-beam';
+                }
+                if (pulse2) {
+                    pulse2.setAttribute('fill', '#ef4444');
+                    pulse2.setAttribute('filter', 'url(#glow-red)');
+                }
+                if (motion2) motion2.setAttribute('path', 'M 880 130 L 550 265');
+                ddosStatus.innerText = '[ATTACK: SYN_FLOOD]';
+                ddosStatus.className = 'atk-status text-[9px] font-mono-code text-red-400 mt-0.5 bg-red-950/70 px-2 py-0.5 rounded border border-red-500/30';
+                ddosActor.classList.remove('blocked');
+            }
+
+            // 3. Control A.10 (Cryptography) vs Ransomware
+            if (a10) {
+                shieldA10.classList.add('active');
+                if (laser3) {
+                    laser3.setAttribute('stroke', '#10b981');
+                    laser3.setAttribute('marker-end', 'url(#arrow-emerald)');
+                    laser3.setAttribute('filter', 'url(#glow-emerald)');
+                    laser3.setAttribute('x2', '380');
+                    laser3.setAttribute('y2', '340');
+                    laser3.className.baseVal = 'laser-beam laser-beam-blocked';
+                }
+                if (pulse3) {
+                    pulse3.setAttribute('fill', '#10b981');
+                    pulse3.setAttribute('filter', 'url(#glow-emerald)');
+                }
+                if (motion3) motion3.setAttribute('path', 'M 120 430 L 380 340');
+                ransomStatus.innerText = '[BLOCKED: AES_256]';
+                ransomStatus.className = 'atk-status text-[9px] font-mono-code text-emerald-400 mt-0.5 bg-emerald-950/70 px-2 py-0.5 rounded border border-emerald-500/40 glow-text-green';
+                ransomActor.classList.add('blocked');
+            } else {
+                shieldA10.classList.remove('active');
+                if (laser3) {
+                    laser3.setAttribute('stroke', '#ef4444');
+                    laser3.setAttribute('marker-end', 'url(#arrow-red)');
+                    laser3.setAttribute('filter', 'url(#glow-red)');
+                    laser3.setAttribute('x2', '450');
+                    laser3.setAttribute('y2', '370');
+                    laser3.className.baseVal = 'laser-beam';
+                }
+                if (pulse3) {
+                    pulse3.setAttribute('fill', '#ef4444');
+                    pulse3.setAttribute('filter', 'url(#glow-red)');
+                }
+                if (motion3) motion3.setAttribute('path', 'M 120 430 L 450 295');
+                ransomStatus.innerText = '[ATTACK: ENCRYPTING]';
+                ransomStatus.className = 'atk-status text-[9px] font-mono-code text-red-400 mt-0.5 bg-red-950/70 px-2 py-0.5 rounded border border-red-500/30';
+                ransomActor.classList.remove('blocked');
+            }
+
+            // 4. Control A.17 (DRP & Continuity) vs Phishing / Secondary Target
+            const phishingStatus = document.getElementById('phishing-status');
+            const phishingActor = document.getElementById('phishing-actor');
+            if (a17) {
+                backupServer.classList.remove('opacity-0', 'pointer-events-none', 'translate-x-8');
+                backupServer.classList.add('opacity-100', 'translate-x-0');
+                if (laser4) {
+                    laser4.setAttribute('stroke', '#06b6d4');
+                    laser4.setAttribute('marker-end', 'url(#arrow-emerald)');
+                    laser4.setAttribute('filter', 'url(#glow-emerald)');
+                    laser4.setAttribute('x2', '620');
+                    laser4.setAttribute('y2', '340');
+                    laser4.className.baseVal = 'laser-beam laser-beam-blocked';
+                }
+                if (pulse4) {
+                    pulse4.setAttribute('fill', '#06b6d4');
+                    pulse4.setAttribute('filter', 'url(#glow-emerald)');
+                }
+                if (motion4) motion4.setAttribute('path', 'M 880 430 L 620 340');
+                if (phishingStatus) {
+                    phishingStatus.innerText = '[FILTERED: CSIRT_SANDBOX]';
+                    phishingStatus.className = 'atk-status text-[9px] font-mono-code text-cyan-400 mt-0.5 bg-cyan-950/70 px-2 py-0.5 rounded border border-cyan-500/40 glow-text-blue';
+                }
+                if (phishingActor) phishingActor.classList.add('blocked');
+            } else {
+                backupServer.classList.add('opacity-0', 'pointer-events-none', 'translate-x-8');
+                backupServer.classList.remove('opacity-100', 'translate-x-0');
+                if (laser4) {
+                    laser4.setAttribute('stroke', '#ef4444');
+                    laser4.setAttribute('marker-end', 'url(#arrow-red)');
+                    laser4.setAttribute('filter', 'url(#glow-red)');
+                    laser4.setAttribute('x2', '550');
+                    laser4.setAttribute('y2', '370');
+                    laser4.className.baseVal = 'laser-beam';
+                }
+                if (pulse4) {
+                    pulse4.setAttribute('fill', '#ef4444');
+                    pulse4.setAttribute('filter', 'url(#glow-red)');
+                }
+                if (motion4) motion4.setAttribute('path', 'M 880 430 L 550 295');
+                if (phishingStatus) {
+                    phishingStatus.innerText = '[ATTACK: SPEAR_PHISH]';
+                    phishingStatus.className = 'atk-status text-[9px] font-mono-code text-red-400 mt-0.5 bg-red-950/70 px-2 py-0.5 rounded border border-red-500/30';
+                }
+                if (phishingActor) phishingActor.classList.remove('blocked');
+            }
+
+
+            if(score === 100) {
+                coreServer.classList.remove('vulnerable');
+                coreServer.classList.add('secured');
+                coreIcon.className = "fa-solid fa-shield-halved text-4xl text-emerald-400 mb-1.5 transition-all duration-500";
+                coreText.innerText = "SECURED";
+                coreText.className = "text-[10px] font-bold text-emerald-400 tracking-widest font-mono-code glow-text-emerald";
+                coreSub.innerText = "SGSI COMPLIANT";
+                coreSub.className = "text-[8px] text-emerald-300 font-mono-code";
+            } else {
+                coreServer.classList.add('vulnerable');
+                coreServer.classList.remove('secured');
+                coreIcon.className = "fa-solid fa-server text-4xl text-red-500 mb-1.5 transition-all duration-500";
+                coreText.innerText = "VULNERABLE";
+                coreText.className = "text-[10px] font-bold text-red-500 tracking-widest font-mono-code glow-text-red";
+                coreSub.innerText = score === 0 ? "EXPOSICIÓN TOTAL" : "DEFENSA PARCIAL";
+                coreSub.className = "text-[8px] text-red-400/80 font-mono-code";
+            }
+        }
+
+        toggles.forEach(t => {
+            t.addEventListener('change', (e) => {
+                const isChecked = e.target.checked;
+                const controlId = e.target.id;
+                
+                playSound(isChecked ? 'click-on' : 'click-off');
+
+                if (controlId === 'toggle-a9') {
+                    if (isChecked) speakAlert('Control A.9 activado. Autenticación multifactor aplicada.');
+                    logEvent(isChecked 
+                        ? 'Control A.9 (Acceso) ACTIVADO. MFA obligatorio aplicado. Vector APT mitigado.' 
+                        : 'Control A.9 DESACTIVADO. Alerta: Puerto SSH expuesto a fuerza bruta.', 
+                        isChecked ? 'success' : 'danger');
+                } else if (controlId === 'toggle-a16') {
+                    if (isChecked) speakAlert('Control A.16 SIEM activado. Tráfico anómalo mitigado.');
+                    logEvent(isChecked 
+                        ? 'Control A.16 (SIEM) ACTIVADO. Detección de tráfico anómalo SYN-Flood bloqueado.' 
+                        : 'Control A.16 DESACTIVADO. Red vulnerable a inundación DDoS sin monitoreo.', 
+                        isChecked ? 'success' : 'danger');
+                } else if (controlId === 'toggle-a10') {
+                    if (isChecked) speakAlert('Control A.10 Criptografía activado. Algoritmo AES 256 en línea.');
+                    logEvent(isChecked 
+                        ? 'Control A.10 (Criptografía) ACTIVADO. Claves AES-256 rotadas. Ransomware anulado.' 
+                        : 'Control A.10 DESACTIVADO. Almacenamiento en texto plano expuesto a cifrado malicioso.', 
+                        isChecked ? 'success' : 'danger');
+                } else if (controlId === 'toggle-a17') {
+                    if (isChecked) speakAlert('Control A.17 Continuidad activado. Respaldo inmutable sincronizado.');
+                    logEvent(isChecked 
+                        ? 'Control A.17 (DRP) ACTIVADO. Replicación continua y respaldos inmutables en línea.' 
+                        : 'Control A.17 DESACTIVADO. Pérdida de continuidad: RPO/RTO no garantizados.', 
+                        isChecked ? 'success' : 'warning');
+                }
+
+                updateSystem();
+
+                let currentScore = 0;
+                toggles.forEach(item => { if(item.checked) currentScore += parseInt(item.dataset.val); });
+                if(currentScore === 100) {
+                    logEvent('¡Felicitaciones! Cumplimiento ISO 27001 alcanzado al 100%. Servidor blindado.', 'system');
+                    playSound('victory');
+                }
+            });
+        });
+        
+        logEvent('Simulador de Ciberdefensa ISO/IEC 27001 Pro Max inicializado.', 'system');
+        logEvent('Topología CORP_MAIN activa. Monitoreo de amenazas y Tríada CID habilitado.', 'info');
+        updateSystem();
+
+        // ----------------------------------------------------
+        // VOICE ANNOUNCER ENGINE (Web Speech API)
+        // ----------------------------------------------------
+        let voiceEnabled = true;
+
+        function toggleVoiceAssistant() {
+            voiceEnabled = !voiceEnabled;
+            const btnText = document.getElementById('voice-text');
+            const btnIcon = document.getElementById('voice-icon');
+            if (voiceEnabled) {
+                btnText.innerText = 'VOZ IA: ON';
+                btnIcon.className = 'fa-solid fa-volume-high text-purple-400';
+                speakAlert('Asistente de voz de ciberdefensa activado.');
+            } else {
+                btnText.innerText = 'VOZ IA: OFF';
+                btnIcon.className = 'fa-solid fa-volume-xmark text-gray-500';
+            }
+        }
+
+        function speakAlert(text) {
+            if (!voiceEnabled || !('speechSynthesis' in window)) return;
+            try {
+                window.speechSynthesis.cancel();
+                const utter = new SpeechSynthesisUtterance(text);
+                utter.lang = 'es-ES';
+                utter.rate = 1.05;
+                utter.pitch = 0.95;
+                window.speechSynthesis.speak(utter);
+            } catch(e) {
+                console.log('Error de voz:', e);
+            }
+        }
+
+        // ----------------------------------------------------
+        // WIRESHARK DPI ENGINE
+        // ----------------------------------------------------
+        const wiresharkPackets = [
+            {
+                no: 1, time: '0.000000', src: '198.51.100.42', dst: '10.0.1.10', proto: 'TCP', len: 64,
+                info: '54210 → 80 [SYN] Seq=0 Win=64240 (DDoS SYN Flood)',
+                dissection: [
+                    'Frame 1: 64 bytes on wire (512 bits), captured on eth0',
+                    'Ethernet II, Src: 00:0c:29:ab:12:ef, Dst: 00:50:56:c0:00:08',
+                    'Internet Protocol Version 4, Src: 198.51.100.42, Dst: 10.0.1.10, TTL: 48',
+                    'Transmission Control Protocol, Src Port: 54210, Dst Port: 80, Flags: [SYN], Seq: 0'
+                ],
+                hex: '0000  00 50 56 c0 00 08 00 0c 29 ab 12 ef 08 00 45 00  .PV.....)...E.\n0010  00 34 1a 2b 40 00 30 06 7c 11 c6 33 64 2a 0a 01  .4.+@.0.|..3d*..\n0020  01 0a d3 c2 00 50 00 00 00 00 a0 02 fa f0 b2 12  .....P..........',
+                rule: 'ET DOS High-Rate Inbound TCP SYN Flood on Web Port [CVE-2009-3555]'
+            },
+            {
+                no: 2, time: '0.014280', src: '203.0.113.88', dst: '10.0.1.10', proto: 'SMB2', len: 1460,
+                info: 'Tree Connect Request: \\CORP_MAIN\C$ (EternalBlue MS17-010 Exploit)',
+                dissection: [
+                    'Frame 2: 1460 bytes on wire, captured on eth0',
+                    'Ethernet II, Src: 00:1d:7e:99:32:01, Dst: 00:50:56:c0:00:08',
+                    'Internet Protocol Version 4, Src: 203.0.113.88, Dst: 10.0.1.10, TTL: 52',
+                    'Transmission Control Protocol, Src Port: 49152, Dst Port: 445 [PSH, ACK]',
+                    'SMB2 (Server Message Block Protocol Version 2), Tree Connect Request'
+                ],
+                hex: '0000  fe 53 4d 42 40 00 00 00 00 00 00 00 03 00 01 00  .SMB@...........\n0010  01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................\n0020  5c 5c 43 4f 52 50 5f 4d 41 49 4e 5c 43 24 00 00  \\CORP_MAIN\\C$..',
+                rule: 'ET EXPLOIT MS17-010 EternalBlue SMBv1 Buffer Overflow [CVE-2017-0144]'
+            },
+            {
+                no: 3, time: '0.048120', src: '185.220.101.5', dst: '10.0.1.10', proto: 'SSH', len: 128,
+                info: 'Client: SSH-2.0-OpenSSH_8.9p1 (APT Brute Force Hydra/Medusa)',
+                dissection: [
+                    'Frame 3: 128 bytes on wire, captured on eth0',
+                    'Ethernet II, Src: a2:40:99:11:bc:ff, Dst: 00:50:56:c0:00:08',
+                    'Internet Protocol Version 4, Src: 185.220.101.5, Dst: 10.0.1.10',
+                    'Transmission Control Protocol, Src Port: 58491, Dst Port: 22 [PSH, ACK]',
+                    'SSH Protocol: Identification string exchange'
+                ],
+                hex: '0000  53 53 48 2d 32 2e 30 2d 4f 70 65 6e 53 53 48 5f  SSH-2.0-OpenSSH_\n0010  38 2e 39 70 31 0d 0a 00 00 00 00 00 00 00 00 00  8.9p1...........',
+                rule: 'ET SCAN Potential SSH Brute Force Attack in Progress (More than 30 attempts/min)'
+            },
+            {
+                no: 4, time: '0.089400', src: '192.0.2.14', dst: '10.0.1.10', proto: 'HTTP', len: 432,
+                info: "POST /login.php HTTP/1.1 (Payload: admin' OR 1=1 --)",
+                dissection: [
+                    'Frame 4: 432 bytes on wire, captured on eth0',
+                    'Ethernet II, Src: 00:0c:29:ab:12:ef, Dst: 00:50:56:c0:00:08',
+                    'Internet Protocol Version 4, Src: 192.0.2.14, Dst: 10.0.1.10',
+                    'Hypertext Transfer Protocol, POST /login.php',
+                    'HTML Form Data: user=admin%27+OR+1%3D1--&pass=secret'
+                ],
+                hex: "0000  50 4f 53 54 20 2f 6c 6f 67 69 6e 2e 70 68 70 20  POST /login.php \\n0010  48 54 54 50 2f 31 2e 31 0d 0a 55 73 65 72 2d 41  HTTP/1.1..User-A\\n0020  75 73 65 72 3d 61 64 6d 69 6e 27 20 4f 52 20 31  user=admin' OR 1",
+                rule: 'ET WEB_SPECIFIC_APPS Possible SQL Injection Attempt Inbound [OWASP Top 10 A03]'
+            },
+            {
+                no: 5, time: '0.120550', src: '10.0.1.10', dst: '8.8.8.8', proto: 'DNS', len: 148,
+                info: 'Standard query 0x1a2b A c2-beacon-data-chunk-99.darkweb.xyz',
+                dissection: [
+                    'Frame 5: 148 bytes on wire, captured on eth0',
+                    'Ethernet II, Src: 00:50:56:c0:00:08, Dst: 00:0c:29:ab:12:ef',
+                    'Internet Protocol Version 4, Src: 10.0.1.10, Dst: 8.8.8.8',
+                    'User Datagram Protocol, Src Port: 60114, Dst Port: 53',
+                    'Domain Name System (query), QNAME: c2-beacon-data-chunk-99.darkweb.xyz'
+                ],
+                hex: '0000  1a 2b 01 00 00 01 00 00 00 00 00 00 1a 63 32 2d  .+...........c2-\n0010  62 65 61 63 6f 6e 2d 64 61 74 61 2d 63 68 75 6e  beacon-data-chun\n0020  6b 2d 39 39 07 64 61 72 6b 77 65 62 03 78 79 7a  k-99.darkweb.xyz',
+                rule: 'ET MALWARE DNS Query to Suspicious High-Entropy Top-Level Domain [T1071.004]'
+            }
+        ];
+
+        function openWiresharkModal() {
+            playSound('click-on');
+            document.getElementById('wireshark-modal').classList.remove('hidden');
+            renderWiresharkPackets();
+            selectWiresharkPacket(1); // default select eternalblue
+        }
+
+        function closeWiresharkModal() {
+            document.getElementById('wireshark-modal').classList.add('hidden');
+        }
+
+        function renderWiresharkPackets() {
+            const list = document.getElementById('ws-packet-list');
+            list.innerHTML = '';
+            wiresharkPackets.forEach((p, idx) => {
+                const row = document.createElement('div');
+                row.className = `grid grid-cols-12 p-2 hover:bg-slate-700/60 cursor-pointer transition ${idx === 1 ? 'bg-cyan-950/70 border-l-4 border-cyan-400' : ''}`;
+                row.id = `ws-pkt-row-${idx}`;
+                row.onclick = () => selectWiresharkPacket(idx);
+
+                let color = 'text-gray-300';
+                if (p.proto === 'SMB2') color = 'text-amber-300';
+                if (p.proto === 'HTTP') color = 'text-blue-300';
+                if (p.proto === 'DNS') color = 'text-purple-300';
+                if (p.proto === 'SSH') color = 'text-emerald-300';
+
+                row.innerHTML = `
+                    <span class="col-span-1 text-gray-500">${p.no}</span>
+                    <span class="col-span-2 text-gray-400">${p.time}</span>
+                    <span class="col-span-2 ${color}">${p.src}</span>
+                    <span class="col-span-2 text-white font-bold">${p.dst}</span>
+                    <span class="col-span-1 font-bold ${color}">${p.proto}</span>
+                    <span class="col-span-1 text-gray-400">${p.len}</span>
+                    <span class="col-span-3 text-gray-200 truncate">${p.info}</span>
+                `;
+                list.appendChild(row);
+            });
+        }
+
+        function selectWiresharkPacket(idx) {
+            playSound('click-on');
+            const p = wiresharkPackets[idx];
+            document.getElementById('ws-selected-proto-badge').innerText = `SELECCIONADO: PKT #${p.no} (${p.proto})`;
+
+            wiresharkPackets.forEach((_, i) => {
+                const r = document.getElementById(`ws-pkt-row-${i}`);
+                if (r) {
+                    if (i === idx) {
+                        r.className = 'grid grid-cols-12 p-2 bg-cyan-950/80 border-l-4 border-cyan-400 cursor-pointer';
+                    } else {
+                        r.className = 'grid grid-cols-12 p-2 hover:bg-slate-800 cursor-pointer';
+                    }
+                }
+            });
+
+            const tree = document.getElementById('ws-dissection-tree');
+            tree.innerHTML = '';
+            p.dissection.forEach(line => {
+                const item = document.createElement('div');
+                item.className = 'p-1.5 rounded bg-slate-950/80 border border-slate-800 flex items-center gap-2';
+                item.innerHTML = `<i class="fa-solid fa-angle-right text-cyan-400 text-[10px]"></i><span>${line}</span>`;
+                tree.appendChild(item);
+            });
+
+            document.getElementById('ws-hex-dump').innerText = p.hex.replace(/\\n/g, '\n');
+            document.getElementById('ws-ids-alert').innerHTML = `
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-triangle-exclamation text-rose-400 text-lg"></i>
+                    <span>REGLA SURICATA MATCH: <b>${p.rule}</b></span>
+                </div>
+                <span class="text-[10px] bg-rose-500/20 px-2 py-0.5 rounded border border-rose-500/40 text-rose-200">PRIORIDAD 1</span>
+            `;
+        }
+
+        function applyWiresharkFilter() {
+            playSound('click-on');
+            logEvent('Filtro de visualización Wireshark aplicado en captura en vivo.', 'info');
+        }
+
+        function resetWiresharkFilter() {
+            document.getElementById('ws-filter-input').value = '';
+            renderWiresharkPackets();
+            selectWiresharkPacket(0);
+        }
+
+        // ----------------------------------------------------
+        // PHISHING SIMULATOR ENGINE (ISO 27001 A.7.2.2)
+        // ----------------------------------------------------
+        const phishingCases = [
+            {
+                sender: 'recursos.humanos@hermanos-carcamo-portal.com (TYPO-DOMAIN)',
+                subject: 'URGENTE: Actualización y Firma de Planilla Mensual Octubre 2026',
+                spf: 'SPF: SOFTFAIL (~all)', dkim: 'DKIM: UNVERIFIED', dmarc: 'DMARC: QUARANTINE',
+                filename: 'Planilla_Liquidacion_Octubre_2026.xlsm',
+                body: `
+                    <p>Estimado colaborador del I.E.S.T.P. Hermanos Cárcamo,</p>
+                    <p>Se le informa que la Gerencia de Administración ha reajustado los pagos correspondientes al mes en curso. Para procesar el depósito bancario de manera efectiva, <b>debe abrir inmediatamente el archivo Excel adjunto y habilitar el contenido de macros</b>.</p>
+                    <p>De no regularizar su firma antes de las 18:00 hrs, se postergará su retribución económica al siguiente ciclo.</p>
+                    <p class="text-[11px] text-gray-500 italic mt-3">Atentamente,<br>Área de Compensaciones & Recursos Humanos</p>
+                `,
+                explanation: 'Ataque de Spear-Phishing con macro malicioso en archivo .xlsm. Simula presión temporal e ingeniería social hacia empleados.'
+            },
+            {
+                sender: 'no-reply@login-microsoft-secure-verify.xyz',
+                subject: 'Alerta de Seguridad: Su contraseña de correo institucional expira en 2 horas',
+                spf: 'SPF: FAIL (-all)', dkim: 'DKIM: FAIL', dmarc: 'DMARC: REJECT',
+                filename: 'Enlace Web: https://login-microsoft-secure-verify.xyz/auth?user=prof.jaramillo',
+                body: `
+                    <p>Su contraseña de Microsoft 365 para la cuenta institucional expirará hoy.</p>
+                    <p>Para evitar la pérdida de acceso a sus clases virtuales y plataforma académica, haga clic en el siguiente enlace y confirme su contraseña actual:</p>
+                    <div class="my-3 text-center">
+                        <span class="px-4 py-2 bg-blue-600 text-white rounded font-bold inline-block cursor-pointer">MANTENER MI CONTRASEÑA ACTUAL</span>
+                    </div>
+                    <p class="text-[11px] text-gray-500">Este es un mensaje automático de la mesa de ayuda de TI.</p>
+                `,
+                explanation: 'Suplantación de identidad (Credential Harvesting) hacia el portal de Microsoft 365 con dominio falso .xyz.'
+            },
+            {
+                sender: 'facturacion@proveedor-servidores-paita.net',
+                subject: 'Factura Electrónica F001-9482 Vencida - Notificación de Corte de Fibra',
+                spf: 'SPF: PASS', dkim: 'DKIM: PASS', dmarc: 'DMARC: PASS (Cuenta Comprometida)',
+                filename: 'Factura_F001_9482.pdf.exe (Doble extensión maliciosa)',
+                body: `
+                    <p>Estimados Sres. I.E.S.T.P. Hermanos Cárcamo,</p>
+                    <p>Adjuntamos el estado de cuenta y factura vencida del servicio de transporte de fibra óptica contratado para el Data Center.</p>
+                    <p>Sírvase ejecutar el comprobante digital para verificar los montos adeudados y evitar la suspensión del enlace troncal.</p>
+                `,
+                explanation: 'Ataque de BEC (Business Email Compromise) utilizando una cuenta legítima vulnerada con un troyano con doble extensión (.pdf.exe).'
+            }
+        ];
+
+        let currentPhishIdx = 0;
+
+        function openPhishingModal() {
+            playSound('click-on');
+            document.getElementById('phishing-modal').classList.remove('hidden');
+            selectPhishingMail(0);
+        }
+
+        function closePhishingModal() {
+            document.getElementById('phishing-modal').classList.add('hidden');
+        }
+
+        function selectPhishingMail(idx) {
+            currentPhishIdx = idx;
+            playSound('click-on');
+            [0, 1, 2].forEach(i => {
+                const tab = document.getElementById(`phish-tab-${i}`);
+                if (i === idx) {
+                    tab.className = 'px-3.5 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold transition';
+                } else {
+                    tab.className = 'px-3.5 py-2 rounded-xl bg-slate-800 text-gray-300 hover:bg-slate-700 transition';
+                }
+            });
+
+            const data = phishingCases[idx];
+            document.getElementById('phish-sender').innerText = data.sender;
+            document.getElementById('phish-subject').innerText = data.subject;
+            document.getElementById('phish-spf').innerText = data.spf;
+            document.getElementById('phish-dkim').innerText = data.dkim;
+            document.getElementById('phish-dmarc').innerText = data.dmarc;
+            document.getElementById('phish-filename').innerText = data.filename;
+            document.getElementById('phish-body').innerHTML = data.body;
+            document.getElementById('phish-feedback').classList.add('hidden');
+        }
+
+        function actionPhishing(type) {
+            playSound('click-on');
+            const fb = document.getElementById('phish-feedback');
+            fb.classList.remove('hidden');
+
+            if (type === 'report') {
+                playSound('victory');
+                fb.className = 'p-3.5 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 space-y-1';
+                fb.innerHTML = `
+                    <b class="text-emerald-400 block"><i class="fa-solid fa-circle-check mr-1"></i> ¡EXCELENTE DECISIÓN! PROTOCOLO ISO 27001 CUMPLIDO</b>
+                    <p>Has reportado el correo sospechoso al CSIRT institucional. El remitente falso fue bloqueado en el gateway perimetral y se previno el contagio en la red académica.</p>
+                `;
+                speakAlert('Incidente de phishing contenido con éxito.');
+                logEvent('Campaña de Phishing detectada y neutralizada por el usuario según Control A.7.2.2.', 'success');
+            } else if (type === 'sandbox') {
+                playSound('click-on');
+                fb.className = 'p-3.5 rounded-xl bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 space-y-1';
+                fb.innerHTML = `
+                    <b class="text-cyan-400 block"><i class="fa-solid fa-microchip mr-1"></i> DETONACIÓN EN SANDBOX SEGURA</b>
+                    <p>El macro de Excel intentó conectarse a la IP maliciosa 185.220.101.5 para descargar un payload ransomware. La máquina virtual aislada congeló la amenaza sin riesgo para el servidor corporativo.</p>
+                `;
+            } else if (type === 'quarantine') {
+                fb.className = 'p-3.5 rounded-xl bg-amber-950/80 border border-amber-500/40 text-amber-300 space-y-1';
+                fb.innerHTML = `
+                    <b class="text-amber-400 block"><i class="fa-solid fa-shield mr-1"></i> MENSAJE PUESTO EN CUARENTENA</b>
+                    <p>El correo ha sido aislado del buzón de entrada. No se ejecutarán enlaces ni scripts mientras el analista forense revisa los encabezados.</p>
+                `;
+            } else if (type === 'open') {
+                playSound('alarm');
+                fb.className = 'p-3.5 rounded-xl bg-rose-950/80 border border-rose-500/40 text-rose-300 space-y-1';
+                fb.innerHTML = `
+                    <b class="text-rose-400 block"><i class="fa-solid fa-triangle-exclamation mr-1"></i> ¡ERROR! INFECCIÓN EJECUTADA</b>
+                    <p>El usuario abrió el adjunto malicioso y habilitó macros. El ransomware inició el cifrado de archivos locales. Requiere activación inmediata del Control A.10 (Criptografía) y A.17 (DRP) para mitigar el daño.</p>
+                `;
+                speakAlert('Alerta de seguridad. Carga de ransomware detonada en el endpoint.');
+                logEvent('¡ALERTA! Empleado abrió adjunto malicioso en simulación de phishing.', 'danger');
+            }
+        }
+
+        // ----------------------------------------------------
+        // TERMINAL COMMAND PARSER (INTERACTIVE SHELL)
+        // ----------------------------------------------------
+        function handleTerminalCommand() {
+            const input = document.getElementById('terminal-cmd-input');
+            const cmd = input.value.trim().toLowerCase();
+            if (!cmd) return;
+            input.value = '';
+
+            playSound('click-on');
+            logEvent(`soc@analyst:~$ ${cmd}`, 'system');
+
+            if (cmd === 'help') {
+                logEvent('Comandos disponibles: status, nmap, mitre, blockip <ip>, audit, playbooks, clear', 'info');
+            } else if (cmd === 'status') {
+                let score = 0;
+                toggles.forEach(t => { if (t.checked) score += parseInt(t.dataset.val); });
+                logEvent(`ESTADO DEL SISTEMA: Cumplimiento ISO 27001 al ${score}%. Tríada CID activa.`, score === 100 ? 'success' : 'warning');
+            } else if (cmd === 'nmap') {
+                logEvent('Iniciando escaneo de puertos Nmap sobre target 10.0.1.10 (CORP_MAIN)...', 'info');
+                setTimeout(() => {
+                    logEvent('Puerto 22/tcp: OPEN (OpenSSH 8.9p1)', 'warning');
+                    logEvent('Puerto 80/tcp: OPEN (Nginx 1.24)', 'info');
+                    logEvent('Puerto 443/tcp: OPEN (HTTPS TLS 1.3)', 'info');
+                    logEvent('Puerto 445/tcp: FILTERED (SMB2 Hardened)', 'success');
+                }, 400);
+            } else if (cmd.startsWith('blockip')) {
+                const parts = cmd.split(' ');
+                const ip = parts[1] || '198.51.100.24';
+                logEvent(`IP ${ip} añadida a la lista negra perimetral (DROP ALL). Tráfico bloqueado.`, 'success');
+                speakAlert(`Dirección IP ${ip} bloqueada en el cortafuegos.`);
+            } else if (cmd === 'mitre') {
+                logEvent('MITRE ATT&CK: T1110 (Brute Force), T1498 (Network DoS), T1486 (Data Encrypted for Impact).', 'info');
+            } else if (cmd === 'audit') {
+                openAuditReport();
+            } else if (cmd === 'playbooks') {
+                openPlaybooksModal();
+            } else if (cmd === 'clear') {
+                terminalFeed.innerHTML = '';
+                logEvent('Consola SIEM limpiada.', 'system');
+            } else {
+                logEvent(`Comando no reconocido: '${cmd}'. Escribe 'help' para ver la lista.`, 'danger');
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeThreatModal();
+                closeServerModal();
+                closeAuditReport();
+                closeRiskMatrix();
+                closePlaybooksModal();
+                closeWiresharkModal();
+                closePhishingModal();
+            }
+        });
+    
+        // ----------------------------------------------------
+        // Trigger Holographic Shockwave
+        // ----------------------------------------------------
+        function triggerShockwave() {
+            const sw = document.getElementById('shockwave-ring');
+            if (!sw) return;
+            sw.classList.remove('trigger');
+            void sw.offsetWidth; // force DOM reflow
+            sw.classList.add('trigger');
+        }
+
+        // Add Deflection Sound to playSound
+        const origPlaySound = playSound;
+        playSound = function(type) {
+            origPlaySound(type);
+            if (!soundEnabled) return;
+            try {
+                if (type === 'deflect') {
+                    initAudio();
+                    if (audioCtx.state === 'suspended') audioCtx.resume();
+                    const now = audioCtx.currentTime;
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(950, now);
+                    osc.frequency.exponentialRampToValueAtTime(1900, now + 0.06);
+                    gain.gain.setValueAtTime(0.09, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+                    osc.start(now);
+                    osc.stop(now + 0.06);
+                    triggerShockwave();
+                }
+            } catch(e) {}
+        };
+
+        // ----------------------------------------------------
+        // Automated SOC Demo Presentation Sequence (Prof. Jaramillo)
+        // ----------------------------------------------------
+        let socDemoActive = false;
+        let socDemoStep = 0;
+        let socDemoTimer = null;
+
+        const socDemoSteps = [
+            {
+                step: 1,
+                title: "ESTADO INICIAL: INFRAESTRUCTURA EXPUESTA (0%)",
+                desc: "Servidor central sin defensas perimetrales activas. Ataques DDoS y Fuerza Bruta penetran sin restricción. Estado: BREACHED.",
+                action: () => {
+                    setAllControls(false);
+                    playSound('alarm');
+                }
+            },
+            {
+                step: 2,
+                title: "ACTIVACIÓN CONTROL A.9: FIREWALL & ZERO TRUST",
+                desc: "Se activa el escudo A.9 (Control de Acceso). Las conexiones no autorizadas y el escaneo de puertos son bloqueados inmediatamente por las políticas de filtrado.",
+                action: () => {
+                    document.getElementById('toggle-a9').checked = true;
+                    updateSim();
+                    playSound('deflect');
+                }
+            },
+            {
+                step: 3,
+                title: "ACTIVACIÓN A.10 Y A.17: CRIPTOGRAFÍA Y CONTINUIDAD",
+                desc: "Se despliega la burbuja de cifrado AES-256 (A.10) y se activa la réplica al Servidor Secundario de contingencia (A.17). La integridad de los datos queda garantizada.",
+                action: () => {
+                    document.getElementById('toggle-a10').checked = true;
+                    document.getElementById('toggle-a17').checked = true;
+                    updateSim();
+                    playSound('deflect');
+                }
+            },
+            {
+                step: 4,
+                title: "ACTIVACIÓN A.16, A.5 Y A.7: SIEM Y CONTRAMEDIDAS CSIRT",
+                desc: "El radar SIEM A.16 correlaciona eventos anómalos en tiempo real. Todas las amenazas son mitigadas. El Core Server alcanza estado 100% SECURED.",
+                action: () => {
+                    setAllControls(true);
+                    playSound('victory');
+                }
+            },
+            {
+                step: 5,
+                title: "AUDITORÍA OFICIAL: CERTIFICACIÓN ISO/IEC 27001",
+                desc: "Generación automática del informe formal de conformidad para el Profesor Jaramillo. Todos los dominios normativos aprobados con calificación sobresaliente.",
+                action: () => {
+                    generateAuditReport();
+                }
+            }
+        ];
+
+        function startSocDemo() {
+            playSound('click-on');
+            socDemoActive = true;
+            socDemoStep = 1;
+            document.getElementById('demo-banner').classList.remove('hidden');
+            runSocDemoStep();
+        }
+
+        function runSocDemoStep() {
+            if (!socDemoActive || socDemoStep > socDemoSteps.length) {
+                return;
+            }
+
+            const current = socDemoSteps[socDemoStep - 1];
+            document.getElementById('demo-badge').innerText = `DEMO PASO ${current.step} / ${socDemoSteps.length}`;
+            document.getElementById('demo-title').innerText = current.title;
+            document.getElementById('demo-desc').innerText = current.desc;
+
+            if (current.action) current.action();
+
+            clearTimeout(socDemoTimer);
+            if (socDemoStep < socDemoSteps.length) {
+                socDemoTimer = setTimeout(() => {
+                    if (socDemoActive) {
+                        socDemoStep++;
+                        runSocDemoStep();
+                    }
+                }, 7500);
+            }
+        }
+
+        function stopSocDemo() {
+            socDemoActive = false;
+            clearTimeout(socDemoTimer);
+            document.getElementById('demo-banner').classList.add('hidden');
+            setAllControls(true);
+            logEvent("Secuencia demostrativa finalizada. Control manual restablecido.", "info");
+        }
+
+    </script>
+</body>
+</html>
