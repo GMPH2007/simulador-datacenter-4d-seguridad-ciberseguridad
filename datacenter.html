@@ -145,6 +145,15 @@
 
       <!-- Quick Actions & Tools -->
       <div class="flex flex-wrap items-center gap-2 font-mono-code text-xs">
+        
+        <button onclick="openAtsModal()" class="px-3 py-2 rounded-xl bg-amber-500/15 border border-amber-500/40 text-amber-300 hover:bg-amber-500/25 transition flex items-center gap-1.5 shadow-[0_0_12px_rgba(245,158,11,0.2)]">
+          <i class="fa-solid fa-bolt text-amber-400"></i>
+          <span>ATS & DIÉSEL</span>
+        </button>
+        <button onclick="openPatchPanelModal('otdr')" class="px-3 py-2 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/25 transition flex items-center gap-1.5 shadow-[0_0_12px_rgba(16,185,129,0.2)]">
+          <i class="fa-solid fa-wave-square text-emerald-400"></i>
+          <span>OTDR FIBRA</span>
+        </button>
         <button onclick="startPresentationTour()" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 font-bold shadow-[0_0_20px_rgba(6,182,212,0.4)] transition flex items-center gap-1.5 transform hover:scale-105">
           <i class="fa-solid fa-person-chalkboard text-slate-950"></i>
           <span>TOUR GUIADO 3D</span>
@@ -770,40 +779,235 @@
     </div>
   </div>
 
-  <!-- Modal 4: Patch Panel 24 Puertos & ODF Fibra Óptica -->
+  <!-- Modal 4: Patch Panel 24 Puertos & ODF Fibra Óptica (con OTDR Integrado) -->
   <div id="patch-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="glass-panel max-w-2xl w-full rounded-3xl p-6 border border-white/10 shadow-2xl relative bg-slate-900">
+    <div class="glass-panel max-w-3xl w-full rounded-3xl p-6 border border-white/10 shadow-2xl relative bg-slate-900 max-h-[90vh] overflow-y-auto custom-scroll">
       <div class="flex justify-between items-start border-b border-white/10 pb-4 mb-4">
         <div>
-          <span class="text-xs font-mono-code text-emerald-400 font-bold">RACK B · DISTRIBUIDOR DE FIBRA & COBRE</span>
-          <h3 class="text-xl font-bold text-white">Inspección de Patch Panel 24P & Bandeja MPO</h3>
+          <span class="text-xs font-mono-code text-emerald-400 font-bold">RACK B · DISTRIBUIDOR DE FIBRA & COBRE (ANSI/TIA-568.3-D)</span>
+          <h3 class="text-xl font-bold text-white">Inspección de Patch Panel 24P & Reflectometría Óptica OTDR</h3>
         </div>
         <button onclick="closePatchPanelModal()" class="w-8 h-8 rounded-full bg-slate-800 text-gray-400 hover:text-white flex items-center justify-center transition">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
 
-      <div class="space-y-4 text-xs text-gray-300">
+      <!-- Tab Switcher -->
+      <div class="flex gap-2 mb-4 border-b border-white/10 pb-3">
+        <button id="tab-btn-patch" onclick="switchPatchTab('patch')" class="px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold font-mono-code text-xs flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-network-wired"></i>
+          <span>PATCH PANEL 24P (CAT 6A)</span>
+        </button>
+        <button id="tab-btn-otdr" onclick="switchPatchTab('otdr')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold font-mono-code text-xs border border-cyan-500/30 flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-wave-square text-cyan-400"></i>
+          <span>REFLECTÓMETRO ÓPTICO OTDR (OM4)</span>
+        </button>
+      </div>
+
+      <!-- Tab 1: Patch Panel RJ45 -->
+      <div id="tab-content-patch" class="space-y-4 text-xs text-gray-300">
         <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 flex justify-between items-center font-mono-code">
-          <span>TIPO: MPO-12 & Cat 6A STP</span>
-          <span class="text-emerald-400 font-bold">ATENUACIÓN: 0.28 dB/km (ÓPTIMO)</span>
+          <span>TIPO: MPO-12 & Cat 6A STP (T568B)</span>
+          <span class="text-emerald-400 font-bold">ANCHO DE BANDA: 10 Gbps / 100 Gbps Troncal</span>
         </div>
 
         <div>
-          <span class="font-mono-code text-gray-400 text-[11px] block mb-2">PUERTOS DE PARCHEO 1-24 (Haz clic en un puerto para probar reflectometría OTDR):</span>
+          <span class="font-mono-code text-gray-400 text-[11px] block mb-2">PUERTOS DE PARCHEO 1-24 (Haz clic en un puerto para verificar continuidad y enlace):</span>
           <div class="grid grid-cols-6 sm:grid-cols-12 gap-1.5 p-3 rounded-2xl bg-slate-950 border border-slate-800" id="patch-ports-grid">
             <!-- 24 ports generated via JS -->
           </div>
         </div>
 
-        <div id="port-test-result" class="p-3 rounded-xl bg-slate-800/60 border border-slate-700 font-mono-code text-[11px] text-gray-300">
+        <div id="port-test-result" class="p-3.5 rounded-xl bg-slate-800/60 border border-slate-700 font-mono-code text-[11px] text-gray-300">
           <span>Selecciona un puerto para verificar enlace con Rack A (Core) o Rack C (Server).</span>
         </div>
       </div>
 
-      <div class="mt-6 flex justify-end">
+      <!-- Tab 2: OTDR Optical Reflectometry Trace -->
+      <div id="tab-content-otdr" class="space-y-4 text-xs text-gray-300 hidden">
+        <div class="flex flex-wrap items-center justify-between gap-2 p-3 rounded-xl bg-slate-950 border border-cyan-500/30 font-mono-code">
+          <div class="flex items-center gap-3">
+            <span class="text-gray-400">LONGITUD DE ONDA:</span>
+            <button onclick="setOtdrWavelength(850)" id="btn-otdr-850" class="px-2.5 py-1 rounded bg-cyan-500 text-slate-950 font-bold">850 nm (OM4)</button>
+            <button onclick="setOtdrWavelength(1310)" id="btn-otdr-1310" class="px-2.5 py-1 rounded bg-slate-800 text-gray-400 hover:text-white">1310 nm (OS2)</button>
+          </div>
+          <button onclick="runOtdrSweep()" class="px-4 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold flex items-center gap-1.5 shadow-[0_0_15px_rgba(6,182,212,0.4)]">
+            <i class="fa-solid fa-play"></i>
+            <span>DISPARAR LÁSER OTDR</span>
+          </button>
+        </div>
+
+        <!-- OTDR SVG Trace Graph Screen -->
+        <div class="relative h-56 bg-slate-950 rounded-2xl border border-cyan-500/40 p-3 overflow-hidden shadow-inner">
+          <div class="absolute top-2 left-3 font-mono-code text-[10px] text-cyan-400 flex items-center gap-2 z-10">
+            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+            <span>TRAZA OTDR EN TIEMPO REAL · ENLACE RACK A &rarr; RACK C (OM4 50/125 µm)</span>
+          </div>
+          <div class="absolute top-2 right-3 font-mono-code text-[10px] text-emerald-400 z-10" id="otdr-status-badge">
+            ESTADO: DISPONIBLE
+          </div>
+
+          <svg id="otdr-svg" class="w-full h-full" viewBox="0 0 500 160">
+            <!-- Grid Lines -->
+            <defs>
+              <pattern id="otdr-grid" width="50" height="20" patternUnits="userSpaceOnUse">
+                <path d="M 50 0 L 0 0 0 20" fill="none" stroke="#1e293b" stroke-width="0.8"/>
+              </pattern>
+            </defs>
+            <rect width="500" height="160" fill="url(#otdr-grid)"/>
+
+            <!-- Axes Labels -->
+            <text x="15" y="25" fill="#64748b" font-size="8" font-family="monospace">0 dB</text>
+            <text x="15" y="70" fill="#64748b" font-size="8" font-family="monospace">-4 dB</text>
+            <text x="15" y="115" fill="#64748b" font-size="8" font-family="monospace">-8 dB</text>
+            <text x="15" y="150" fill="#64748b" font-size="8" font-family="monospace">-12 dB</text>
+
+            <text x="60" y="155" fill="#64748b" font-size="8" font-family="monospace">0 m</text>
+            <text x="180" y="155" fill="#64748b" font-size="8" font-family="monospace">15 m</text>
+            <text x="300" y="155" fill="#64748b" font-size="8" font-family="monospace">30 m</text>
+            <text x="420" y="155" fill="#64748b" font-size="8" font-family="monospace">45 m</text>
+
+            <!-- OTDR Backscatter Trace Curve -->
+            <!-- Event 1: Launch Connector at x=60 (spike up, step down) -->
+            <!-- Span 1: x=60 to 240 (gentle slope) -->
+            <!-- Event 2: MPO Splice at x=240 (small step down) -->
+            <!-- Span 2: x=240 to 425 (gentle slope) -->
+            <!-- Event 3: Fresnel End Reflection at x=425 (sharp spike, then drops to noise floor) -->
+            <path id="otdr-curve" d="M 30 145 L 60 145 L 60 30 L 75 45 L 240 58 L 245 68 L 420 80 L 425 22 L 435 150 L 490 150" fill="none" stroke="#06b6d4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+            <!-- Event Marker Pins -->
+            <g id="otdr-markers">
+              <circle cx="60" cy="30" r="4" fill="#3b82f6"/>
+              <text x="50" y="20" fill="#93c5fd" font-size="8" font-family="monospace">E1: 0m (ODF)</text>
+
+              <circle cx="245" cy="68" r="4" fill="#10b981"/>
+              <text x="220" y="60" fill="#6ee7b7" font-size="8" font-family="monospace">E2: 24m (MPO)</text>
+
+              <circle cx="425" cy="22" r="4" fill="#f59e0b"/>
+              <text x="400" y="15" fill="#fcd34d" font-size="8" font-family="monospace">E3: 48.2m (End)</text>
+            </g>
+
+            <!-- Animated laser pulse dot -->
+            <circle id="otdr-pulse" cx="60" cy="30" r="5" fill="#f43f5e" class="hidden">
+              <animate attributeName="r" values="3;7;3" dur="0.8s" repeatCount="indefinite"/>
+            </circle>
+          </svg>
+        </div>
+
+        <!-- OTDR Event Parameters Table -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono-code text-[11px]">
+          <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+            <span class="text-gray-400 block text-[9px]">LONGITUD DEL ENLACE</span>
+            <span class="text-white font-bold text-sm" id="otdr-len">48.25 metros</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+            <span class="text-gray-400 block text-[9px]">PÉRDIDA TOTAL (IL)</span>
+            <span class="text-emerald-400 font-bold text-sm" id="otdr-loss">0.26 dB</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+            <span class="text-gray-400 block text-[9px]">ORL (PÉRDIDA RETORNO)</span>
+            <span class="text-cyan-400 font-bold text-sm" id="otdr-orl">&gt; 48.5 dB</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+            <span class="text-gray-400 block text-[9px]">DICTAMEN TIA-568.3-D</span>
+            <span class="text-emerald-400 font-bold text-sm" id="otdr-pass">PASA (+1.24 dB)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 flex justify-between items-center border-t border-white/10 pt-4">
+        <span class="font-mono-code text-[11px] text-gray-400">Norma: ANSI/TIA-568.3-D & ISO/IEC 11801 (Sistemas de Cableado Óptico)</span>
         <button onclick="closePatchPanelModal()" class="px-5 py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold font-mono-code text-xs hover:bg-emerald-400 transition">
           CERRAR PANEL
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 5: Cuadro de Transferencia Automática ATS & Grupo Electrógeno Diésel -->
+  <div id="ats-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-panel max-w-2xl w-full rounded-3xl p-6 border border-amber-500/40 shadow-[0_0_50px_rgba(245,158,11,0.25)] relative bg-slate-900">
+      <div class="flex justify-between items-start border-b border-white/10 pb-4 mb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center">
+            <i class="fa-solid fa-bolt text-amber-400 text-xl"></i>
+          </div>
+          <div>
+            <span class="text-xs font-mono-code text-amber-400 font-bold">ANSI/TIA-942 TIER III · SISTEMA ELÉCTRICO 2N</span>
+            <h3 class="text-xl font-bold text-white">Tablero de Transferencia Automática ATS & Generador</h3>
+          </div>
+        </div>
+        <button onclick="closeAtsModal()" class="w-8 h-8 rounded-full bg-slate-800 text-gray-400 hover:text-white flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4 font-mono-code text-xs">
+        <!-- Power Source Comparison Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <!-- Source 1: Commercial Grid -->
+          <div id="grid-source-card" class="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/50 flex flex-col justify-between">
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-[10px] text-gray-400 uppercase">ACOMETIDA PRIMARIA</span>
+                <span id="grid-status-badge" class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40">OPERATIVA</span>
+              </div>
+              <h4 class="text-base font-bold text-white">RED COMERCIAL ENOSA</h4>
+              <p class="text-gray-400 text-[11px] mt-1">Suministro 380V / 220V Trifásico 60 Hz desde subestación eléctrica Paita.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-emerald-500/20 flex justify-between text-[11px]">
+              <span>TENSIÓN: <b id="grid-volt" class="text-emerald-400">380.2 V</b></span>
+              <span>FREC: <b class="text-emerald-400">60.0 Hz</b></span>
+            </div>
+          </div>
+
+          <!-- Source 2: Diesel Generator -->
+          <div id="diesel-source-card" class="p-4 rounded-2xl bg-slate-950 border border-slate-800 flex flex-col justify-between">
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-[10px] text-gray-400 uppercase">RESPALDO AUTÓNOMO</span>
+                <span id="diesel-status-badge" class="px-2 py-0.5 rounded text-[10px] bg-slate-800 text-gray-400 font-bold border border-slate-700">STANDBY</span>
+              </div>
+              <h4 class="text-base font-bold text-white">CAT 3512B 1500 kVA</h4>
+              <p class="text-gray-400 text-[11px] mt-1">Generador diésel con arranque autónomo en &lt; 10 seg y autonomía de 72 hrs.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-800 flex justify-between text-[11px]">
+              <span>RPM: <b id="diesel-rpm" class="text-gray-400">0 RPM</b></span>
+              <span>COMBUSTIBLE: <b class="text-amber-400">94%</b></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Central Transfer Status -->
+        <div class="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="w-3 h-3 rounded-full bg-emerald-400 animate-ping"></span>
+            <div>
+              <span class="text-gray-400 block text-[10px]">CONMUTADOR AUTOMÁTICO (ATS)</span>
+              <span id="ats-mode-text" class="text-white font-bold text-xs">SUMINISTRO NORMAL DESDE RED PÚBLICA</span>
+            </div>
+          </div>
+          <span id="ats-trans-badge" class="px-3 py-1 rounded-xl bg-slate-900 border border-cyan-500/30 text-cyan-300 text-[11px] font-bold">
+            CARGA: 840 kW (70%)
+          </span>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="grid grid-cols-2 gap-3 pt-2">
+          <button onclick="triggerAtsCut()" class="py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold transition flex items-center justify-center gap-2 shadow-lg">
+            <i class="fa-solid fa-plug-circle-xmark"></i>
+            <span>CORTAR RED COMERCIAL</span>
+          </button>
+          <button onclick="triggerAtsRestore()" class="py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition flex items-center justify-center gap-2 shadow-lg">
+            <i class="fa-solid fa-plug-circle-check"></i>
+            <span>RESTABLECER RED ELÉCTRICA</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-6 flex justify-end">
+        <button onclick="closeAtsModal()" class="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-gray-200 font-bold font-mono-code text-xs transition">
+          CERRAR TABLERO
         </button>
       </div>
     </div>
@@ -1955,6 +2159,7 @@
     // 9. Hot-Swap Blade Server Extraction in 3D
     // ----------------------------------------------------
     function toggleHotSwapBlade() {
+      if (!racks || !racks.C || !racks.C.userData || !racks.C.userData.bladeMeshes) return;
       bladeEjected = !bladeEjected;
       playSfx('eject');
 
@@ -2006,12 +2211,102 @@
       `;
     }
 
-    function openPatchPanelModal() {
+    function openPatchPanelModal(initialTab = 'patch') {
       playSfx('click');
       document.getElementById('patch-modal').classList.remove('hidden');
+      switchPatchTab(initialTab);
     }
     function closePatchPanelModal() {
       document.getElementById('patch-modal').classList.add('hidden');
+    }
+
+    function switchPatchTab(tab) {
+      const btnPatch = document.getElementById('tab-btn-patch');
+      const btnOtdr = document.getElementById('tab-btn-otdr');
+      const contentPatch = document.getElementById('tab-content-patch');
+      const contentOtdr = document.getElementById('tab-content-otdr');
+
+      if (tab === 'otdr') {
+        btnOtdr.className = 'px-4 py-2 rounded-xl bg-cyan-500 text-slate-950 font-bold font-mono-code text-xs flex items-center gap-1.5 transition';
+        btnPatch.className = 'px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-gray-300 font-bold font-mono-code text-xs border border-slate-700 flex items-center gap-1.5 transition';
+        contentPatch.classList.add('hidden');
+        contentOtdr.classList.remove('hidden');
+      } else {
+        btnPatch.className = 'px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold font-mono-code text-xs flex items-center gap-1.5 transition';
+        btnOtdr.className = 'px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold font-mono-code text-xs border border-cyan-500/30 flex items-center gap-1.5 transition';
+        contentPatch.classList.remove('hidden');
+        contentOtdr.classList.add('hidden');
+      }
+    }
+
+    let otdrWave = 850;
+    function setOtdrWavelength(w) {
+      otdrWave = w;
+      playSfx('click');
+      document.getElementById('btn-otdr-850').className = w === 850 ? 'px-2.5 py-1 rounded bg-cyan-500 text-slate-950 font-bold' : 'px-2.5 py-1 rounded bg-slate-800 text-gray-400 hover:text-white';
+      document.getElementById('btn-otdr-1310').className = w === 1310 ? 'px-2.5 py-1 rounded bg-cyan-500 text-slate-950 font-bold' : 'px-2.5 py-1 rounded bg-slate-800 text-gray-400 hover:text-white';
+      runOtdrSweep();
+    }
+
+    function runOtdrSweep() {
+      playSfx('fluke-sweep');
+      const statusBadge = document.getElementById('otdr-status-badge');
+      const pulse = document.getElementById('otdr-pulse');
+      statusBadge.innerText = 'DISPARANDO LÁSER OTDR...';
+      statusBadge.className = 'text-amber-400 font-bold';
+      pulse.classList.remove('hidden');
+
+      setTimeout(() => {
+        pulse.classList.add('hidden');
+        statusBadge.innerText = 'MEDICIÓN COMPLETADA (PASA)';
+        statusBadge.className = 'text-emerald-400 font-bold';
+        logNetworkEvent(`Reflectometría OTDR (${otdrWave} nm): Enlace OM4 48.25m verificado. Atenuación 0.26 dB dentro del margen TIA-568.3-D.`, 'success');
+      }, 900);
+    }
+
+    // ATS Modal functions
+    function openAtsModal() {
+      playSfx('click');
+      document.getElementById('ats-modal').classList.remove('hidden');
+    }
+    function closeAtsModal() {
+      document.getElementById('ats-modal').classList.add('hidden');
+    }
+
+    function triggerAtsCut() {
+      playSfx('power');
+      document.getElementById('grid-source-card').className = 'p-4 rounded-2xl bg-rose-950/40 border border-rose-500/50 flex flex-col justify-between';
+      document.getElementById('grid-status-badge').className = 'px-2 py-0.5 rounded text-[10px] bg-rose-500/20 text-rose-300 font-bold border border-rose-500/40';
+      document.getElementById('grid-status-badge').innerText = 'INTERRUMPIDA';
+      document.getElementById('grid-volt').innerText = '0.0 V';
+      document.getElementById('grid-volt').className = 'text-rose-400';
+
+      document.getElementById('diesel-source-card').className = 'p-4 rounded-2xl bg-amber-950/40 border border-amber-500/50 flex flex-col justify-between';
+      document.getElementById('diesel-status-badge').className = 'px-2 py-0.5 rounded text-[10px] bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40 animate-pulse';
+      document.getElementById('diesel-status-badge').innerText = 'EN LÍNEA (1800 RPM)';
+      document.getElementById('diesel-rpm').innerText = '1800 RPM (60.0 Hz)';
+      document.getElementById('diesel-rpm').className = 'text-amber-400';
+
+      document.getElementById('ats-mode-text').innerText = 'RESPALDO ACTIVO: GRUPO ELECTRÓGENO CAT 3512B';
+      logNetworkEvent('ATS: Conmutación de emergencia ejecutada. Carga alimentada por generador diésel.', 'warning');
+    }
+
+    function triggerAtsRestore() {
+      playSfx('restore');
+      document.getElementById('grid-source-card').className = 'p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/50 flex flex-col justify-between';
+      document.getElementById('grid-status-badge').className = 'px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40';
+      document.getElementById('grid-status-badge').innerText = 'OPERATIVA';
+      document.getElementById('grid-volt').innerText = '380.2 V';
+      document.getElementById('grid-volt').className = 'text-emerald-400';
+
+      document.getElementById('diesel-source-card').className = 'p-4 rounded-2xl bg-slate-950 border border-slate-800 flex flex-col justify-between';
+      document.getElementById('diesel-status-badge').className = 'px-2 py-0.5 rounded text-[10px] bg-slate-800 text-gray-400 font-bold border border-slate-700';
+      document.getElementById('diesel-status-badge').innerText = 'STANDBY';
+      document.getElementById('diesel-rpm').innerText = '0 RPM';
+      document.getElementById('diesel-rpm').className = 'text-gray-400';
+
+      document.getElementById('ats-mode-text').innerText = 'SUMINISTRO NORMAL DESDE RED PÚBLICA';
+      logNetworkEvent('ATS: Red eléctrica comercial restablecida. Generador en ciclo de enfriamiento.', 'success');
     }
 
     const raycaster = new THREE.Raycaster();
@@ -2487,6 +2782,7 @@
         closeTierModal();
         closePatchPanelModal();
         closeFlukeModal();
+        closeAtsModal();
       }
     });
   
